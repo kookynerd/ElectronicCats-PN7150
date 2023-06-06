@@ -31,6 +31,7 @@ To install this library:
 | Arduino MKR Family  | Compatible  |
 | ESP32  | Compatible  |
 | RP2040 | Compatible  |
+| RENESAS | Compatible  |
 
 ### Maintainer
 
