@@ -1102,7 +1102,7 @@ bool Electroniccats_PN7150::StopDiscovery(void)
 
     (void)writeData(NCIStopDiscovery, sizeof(NCIStopDiscovery));
     getMessage();
-    getMessage(1000);
+    getMessage(100);
 
     return SUCCESS;
 }
