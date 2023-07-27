@@ -7,6 +7,8 @@
 #define PN7150_ADDR (0x28)
 
 // Function prototypes
+void checkReaders();
+void p2pMode();
 void resetMode();
 void ndefPush_Cb(unsigned char *pNdefRecord, unsigned short NdefRecordSize);
 void displayDeviceInfo();
@@ -38,6 +40,20 @@ void setup() {
     Serial.println("Set message error\r\n");
   }
 
+	if (RW_NDEF_SetMessage((unsigned char *)NDEF_MESSAGE, sizeof(NDEF_MESSAGE), (void *)*ndefPush_Cb)) {
+		Serial.println("Set message ok\r\n");
+	} else {
+		Serial.println("Set message error\r\n");
+	}
+
+	if (P2P_NDEF_SetMessage((unsigned char *)NDEF_MESSAGE, sizeof(NDEF_MESSAGE), (void *)*ndefPush_Cb)) {
+		Serial.println("Set message ok\r\n");
+	} else {
+		Serial.println("Set message error\r\n");
+	}
+
+	P2P_NDEF_RegisterPullCallback((void *)*ndefPush_Cb);
+
   Serial.println("Initializing...");
   if (nfc.connectNCI()) {  // Wake up the board
     Serial.println("Error while setting up the mode, check connections!");
@@ -62,16 +78,51 @@ void setup() {
 }
 
 void loop() {
+  // checkReaders();
+	p2pMode();
+}
+
+void checkReaders() {
   if (nfc.CardModeReceive(Cmd, &CmdSize) == 0) {  // Data in buffer?
     if ((CmdSize >= 2) && (Cmd[0] == 0x00)) {     // Expect at least two bytes
       if (Cmd[1] == 0xA4) {
         Serial.println("Reader detected!");
         displayDeviceInfo();
       }
-			// Send back status OK to the reader means that the command has been received
       nfc.CardModeSend(STATUSOK, sizeof(STATUSOK));
     }
   }
+}
+
+void p2pMode() {
+  Serial.print(".");
+
+  if (!nfc.WaitForDiscoveryNotification(&RfInterface, 1000)) {  // Waiting to detect
+		Serial.println();
+    displayDeviceInfo();
+
+    if (RfInterface.Interface == INTF_NFCDEP || RfInterface.Interface == INTF_ISODEP) {
+      if ((RfInterface.ModeTech & MODE_LISTEN) == MODE_LISTEN) {
+        Serial.println(" - P2P TARGET MODE: Activated from remote Initiator");
+      } else {
+        Serial.println(" - P2P INITIATOR MODE: Remote Target activated");
+      }
+
+      /* Process with SNEP for NDEF exchange */
+      nfc.ProcessP2pMode(RfInterface);
+      Serial.println("Peer lost!");
+    } else {
+      Serial.println("Wrong discovery!");
+    }
+
+    // Wait for removal
+    nfc.ProcessReaderMode(RfInterface, PRESENCE_CHECK);
+    Serial.println("Device removed!");
+
+    nfc.StopDiscovery();
+    resetMode();
+  }
+  delay(500);
 }
 
 void resetMode() {  // Reset the configuration mode after each reading
@@ -85,7 +136,6 @@ void ndefPush_Cb(unsigned char *pNdefRecord, unsigned short NdefRecordSize) {
 }
 
 void displayDeviceInfo() {
-  Serial.println();
   Serial.print("RfInterface: ");
   switch (RfInterface.Interface) {
     case INTF_ISODEP:
@@ -123,4 +173,6 @@ void displayDeviceInfo() {
       Serial.println("UNKNOWN");
       break;
   }
+
+  Serial.println();
 }

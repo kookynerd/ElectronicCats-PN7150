@@ -761,9 +761,11 @@ void Electroniccats_PN7150::ProcessP2pMode(RfIntf_t RfIntf)
     /* Get frame from remote peer */
     while (status == SUCCESS)
     {
+        Serial.println("here");
         /* is DATA_PACKET ? */
         if ((rxBuffer[0] == 0x00) && (rxBuffer[1] == 0x00))
         {
+            Serial.println("here ");
             uint8_t Cmd[MAX_NCI_FRAME_SIZE];
             uint16_t CmdSize;
             /* Handle P2P communication */
