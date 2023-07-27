@@ -1,14 +1,20 @@
 #include <Electroniccats_PN7150.h>
+
 #include "ndef_helper.h"
 
 #define PN7150_IRQ (11)
 #define PN7150_VEN (13)
 #define PN7150_ADDR (0x28)
 
-Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR); // Creates a global NFC device interface object, attached to pins 7 (IRQ) and 8 (VEN) and using the default I2C address 0x28
-RfIntf_t RfInterface;                                           // Interface to save data for multiple tags
+// Function prototypes
+void resetMode();
+void ndefPush_Cb(unsigned char *pNdefRecord, unsigned short NdefRecordSize);
+void displayDeviceInfo();
 
-uint8_t mode = 1; // modes: 1 = Reader/ Writer, 2 = Emulation, 3 = Peer to peer P2P
+Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);  // Creates a global NFC device interface object, attached to pins 11 (IRQ) and 13 (VEN) and using the default I2C address 0x28
+RfIntf_t RfInterface;                                            // Interface to save data for multiple tags
+
+uint8_t mode = 2;  // modes: 1 = Reader/ Writer, 2 = Emulation, 3 = Peer to peer P2P
 
 unsigned char STATUSOK[] = {0x90, 0x00}, Cmd[256], CmdSize;
 
@@ -22,61 +28,49 @@ const char NDEF_MESSAGE[] = {0xD1,      // MB/ME/CF/1/IL/TNF
 
 void setup() {
   Serial.begin(9600);
-	while (!Serial)
-		;
-	Serial.println("NDEF Message with PN7150");
+  while (!Serial)
+    ;
+  Serial.println("Send NDEF Message with PN7150");
 
-	if(T4T_NDEF_EMU_SetMessage((unsigned char *) NDEF_MESSAGE, sizeof(NDEF_MESSAGE), (void*)*ndefPush_Cb)) {
-    Serial.println("Set message ok\r\n");  
+  if (T4T_NDEF_EMU_SetMessage((unsigned char *)NDEF_MESSAGE, sizeof(NDEF_MESSAGE), (void *)*ndefPush_Cb)) {
+    Serial.println("Set message ok\r\n");
   } else {
     Serial.println("Set message error\r\n");
-	}
+  }
 
-	Serial.println("Initializing...");
-	if (nfc.connectNCI()) { // Wake up the board
-		Serial.println("Error while setting up the mode, check connections!");
-		while (1)
-			;
-	}
+  Serial.println("Initializing...");
+  if (nfc.connectNCI()) {  // Wake up the board
+    Serial.println("Error while setting up the mode, check connections!");
+    while (1)
+      ;
+  }
 
-	if (nfc.ConfigureSettings()) {
-		Serial.println("The Configure Settings failed!");
-		while (1)
-			;
-	}
+  if (nfc.ConfigureSettings()) {
+    Serial.println("The Configure Settings failed!");
+    while (1)
+      ;
+  }
 
-	if (nfc.ConfigMode(mode)) {
-		Serial.println("The Configure Mode failed!!");
-		while (1)
-			;
-	}
+  if (nfc.ConfigMode(mode)) {
+    Serial.println("The Configure Mode failed!!");
+    while (1)
+      ;
+  }
 
-	mode = 3;
-	resetMode();
-	Serial.println("Waiting for an NDEF device...");
+  nfc.StartDiscovery(mode);
+  Serial.println("Waiting for an NDEF device...");
 }
 
 void loop() {
-	if(nfc.CardModeReceive(Cmd, &CmdSize) == 0) { //Data in buffer?
-		if ((CmdSize >= 2) && (Cmd[0] == 0x00)) { //Expect at least two bytes
-			switch (Cmd[1]) {
-				case 0xA4: //Something tries to select a file, meaning that it is a reader
-						Serial.println("Reader detected!");
-					break;
-
-				case 0xB0: //SFI
-				Serial.println("0xB0 detected!");
-					break;
-
-				case 0xD0: //...
-				Serial.println("0xD0 detected!");
-					break;
-
-				default:
-					break;
-			}
-			nfc.CardModeSend(STATUSOK, sizeof(STATUSOK));
-		}
+  if (nfc.CardModeReceive(Cmd, &CmdSize) == 0) {  // Data in buffer?
+    if ((CmdSize >= 2) && (Cmd[0] == 0x00)) {     // Expect at least two bytes
+      if (Cmd[1] == 0xA4) {
+        Serial.println("Reader detected!");
+        displayDeviceInfo();
+      }
+			// Send back status OK to the reader means that the command has been received
+      nfc.CardModeSend(STATUSOK, sizeof(STATUSOK));
+    }
   }
 }
 
@@ -88,4 +82,45 @@ void resetMode() {  // Reset the configuration mode after each reading
 
 void ndefPush_Cb(unsigned char *pNdefRecord, unsigned short NdefRecordSize) {
   Serial.println("--- NDEF Record sent");
+}
+
+void displayDeviceInfo() {
+  Serial.println();
+  Serial.print("RfInterface: ");
+  switch (RfInterface.Interface) {
+    case INTF_ISODEP:
+      Serial.println("ISO-DEP");
+      break;
+    case INTF_NFCDEP:
+      Serial.println("NFC-DEP");
+      break;
+    case INTF_TAGCMD:
+      Serial.println("TAG");
+      break;
+    case INTF_FRAME:
+      Serial.println("FRAME");
+      break;
+    case INTF_UNDETERMINED:
+      Serial.println("UNDETERMINED");
+      break;
+    default:
+      Serial.println("UNKNOWN");
+      break;
+  }
+
+  Serial.print("Mode: ");
+  switch (RfInterface.ModeTech) {
+    case MODE_POLL:
+      Serial.println("POLL");
+      break;
+    case MODE_LISTEN:
+      Serial.println("LISTEN");
+      break;
+    case MODE_MASK:
+      Serial.println("MASK");
+      break;
+    default:
+      Serial.println("UNKNOWN");
+      break;
+  }
 }
