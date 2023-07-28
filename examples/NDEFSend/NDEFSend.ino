@@ -95,7 +95,8 @@ void checkReaders() {
     if ((CmdSize >= 2) && (Cmd[0] == 0x00)) {     // Expect at least two bytes
       if (Cmd[1] == 0xA4) {
         Serial.println("Reader detected!");
-        nfc.ReadNdef(RfInterface);
+        // nfc.ReadNdef(RfInterface);
+        nfc.ProcessCardMode(RfInterface);
         displayDeviceInfo();
       }
       nfc.CardModeSend(STATUSOK, sizeof(STATUSOK));

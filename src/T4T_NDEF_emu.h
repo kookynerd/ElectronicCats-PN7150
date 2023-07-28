@@ -12,6 +12,8 @@
 *                          arising from its use.
 */
 
+#include <Arduino.h>
+
 void T4T_NDEF_EMU_Reset(void);
 bool T4T_NDEF_EMU_SetMessage(unsigned char *pMessage, unsigned short Message_size, void *pCb);
 void T4T_NDEF_EMU_Next(unsigned char *pCmd, unsigned short Cmd_size, unsigned char *Rsp, unsigned short *pRsp_size);

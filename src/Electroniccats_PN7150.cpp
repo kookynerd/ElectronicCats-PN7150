@@ -396,12 +396,13 @@ void Electroniccats_PN7150::ProcessCardMode(RfIntf_t RfIntf)
     /* Reset Card emulation state */
     T4T_NDEF_EMU_Reset();
 
-    (void)writeData(NCIStartDiscovery, NCIStartDiscovery_length);
+   // (void)writeData(NCIStartDiscovery, NCIStartDiscovery_length);
     getMessage(2000);
     //NxpNci_WaitForReception(Answer, sizeof(Answer), &AnswerSize, TIMEOUT_2S) == NXPNCI_SUCCESS
 
     while (rxMessageLength > 0)
     {
+      getMessage(2000);
         /* is RF_DEACTIVATE_NTF ? */
         if ((rxBuffer[0] == 0x61) && (rxBuffer[1] == 0x06))
         {
@@ -409,14 +410,14 @@ void Electroniccats_PN7150::ProcessCardMode(RfIntf_t RfIntf)
             {
                 /* Restart the discovery loop */
                 //NxpNci_HostTransceive(NCIStopDiscovery, sizeof(NCIStopDiscovery), Answer, sizeof(Answer), &AnswerSize);
-                (void)writeData(NCIStartDiscovery, sizeof(NCIStopDiscovery));
+                (void)writeData(NCIStopDiscovery, sizeof(NCIStopDiscovery));
                 getMessage();
                 do
                 {
                     if ((rxBuffer[0] == 0x41) && (rxBuffer[1] == 0x06))
                         break;
                     //NxpNci_WaitForReception(Answer, sizeof(Answer), &AnswerSize, TIMEOUT_100MS);
-                    (void)writeData(rxBuffer, rxMessageLength);
+                    //(void)writeData(rxBuffer, rxMessageLength);
                     getMessage(100);
                 } while (rxMessageLength != 0);
                 //NxpNci_HostTransceive(NCIStartDiscovery, NCIStartDiscovery_length, Answer, sizeof(Answer), &AnswerSize);
@@ -424,7 +425,7 @@ void Electroniccats_PN7150::ProcessCardMode(RfIntf_t RfIntf)
                 getMessage();
             }
             /* Come back to discovery state */
-            break;
+           // break;
         }
         /* is DATA_PACKET ? */
         else if ((rxBuffer[0] == 0x00) && (rxBuffer[1] == 0x00))
