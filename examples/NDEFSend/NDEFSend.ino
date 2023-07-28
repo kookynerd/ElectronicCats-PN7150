@@ -46,13 +46,13 @@ void setup() {
 		Serial.println("Set message error\r\n");
 	}
 
-	if (P2P_NDEF_SetMessage((unsigned char *)NDEF_MESSAGE, sizeof(NDEF_MESSAGE), (void *)*ndefPush_Cb)) {
-		Serial.println("Set message ok\r\n");
-	} else {
-		Serial.println("Set message error\r\n");
-	}
+	// if (P2P_NDEF_SetMessage((unsigned char *)NDEF_MESSAGE, sizeof(NDEF_MESSAGE), (void *)*ndefPush_Cb)) {
+	// 	Serial.println("Set message ok\r\n");
+	// } else {
+	// 	Serial.println("Set message error\r\n");
+	// }
 
-	P2P_NDEF_RegisterPullCallback((void *)*ndefPush_Cb);
+	// P2P_NDEF_RegisterPullCallback((void *)*ndefPush_Cb);
 
   Serial.println("Initializing...");
   if (nfc.connectNCI()) {  // Wake up the board
@@ -78,8 +78,8 @@ void setup() {
 }
 
 void loop() {
-  // checkReaders();
-	p2pMode();
+  checkReaders();
+	// p2pMode();
 }
 
 void checkReaders() {
