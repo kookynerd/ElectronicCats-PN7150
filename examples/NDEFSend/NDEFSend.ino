@@ -55,6 +55,13 @@ void setup() {
 	// P2P_NDEF_RegisterPullCallback((void *)*ndefPush_Cb);
 
   Serial.println("Initializing...");
+
+  if (nfc.begin()) {
+    Serial.println("Error initializing PN7150");
+    while (1)
+      ;
+  }
+
   if (nfc.connectNCI()) {  // Wake up the board
     Serial.println("Error while setting up the mode, check connections!");
     while (1)
@@ -83,10 +90,12 @@ void loop() {
 }
 
 void checkReaders() {
+  Serial.print(".");
   if (nfc.CardModeReceive(Cmd, &CmdSize) == 0) {  // Data in buffer?
     if ((CmdSize >= 2) && (Cmd[0] == 0x00)) {     // Expect at least two bytes
       if (Cmd[1] == 0xA4) {
         Serial.println("Reader detected!");
+        nfc.ReadNdef(RfInterface);
         displayDeviceInfo();
       }
       nfc.CardModeSend(STATUSOK, sizeof(STATUSOK));
@@ -118,8 +127,6 @@ void p2pMode() {
     // Wait for removal
     nfc.ProcessReaderMode(RfInterface, PRESENCE_CHECK);
     Serial.println("Device removed!");
-
-    nfc.StopDiscovery();
     resetMode();
   }
   delay(500);
@@ -127,6 +134,7 @@ void p2pMode() {
 
 void resetMode() {  // Reset the configuration mode after each reading
   Serial.println("\nRe-initializing...");
+  // nfc.StopDiscovery();
   nfc.ConfigMode(mode);
   nfc.StartDiscovery(mode);
 }

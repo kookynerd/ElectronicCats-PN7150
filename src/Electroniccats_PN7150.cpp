@@ -466,6 +466,10 @@ bool Electroniccats_PN7150::CardModeReceive(unsigned char *pData, unsigned char 
     #ifdef DEBUG2
         Serial.println("[DEBUG] cardModeReceive exec");
     #endif
+    #ifdef DEBUG3
+        Serial.println("[DEBUG] cardModeReceive exec");
+    #endif
+
     bool status = NFC_ERROR;
     uint8_t Ans[MAX_NCI_FRAME_SIZE];
 
@@ -761,11 +765,9 @@ void Electroniccats_PN7150::ProcessP2pMode(RfIntf_t RfIntf)
     /* Get frame from remote peer */
     while (status == SUCCESS)
     {
-        Serial.println("here");
         /* is DATA_PACKET ? */
         if ((rxBuffer[0] == 0x00) && (rxBuffer[1] == 0x00))
         {
-            Serial.println("here ");
             uint8_t Cmd[MAX_NCI_FRAME_SIZE];
             uint16_t CmdSize;
             /* Handle P2P communication */

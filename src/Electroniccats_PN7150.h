@@ -25,6 +25,8 @@
 #include "T4T_NDEF_emu.h"
 #include "RW_NDEF.h"
 
+#define DEBUG3
+
 #if defined(TEENSYDUINO) && defined(KINETISK) // Teensy 3.0, 3.1, 3.2, 3.5, 3.6 :  Special, more optimized I2C library for Teensy boards
 #include <i2c_t3.h>                           // Credits Brian "nox771" : see https://forum.pjrc.com/threads/21680-New-I2C-library-for-Teensy3
 #else
