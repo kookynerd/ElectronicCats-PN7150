@@ -20,13 +20,13 @@ uint8_t mode = 2;  // modes: 1 = Reader/ Writer, 2 = Emulation, 3 = Peer to peer
 
 unsigned char STATUSOK[] = {0x90, 0x00}, Cmd[256], CmdSize;
 
-const char NDEF_MESSAGE[] = {0xD1,      // MB/ME/CF/1/IL/TNF
-                             0x01,      // TYPE LENGTH
-                             0x07,      // PAYLOAD LENTGH
-                             'T',       // TYPE
-                             0x02,      // Status
-                             'e', 'n',  // Language
-                             'T', 'e', 's', 't'};
+const char NDEF_MESSAGE[] = {0xD1,                      // MB/ME/CF/1/IL/TNF
+                             0x01,                      // Type length (1 byte for "T")
+                             0x08,                      // Payload length
+                             'U',                       // Type -> 'T' for text, 'U' for URI
+                             0x02,                      // Status
+                             'e', 'n',                  // Language
+                             'H', 'e', 'l', 'l', 'o'};  // Message Payload
 
 void setup() {
   Serial.begin(9600);
@@ -40,19 +40,19 @@ void setup() {
     Serial.println("Set message error\r\n");
   }
 
-	if (RW_NDEF_SetMessage((unsigned char *)NDEF_MESSAGE, sizeof(NDEF_MESSAGE), (void *)*ndefPush_Cb)) {
-		Serial.println("Set message ok\r\n");
-	} else {
-		Serial.println("Set message error\r\n");
-	}
+  if (RW_NDEF_SetMessage((unsigned char *)NDEF_MESSAGE, sizeof(NDEF_MESSAGE), (void *)*ndefPush_Cb)) {
+    Serial.println("Set message ok\r\n");
+  } else {
+    Serial.println("Set message error\r\n");
+  }
 
-	// if (P2P_NDEF_SetMessage((unsigned char *)NDEF_MESSAGE, sizeof(NDEF_MESSAGE), (void *)*ndefPush_Cb)) {
-	// 	Serial.println("Set message ok\r\n");
-	// } else {
-	// 	Serial.println("Set message error\r\n");
-	// }
+  // if (P2P_NDEF_SetMessage((unsigned char *)NDEF_MESSAGE, sizeof(NDEF_MESSAGE), (void *)*ndefPush_Cb)) {
+  // 	Serial.println("Set message ok\r\n");
+  // } else {
+  // 	Serial.println("Set message error\r\n");
+  // }
 
-	// P2P_NDEF_RegisterPullCallback((void *)*ndefPush_Cb);
+  // P2P_NDEF_RegisterPullCallback((void *)*ndefPush_Cb);
 
   Serial.println("Initializing...");
 
@@ -86,7 +86,7 @@ void setup() {
 
 void loop() {
   checkReaders();
-	// p2pMode();
+  // p2pMode();
 }
 
 void checkReaders() {
@@ -108,7 +108,7 @@ void p2pMode() {
   Serial.print(".");
 
   if (!nfc.WaitForDiscoveryNotification(&RfInterface, 1000)) {  // Waiting to detect
-		Serial.println();
+    Serial.println();
     displayDeviceInfo();
 
     if (RfInterface.Interface == INTF_NFCDEP || RfInterface.Interface == INTF_ISODEP) {
