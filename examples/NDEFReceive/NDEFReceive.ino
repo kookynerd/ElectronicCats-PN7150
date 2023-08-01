@@ -288,7 +288,7 @@ void ndefPull_Cb(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = '\0';
         Serial.print("Text record: ");
         // Serial.println(&NdefRecord.recordPayload[NdefRecord.recordPayload[0]+1]);
-        Serial.println(reinterpret_cast<const char*>(&NdefRecord.recordPayload[NdefRecord.recordPayload[0] + 1]));
+        // Serial.println(reinterpret_cast<const char*>(&NdefRecord.recordPayload[NdefRecord.recordPayload[0] + 1]));
         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = save;
       } break;
 
@@ -297,7 +297,7 @@ void ndefPull_Cb(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = '\0';
         Serial.print("URI record: ");
         // Serial.println(ndef_helper_UriHead(NdefRecord.recordPayload[0]), &NdefRecord.recordPayload[1]);
-        Serial.println(reinterpret_cast<const char*>(ndef_helper_UriHead(NdefRecord.recordPayload[0]), &NdefRecord.recordPayload[1]));
+        // Serial.println(reinterpret_cast<const char*>(ndef_helper_UriHead(NdefRecord.recordPayload[0]), &NdefRecord.recordPayload[1]));
         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = save;
       } break;
 
