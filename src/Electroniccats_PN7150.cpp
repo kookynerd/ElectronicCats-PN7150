@@ -16,10 +16,10 @@
  *
  */
 #include "Electroniccats_PN7150.h"
-#include "P2P_NDEF.h"
-#include "ndef_helper.h"
-#include "RW_NDEF.h"
-#include "T4T_NDEF_emu.h"
+// #include "P2P_NDEF.h"
+// #include "ndef_helper.h"
+// #include "RW_NDEF.h"
+// #include "T4T_NDEF_emu.h"
 
 uint8_t gNextTag_Protocol = PROT_UNDETERMINED;
 

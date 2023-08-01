@@ -24,6 +24,7 @@
 #include "P2P_NDEF.h"
 #include "T4T_NDEF_emu.h"
 #include "RW_NDEF.h"
+#include "ndef_helper.h"
 
 // #define DEBUG3
 
