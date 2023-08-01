@@ -1,7 +1,5 @@
 #include <Electroniccats_PN7150.h>
 
-#include "ndef_helper.h"
-
 #define PN7150_IRQ (11)
 #define PN7150_VEN (13)
 #define PN7150_ADDR (0x28)
