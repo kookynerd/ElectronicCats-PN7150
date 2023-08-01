@@ -13,4 +13,7 @@ monitor:
 clean:
 	arduino-cli cache clean
 
-all: compile upload
+wait:
+	sleep 2
+
+all: compile upload wait monitor

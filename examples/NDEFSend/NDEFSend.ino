@@ -17,13 +17,23 @@ uint8_t mode = 2;  // modes: 1 = Reader/ Writer, 2 = Emulation, 3 = Peer to peer
 
 unsigned char STATUSOK[] = {0x90, 0x00}, Cmd[256], CmdSize;
 
-const char NDEF_MESSAGE[] = {0xD1,                      // MB/ME/CF/1/IL/TNF
-                             0x01,                      // Type length (1 byte)
-                             0x08,                      // Payload length
-                             'T',                       // Type -> 'T' for text, 'U' for URI
-                             0x02,                      // Status
-                             'e', 'n',                  // Language
-                             'H', 'e', 'l', 'l', 'o'};  // Message Payload
+const char uri[] = "google.com";
+
+// const char ndefMessage[] = {0xD1,                      // MB/ME/CF/1/IL/TNF
+//                              0x01,                      // Type length (1 byte)
+//                              0x08,                      // Payload length
+//                              'U',                       // Type -> 'T' for text, 'U' for URI
+//                              0x02,                      // Status
+//                              'e', 'n',                  // Language
+//                              'H', 'e', 'l', 'l', 'o'};  // Message Payload
+
+const char ndefMessage[] = {0xD1,
+                            0x01,
+                            sizeof(uri) + 1,
+                            'U',
+                            0x02,
+                            // 'g', 'o', 'o', 'g', 'l', 'e', '.', 'c', 'o', 'm'};
+                            uri[0], uri[1], uri[2], uri[3], uri[4], uri[5], uri[6], uri[7], uri[8], uri[9], uri[10]};
 
 void setup() {
   Serial.begin(9600);
@@ -31,7 +41,7 @@ void setup() {
     ;
   Serial.println("Send NDEF Message with PN7150");
 
-  if (T4T_NDEF_EMU_SetMessage((unsigned char *)NDEF_MESSAGE, sizeof(NDEF_MESSAGE), (void *)*sendMessageCallback)) {
+  if (T4T_NDEF_EMU_SetMessage((unsigned char *)ndefMessage, sizeof(ndefMessage), (void *)*sendMessageCallback)) {
     Serial.println("Set message success!");
   } else {
     Serial.println("Set message failed!");
