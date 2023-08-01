@@ -74,7 +74,7 @@ void setup() {
   }
 
   nfc.StartDiscovery(mode);
-  Serial.println("Waiting for an NDEF device...");
+  Serial.print("Waiting for an NDEF device");
 }
 
 void loop() {
@@ -86,14 +86,15 @@ void checkReaders() {
   if (nfc.CardModeReceive(Cmd, &CmdSize) == 0) {  // Data in buffer?
     if ((CmdSize >= 2) && (Cmd[0] == 0x00)) {     // Expect at least two bytes
       if (Cmd[1] == 0xA4) {
-        Serial.println("Reader detected!");
+        Serial.println("\nReader detected!");
         nfc.ProcessCardMode(RfInterface);
       }
       nfc.CardModeSend(STATUSOK, sizeof(STATUSOK));
+      Serial.print("Waiting for an NDEF device");
     }
   }
 }
 
 void sendMessageCallback(unsigned char *pNdefRecord, unsigned short NdefRecordSize) {
-  Serial.println("--- NDEF Record sent");
+  Serial.println("NDEF Record sent!");
 }
