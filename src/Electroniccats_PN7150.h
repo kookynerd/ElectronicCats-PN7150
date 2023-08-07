@@ -253,12 +253,12 @@ class Electroniccats_PN7150 {
 
  public:
   Electroniccats_PN7150(uint8_t IRQpin, uint8_t VENpin, uint8_t I2Caddress, TwoWire *wire = &Wire);
-  int getFirmwareVersion();
-  int GetFwVersion();  // Deprecated, use getFirmwareVersion() instead
   uint8_t begin(void);
+  bool hasMessage() const;
   uint8_t writeData(uint8_t data[], uint32_t dataLength) const;  // write data from DeviceHost to PN7150. Returns success (0) or Fail (> 0)
   uint32_t readData(uint8_t data[]) const;                       // read data from PN7150, returns the amount of bytes read
-  bool hasMessage() const;
+  int getFirmwareVersion();
+  int GetFwVersion();  // Deprecated, use getFirmwareVersion() instead
   uint8_t configMode(uint8_t modeSE);
   uint8_t ConfigMode(uint8_t modeSE);  // Deprecated, use configMode() instead
   uint8_t startDiscovery(uint8_t modeSE);
@@ -267,7 +267,8 @@ class Electroniccats_PN7150 {
   uint8_t wakeupNCI();
   bool cardModeSend(unsigned char *pData, unsigned char DataSize);
   bool CardModeSend(unsigned char *pData, unsigned char DataSize);  // Deprecated, use cardModeSend() instead
-  bool CardModeReceive(unsigned char *pData, unsigned char *pDataSize);
+  bool cardModeReceive(unsigned char *pData, unsigned char *pDataSize);
+  bool CardModeReceive(unsigned char *pData, unsigned char *pDataSize);  // Deprecated, use cardModeReceive() instead
   bool WaitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout = 0);
   void FillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf);
   bool ReaderTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize);

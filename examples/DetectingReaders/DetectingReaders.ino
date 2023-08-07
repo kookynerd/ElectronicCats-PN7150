@@ -48,7 +48,7 @@ void setup(){
 }
 
 void loop(){
-  if(nfc.CardModeReceive(Cmd, &CmdSize) == 0) { //Data in buffer?
+  if(nfc.cardModeReceive(Cmd, &CmdSize) == 0) { //Data in buffer?
       if ((CmdSize >= 2) && (Cmd[0] == 0x00)) { //Expect at least two bytes
           switch (Cmd[1]) {
               case 0xA4: //Something tries to select a file, meaning that it is a reader

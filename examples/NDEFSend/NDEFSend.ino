@@ -81,7 +81,7 @@ void loop() {
 
 void checkReaders() {
   Serial.print(".");
-  if (nfc.CardModeReceive(Cmd, &CmdSize) == 0) {  // Data in buffer?
+  if (nfc.cardModeReceive(Cmd, &CmdSize) == 0) {  // Data in buffer?
     if ((CmdSize >= 2) && (Cmd[0] == 0x00)) {     // Expect at least two bytes
       if (Cmd[1] == 0xA4) {
         Serial.println("\nReader detected!");
