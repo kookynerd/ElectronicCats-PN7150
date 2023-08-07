@@ -514,7 +514,58 @@ uint8_t Electroniccats_PN7150::wakeupNCI() {  // the device has to wake up using
   return SUCCESS;
 }
 
-void Electroniccats_PN7150::ProcessCardMode(RfIntf_t RfIntf) {
+bool Electroniccats_PN7150::cardModeSend(unsigned char *pData, unsigned char DataSize) {
+  bool status;
+  uint8_t Cmd[MAX_NCI_FRAME_SIZE];
+
+  /* Compute and send DATA_PACKET */
+  Cmd[0] = 0x00;
+  Cmd[1] = 0x00;
+  Cmd[2] = DataSize;
+  memcpy(&Cmd[3], pData, DataSize);
+  (void)writeData(Cmd, DataSize + 3);
+  return status;
+}
+
+// Deprecated, use cardModeSend() instead
+bool Electroniccats_PN7150::CardModeSend(unsigned char *pData, unsigned char DataSize) {
+  return Electroniccats_PN7150::cardModeSend(pData, DataSize);
+}
+
+bool Electroniccats_PN7150::cardModeReceive(unsigned char *pData, unsigned char *pDataSize) {
+#ifdef DEBUG2
+  Serial.println("[DEBUG] cardModeReceive exec");
+#endif
+#ifdef DEBUG3
+  Serial.println("[DEBUG] cardModeReceive exec");
+#endif
+
+  bool status = NFC_ERROR;
+  uint8_t Ans[MAX_NCI_FRAME_SIZE];
+
+  (void)writeData(Ans, 255);
+  getMessage(2000);
+
+  /* Is data packet ? */
+  if ((rxBuffer[0] == 0x00) && (rxBuffer[1] == 0x00)) {
+#ifdef DEBUG2
+    Serial.println(rxBuffer[2]);
+#endif
+    *pDataSize = rxBuffer[2];
+    memcpy(pData, &rxBuffer[3], *pDataSize);
+    status = NFC_SUCCESS;
+  } else {
+    status = NFC_ERROR;
+  }
+  return status;
+}
+
+// Deprecated, use cardModeReceive() instead
+bool Electroniccats_PN7150::CardModeReceive(unsigned char *pData, unsigned char *pDataSize) {
+  return Electroniccats_PN7150::cardModeReceive(pData, pDataSize);
+}
+
+void Electroniccats_PN7150::processCardMode(RfIntf_t RfIntf) {
   uint8_t Answer[MAX_NCI_FRAME_SIZE];
 
   uint8_t NCIStopDiscovery[] = {0x21, 0x06, 0x01, 0x00};
@@ -570,55 +621,8 @@ void Electroniccats_PN7150::ProcessCardMode(RfIntf_t RfIntf) {
   }
 }
 
-bool Electroniccats_PN7150::cardModeSend(unsigned char *pData, unsigned char DataSize) {
-  bool status;
-  uint8_t Cmd[MAX_NCI_FRAME_SIZE];
-
-  /* Compute and send DATA_PACKET */
-  Cmd[0] = 0x00;
-  Cmd[1] = 0x00;
-  Cmd[2] = DataSize;
-  memcpy(&Cmd[3], pData, DataSize);
-  (void)writeData(Cmd, DataSize + 3);
-  return status;
-}
-
-// Deprecated, use cardModeSend() instead
-bool Electroniccats_PN7150::CardModeSend(unsigned char *pData, unsigned char DataSize) {
-  return Electroniccats_PN7150::cardModeSend(pData, DataSize);
-}
-
-bool Electroniccats_PN7150::cardModeReceive(unsigned char *pData, unsigned char *pDataSize) {
-#ifdef DEBUG2
-  Serial.println("[DEBUG] cardModeReceive exec");
-#endif
-#ifdef DEBUG3
-  Serial.println("[DEBUG] cardModeReceive exec");
-#endif
-
-  bool status = NFC_ERROR;
-  uint8_t Ans[MAX_NCI_FRAME_SIZE];
-
-  (void)writeData(Ans, 255);
-  getMessage(2000);
-
-  /* Is data packet ? */
-  if ((rxBuffer[0] == 0x00) && (rxBuffer[1] == 0x00)) {
-#ifdef DEBUG2
-    Serial.println(rxBuffer[2]);
-#endif
-    *pDataSize = rxBuffer[2];
-    memcpy(pData, &rxBuffer[3], *pDataSize);
-    status = NFC_SUCCESS;
-  } else {
-    status = NFC_ERROR;
-  }
-  return status;
-}
-
-// Deprecated, use cardModeReceive() instead
-bool Electroniccats_PN7150::CardModeReceive(unsigned char *pData, unsigned char *pDataSize) {
-  return Electroniccats_PN7150::cardModeReceive(pData, pDataSize);
+void Electroniccats_PN7150::ProcessCardMode(RfIntf_t RfIntf) {
+  Electroniccats_PN7150::processCardMode(RfIntf);
 }
 
 void Electroniccats_PN7150::FillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) {

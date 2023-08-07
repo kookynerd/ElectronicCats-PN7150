@@ -85,7 +85,7 @@ void checkReaders() {
     if ((CmdSize >= 2) && (Cmd[0] == 0x00)) {     // Expect at least two bytes
       if (Cmd[1] == 0xA4) {
         Serial.println("\nReader detected!");
-        nfc.ProcessCardMode(RfInterface);
+        nfc.processCardMode(RfInterface);
       }
       nfc.cardModeSend(STATUSOK, sizeof(STATUSOK));
       Serial.print("Waiting for an NDEF device");

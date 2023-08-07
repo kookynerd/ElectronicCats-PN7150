@@ -273,6 +273,8 @@ class Electroniccats_PN7150 {
   bool CardModeSend(unsigned char *pData, unsigned char DataSize);  // Deprecated, use cardModeSend() instead
   bool cardModeReceive(unsigned char *pData, unsigned char *pDataSize);
   bool CardModeReceive(unsigned char *pData, unsigned char *pDataSize);  // Deprecated, use cardModeReceive() instead
+  void processCardMode(RfIntf_t RfIntf);
+  void ProcessCardMode(RfIntf_t RfIntf);  // Deprecated, use processCardMode() instead
   void FillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf);
   bool ReaderTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize);
   void ProcessReaderMode(RfIntf_t RfIntf, RW_Operation_t Operation);
@@ -288,7 +290,6 @@ class Electroniccats_PN7150 {
   void ProcessP2pMode(RfIntf_t RfIntf);
   void ReadNdef(RfIntf_t RfIntf);
   void WriteNdef(RfIntf_t RfIntf);
-  void ProcessCardMode(RfIntf_t RfIntf);
 };
 
 #endif
