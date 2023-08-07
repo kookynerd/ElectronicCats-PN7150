@@ -279,10 +279,11 @@ class Electroniccats_PN7150 {
   void ProcessReaderMode(RfIntf_t RfIntf, RW_Operation_t Operation);  // Deprecated, use processReaderMode() instead
   void processP2pMode(RfIntf_t RfIntf);
   void ProcessP2pMode(RfIntf_t RfIntf);  // Deprecated, use processP2pMode() instead
+  void presenceCheck(RfIntf_t RfIntf);
+  void PresenceCheck(RfIntf_t RfIntf);  // Deprecated, use presenceCheck() instead
   void fillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf);
   void FillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf);
   bool ReaderTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize);
-  void PresenceCheck(RfIntf_t RfIntf);
   bool ReaderReActivate(RfIntf_t *pRfIntf);
   bool ReaderActivateNext(RfIntf_t *pRfIntf);
   bool ConfigureSettings(void);

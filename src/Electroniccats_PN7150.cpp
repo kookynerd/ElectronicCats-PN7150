@@ -635,7 +635,7 @@ void Electroniccats_PN7150::processReaderMode(RfIntf_t RfIntf, RW_Operation_t Op
       WriteNdef(RfIntf);
       break;
     case PRESENCE_CHECK:
-      PresenceCheck(RfIntf);
+      presenceCheck(RfIntf);
       break;
     default:
       break;
@@ -737,6 +737,95 @@ void Electroniccats_PN7150::processP2pMode(RfIntf_t RfIntf) {
 // Deprecated, use processP2pMode() instead
 void Electroniccats_PN7150::ProcessP2pMode(RfIntf_t RfIntf) {
   Electroniccats_PN7150::processP2pMode(RfIntf);
+}
+
+void Electroniccats_PN7150::presenceCheck(RfIntf_t RfIntf) {
+  bool status;
+  uint8_t i;
+
+  uint8_t NCIPresCheckT1T[] = {0x00, 0x00, 0x07, 0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  uint8_t NCIPresCheckT2T[] = {0x00, 0x00, 0x02, 0x30, 0x00};
+  uint8_t NCIPresCheckT3T[] = {0x21, 0x08, 0x04, 0xFF, 0xFF, 0x00, 0x01};
+  uint8_t NCIPresCheckIsoDep[] = {0x2F, 0x11, 0x00};
+  uint8_t NCIPresCheckIso15693[] = {0x00, 0x00, 0x0B, 0x26, 0x01, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  uint8_t NCIDeactivate[] = {0x21, 0x06, 0x01, 0x01};
+  uint8_t NCISelectMIFARE[] = {0x21, 0x04, 0x03, 0x01, 0x80, 0x80};
+
+  switch (RfIntf.Protocol) {
+    case PROT_T1T:
+      do {
+        delay(500);
+        (void)writeData(NCIPresCheckT1T, sizeof(NCIPresCheckT1T));
+        getMessage();
+        getMessage(100);
+      } while ((rxBuffer[0] == 0x00) && (rxBuffer[1] == 0x00));
+      break;
+
+    case PROT_T2T:
+      do {
+        delay(500);
+        (void)writeData(NCIPresCheckT2T, sizeof(NCIPresCheckT2T));
+        getMessage();
+        getMessage(100);
+      } while ((rxBuffer[0] == 0x00) && (rxBuffer[1] == 0x00) && (rxBuffer[2] == 0x11));
+      break;
+
+    case PROT_T3T:
+      do {
+        delay(500);
+        (void)writeData(NCIPresCheckT3T, sizeof(NCIPresCheckT3T));
+        getMessage();
+        getMessage(100);
+      } while ((rxBuffer[0] == 0x61) && (rxBuffer[1] == 0x08) && ((rxBuffer[3] == 0x00) || (rxBuffer[4] > 0x00)));
+      break;
+
+    case PROT_ISODEP:
+      do {
+        delay(500);
+        (void)writeData(NCIPresCheckIsoDep, sizeof(NCIPresCheckIsoDep));
+        getMessage();
+        getMessage(100);
+      } while ((rxBuffer[0] == 0x6F) && (rxBuffer[1] == 0x11) && (rxBuffer[2] == 0x01) && (rxBuffer[3] == 0x01));
+      break;
+
+    case PROT_ISO15693:
+      do {
+        delay(500);
+        for (i = 0; i < 8; i++)
+          NCIPresCheckIso15693[i + 6] = RfIntf.Info.NFC_VPP.ID[7 - i];
+        (void)writeData(NCIPresCheckIso15693, sizeof(NCIPresCheckIso15693));
+        getMessage();
+        getMessage(100);
+        status = ERROR;
+        if (rxMessageLength)
+          status = SUCCESS;
+      } while ((status == SUCCESS) && (rxBuffer[0] == 0x00) && (rxBuffer[1] == 0x00) && (rxBuffer[rxMessageLength - 1] == 0x00));
+      break;
+
+    case PROT_MIFARE:
+      do {
+        delay(500);
+        /* Deactivate target */
+        (void)writeData(NCIDeactivate, sizeof(NCIDeactivate));
+        getMessage();
+        getMessage(100);
+
+        /* Reactivate target */
+        (void)writeData(NCISelectMIFARE, sizeof(NCISelectMIFARE));
+        getMessage();
+        getMessage(100);
+      } while ((rxBuffer[0] == 0x61) && (rxBuffer[1] == 0x05));
+      break;
+
+    default:
+      /* Nothing to do */
+      break;
+  }
+}
+
+// Deprecated, use presenceCheck() instead
+void Electroniccats_PN7150::PresenceCheck(RfIntf_t RfIntf) {
+  Electroniccats_PN7150::presenceCheck(RfIntf);
 }
 
 void Electroniccats_PN7150::fillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) {
@@ -889,90 +978,6 @@ void Electroniccats_PN7150::WriteNdef(RfIntf_t RfIntf) {
       getMessage();
       getMessage(2000);
     }
-  }
-}
-
-void Electroniccats_PN7150::PresenceCheck(RfIntf_t RfIntf) {
-  bool status;
-  uint8_t i;
-
-  uint8_t NCIPresCheckT1T[] = {0x00, 0x00, 0x07, 0x78, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-  uint8_t NCIPresCheckT2T[] = {0x00, 0x00, 0x02, 0x30, 0x00};
-  uint8_t NCIPresCheckT3T[] = {0x21, 0x08, 0x04, 0xFF, 0xFF, 0x00, 0x01};
-  uint8_t NCIPresCheckIsoDep[] = {0x2F, 0x11, 0x00};
-  uint8_t NCIPresCheckIso15693[] = {0x00, 0x00, 0x0B, 0x26, 0x01, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-  uint8_t NCIDeactivate[] = {0x21, 0x06, 0x01, 0x01};
-  uint8_t NCISelectMIFARE[] = {0x21, 0x04, 0x03, 0x01, 0x80, 0x80};
-
-  switch (RfIntf.Protocol) {
-    case PROT_T1T:
-      do {
-        delay(500);
-        (void)writeData(NCIPresCheckT1T, sizeof(NCIPresCheckT1T));
-        getMessage();
-        getMessage(100);
-      } while ((rxBuffer[0] == 0x00) && (rxBuffer[1] == 0x00));
-      break;
-
-    case PROT_T2T:
-      do {
-        delay(500);
-        (void)writeData(NCIPresCheckT2T, sizeof(NCIPresCheckT2T));
-        getMessage();
-        getMessage(100);
-      } while ((rxBuffer[0] == 0x00) && (rxBuffer[1] == 0x00) && (rxBuffer[2] == 0x11));
-      break;
-
-    case PROT_T3T:
-      do {
-        delay(500);
-        (void)writeData(NCIPresCheckT3T, sizeof(NCIPresCheckT3T));
-        getMessage();
-        getMessage(100);
-      } while ((rxBuffer[0] == 0x61) && (rxBuffer[1] == 0x08) && ((rxBuffer[3] == 0x00) || (rxBuffer[4] > 0x00)));
-      break;
-
-    case PROT_ISODEP:
-      do {
-        delay(500);
-        (void)writeData(NCIPresCheckIsoDep, sizeof(NCIPresCheckIsoDep));
-        getMessage();
-        getMessage(100);
-      } while ((rxBuffer[0] == 0x6F) && (rxBuffer[1] == 0x11) && (rxBuffer[2] == 0x01) && (rxBuffer[3] == 0x01));
-      break;
-
-    case PROT_ISO15693:
-      do {
-        delay(500);
-        for (i = 0; i < 8; i++)
-          NCIPresCheckIso15693[i + 6] = RfIntf.Info.NFC_VPP.ID[7 - i];
-        (void)writeData(NCIPresCheckIso15693, sizeof(NCIPresCheckIso15693));
-        getMessage();
-        getMessage(100);
-        status = ERROR;
-        if (rxMessageLength)
-          status = SUCCESS;
-      } while ((status == SUCCESS) && (rxBuffer[0] == 0x00) && (rxBuffer[1] == 0x00) && (rxBuffer[rxMessageLength - 1] == 0x00));
-      break;
-
-    case PROT_MIFARE:
-      do {
-        delay(500);
-        /* Deactivate target */
-        (void)writeData(NCIDeactivate, sizeof(NCIDeactivate));
-        getMessage();
-        getMessage(100);
-
-        /* Reactivate target */
-        (void)writeData(NCISelectMIFARE, sizeof(NCISelectMIFARE));
-        getMessage();
-        getMessage(100);
-      } while ((rxBuffer[0] == 0x61) && (rxBuffer[1] == 0x05));
-      break;
-
-    default:
-      /* Nothing to do */
-      break;
   }
 }
 
