@@ -415,7 +415,7 @@ void Electroniccats_PN7150::ProcessCardMode(RfIntf_t RfIntf) {
   }
 }
 
-bool Electroniccats_PN7150::CardModeSend(unsigned char *pData, unsigned char DataSize) {
+bool Electroniccats_PN7150::cardModeSend(unsigned char *pData, unsigned char DataSize) {
   bool status;
   uint8_t Cmd[MAX_NCI_FRAME_SIZE];
 
@@ -426,6 +426,10 @@ bool Electroniccats_PN7150::CardModeSend(unsigned char *pData, unsigned char Dat
   memcpy(&Cmd[3], pData, DataSize);
   (void)writeData(Cmd, DataSize + 3);
   return status;
+}
+
+bool Electroniccats_PN7150::CardModeSend(unsigned char *pData, unsigned char DataSize) {
+  return Electroniccats_PN7150::cardModeSend(pData, DataSize);
 }
 
 bool Electroniccats_PN7150::CardModeReceive(unsigned char *pData, unsigned char *pDataSize) {

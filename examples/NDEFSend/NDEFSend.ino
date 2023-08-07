@@ -87,7 +87,7 @@ void checkReaders() {
         Serial.println("\nReader detected!");
         nfc.ProcessCardMode(RfInterface);
       }
-      nfc.CardModeSend(STATUSOK, sizeof(STATUSOK));
+      nfc.cardModeSend(STATUSOK, sizeof(STATUSOK));
       Serial.print("Waiting for an NDEF device");
     }
   }

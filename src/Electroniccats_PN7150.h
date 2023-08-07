@@ -265,7 +265,8 @@ class Electroniccats_PN7150 {
   uint8_t StartDiscovery(uint8_t modeSE);  // Deprecated, use startDiscovery() instead
   uint8_t connectNCI();
   uint8_t wakeupNCI();
-  bool CardModeSend(unsigned char *pData, unsigned char DataSize);
+  bool cardModeSend(unsigned char *pData, unsigned char DataSize);
+  bool CardModeSend(unsigned char *pData, unsigned char DataSize);  // Deprecated, use cardModeSend() instead
   bool CardModeReceive(unsigned char *pData, unsigned char *pDataSize);
   bool WaitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout = 0);
   void FillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf);

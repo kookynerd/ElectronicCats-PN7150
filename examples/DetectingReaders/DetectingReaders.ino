@@ -64,7 +64,7 @@ void loop(){
               default:
                   break;
           }
-          nfc.CardModeSend(STATUSOK, sizeof(STATUSOK));
+          nfc.cardModeSend(STATUSOK, sizeof(STATUSOK));
       }
   }
 }
