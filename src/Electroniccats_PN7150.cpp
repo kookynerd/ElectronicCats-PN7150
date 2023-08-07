@@ -336,7 +336,7 @@ wait:
     pRfIntf->Protocol = rxBuffer[5];
     pRfIntf->ModeTech = rxBuffer[6];
     pRfIntf->MoreTags = false;
-    FillInterfaceInfo(pRfIntf, &rxBuffer[10]);
+    fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
 
     // P2P
     /* Verifying if not a P2P device also presenting T4T emulation */
@@ -362,7 +362,7 @@ wait:
             pRfIntf->Protocol = rxBuffer[5];
             pRfIntf->ModeTech = rxBuffer[6];
             pRfIntf->MoreTags = false;
-            FillInterfaceInfo(pRfIntf, &rxBuffer[10]);
+            fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
             break;
           }
         } else {
@@ -420,7 +420,7 @@ wait:
         pRfIntf->Interface = rxBuffer[4];
         pRfIntf->Protocol = rxBuffer[5];
         pRfIntf->ModeTech = rxBuffer[6];
-        FillInterfaceInfo(pRfIntf, &rxBuffer[10]);
+        fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
       }
 
       /* In case of P2P target detected but lost, inform application to restart discovery */
@@ -625,7 +625,7 @@ void Electroniccats_PN7150::ProcessCardMode(RfIntf_t RfIntf) {
   Electroniccats_PN7150::processCardMode(RfIntf);
 }
 
-void Electroniccats_PN7150::FillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) {
+void Electroniccats_PN7150::fillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) {
   uint8_t i, temp;
 
   switch (pRfIntf->ModeTech) {
@@ -683,6 +683,10 @@ void Electroniccats_PN7150::FillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) 
     default:
       break;
   }
+}
+
+void Electroniccats_PN7150::FillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) {
+  Electroniccats_PN7150::fillInterfaceInfo(pRfIntf, pBuf);
 }
 
 bool Electroniccats_PN7150::ReaderTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize) {
@@ -1026,7 +1030,7 @@ bool Electroniccats_PN7150::ReaderActivateNext(RfIntf_t *pRfIntf) {
       pRfIntf->Interface = rxBuffer[4];
       pRfIntf->Protocol = rxBuffer[5];
       pRfIntf->ModeTech = rxBuffer[6];
-      FillInterfaceInfo(pRfIntf, &rxBuffer[10]);
+      fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
       status = SUCCESS;
     }
   }
