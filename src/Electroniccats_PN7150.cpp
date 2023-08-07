@@ -225,7 +225,7 @@ int Electroniccats_PN7150::GetFwVersion() {
   return getFirmwareVersion();
 }
 
-uint8_t Electroniccats_PN7150::ConfigMode(uint8_t modeSE) {
+uint8_t Electroniccats_PN7150::configMode(uint8_t modeSE) {
   unsigned mode = (modeSE == 1 ? MODE_RW : modeSE == 2 ? MODE_CARDEMU
                                                        : MODE_P2P);
 
@@ -323,6 +323,10 @@ uint8_t Electroniccats_PN7150::ConfigMode(uint8_t modeSE) {
     }
   }
   return SUCCESS;
+}
+
+uint8_t Electroniccats_PN7150::ConfigMode(uint8_t modeSE) {
+  return Electroniccats_PN7150::configMode(modeSE);
 }
 
 uint8_t Electroniccats_PN7150::StartDiscovery(uint8_t modeSE) {

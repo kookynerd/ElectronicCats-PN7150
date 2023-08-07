@@ -65,7 +65,7 @@ void setup() {
       ;
   }
 
-  if (nfc.ConfigMode(mode)) {
+  if (nfc.configMode(mode)) {
     Serial.println("The Configure Mode failed!!");
     while (1)
       ;

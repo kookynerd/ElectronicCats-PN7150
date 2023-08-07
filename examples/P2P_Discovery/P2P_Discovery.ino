@@ -24,7 +24,7 @@ uint8_t mode = 3;                                                  // modes: 1 =
 
 void ResetMode(){                                  //Reset the configuration mode after each reading
   Serial.println("Re-initializing...");
-  nfc.ConfigMode(mode);                               
+  nfc.configMode(mode);                               
   nfc.StartDiscovery(mode);
 }
 
@@ -45,7 +45,7 @@ void setup(){
     while (1);
   }
   
-  if(nfc.ConfigMode(mode)){ //Set up the configuration mode
+  if(nfc.configMode(mode)){ //Set up the configuration mode
     Serial.println("The Configure Mode failed!!");
     while (1);
   }
