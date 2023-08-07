@@ -19,7 +19,7 @@ const char ndefMessage[] = {0xD1,                      // MB/ME/CF/1/IL/TNF
 void ResetMode() {  // Reset the configuration mode after each reading
   Serial.println("Re-initializing...");
   nfc.configMode(mode);
-  nfc.StartDiscovery(mode);
+  nfc.startDiscovery(mode);
 }
 
 void PrintBuf(const byte *data, const uint32_t numBytes) {  // Print hex data buffer in format
@@ -143,7 +143,7 @@ void setup() {
     while (1)
       ;
   }
-  nfc.StartDiscovery(mode);  // NCI Discovery mode
+  nfc.startDiscovery(mode);  // NCI Discovery mode
   Serial.println("Waiting for an Card ...");
 }
 
@@ -179,7 +179,7 @@ void loop() {
     Serial.println("CARD REMOVED!");
 
     nfc.StopDiscovery();
-    nfc.StartDiscovery(mode);
+    nfc.startDiscovery(mode);
   }
   ResetMode();
   delay(500);

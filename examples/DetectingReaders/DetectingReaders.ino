@@ -43,7 +43,7 @@ void setup(){
     Serial.println("The Configure Mode is failed!!");
     while (1);
   }
-  nfc.StartDiscovery(mode); //NCI Discovery mode
+  nfc.startDiscovery(mode); //NCI Discovery mode
   Serial.println("Waiting for an Reader Card ...");
 }
 

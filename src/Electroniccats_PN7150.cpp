@@ -329,7 +329,7 @@ uint8_t Electroniccats_PN7150::ConfigMode(uint8_t modeSE) {
   return Electroniccats_PN7150::configMode(modeSE);
 }
 
-uint8_t Electroniccats_PN7150::StartDiscovery(uint8_t modeSE) {
+uint8_t Electroniccats_PN7150::startDiscovery(uint8_t modeSE) {
   unsigned char TechTabSize = (modeSE == 1 ? sizeof(DiscoveryTechnologiesRW) : modeSE == 2 ? sizeof(DiscoveryTechnologiesCE)
                                                                                            : sizeof(DiscoveryTechnologiesP2P));
 
@@ -353,6 +353,10 @@ uint8_t Electroniccats_PN7150::StartDiscovery(uint8_t modeSE) {
     return ERROR;
   else
     return SUCCESS;
+}
+
+uint8_t Electroniccats_PN7150::StartDiscovery(uint8_t modeSE) {
+  return Electroniccats_PN7150::startDiscovery(modeSE);
 }
 
 void Electroniccats_PN7150::ProcessCardMode(RfIntf_t RfIntf) {

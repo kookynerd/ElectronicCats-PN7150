@@ -261,7 +261,8 @@ class Electroniccats_PN7150 {
   bool hasMessage() const;
   uint8_t configMode(uint8_t modeSE);
   uint8_t ConfigMode(uint8_t modeSE);  // Deprecated, use configMode() instead
-  uint8_t StartDiscovery(uint8_t modeSE);
+  uint8_t startDiscovery(uint8_t modeSE);
+  uint8_t StartDiscovery(uint8_t modeSE);  // Deprecated, use startDiscovery() instead
   uint8_t connectNCI();
   uint8_t wakeupNCI();
   bool CardModeSend(unsigned char *pData, unsigned char DataSize);

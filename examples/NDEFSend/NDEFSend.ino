@@ -71,7 +71,7 @@ void setup() {
       ;
   }
 
-  nfc.StartDiscovery(mode);
+  nfc.startDiscovery(mode);
   Serial.print("Waiting for an NDEF device");
 }
 

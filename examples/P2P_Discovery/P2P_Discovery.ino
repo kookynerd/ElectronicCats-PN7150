@@ -25,7 +25,7 @@ uint8_t mode = 3;                                                  // modes: 1 =
 void ResetMode(){                                  //Reset the configuration mode after each reading
   Serial.println("Re-initializing...");
   nfc.configMode(mode);                               
-  nfc.StartDiscovery(mode);
+  nfc.startDiscovery(mode);
 }
 
 
@@ -49,7 +49,7 @@ void setup(){
     Serial.println("The Configure Mode failed!!");
     while (1);
   }
-  nfc.StartDiscovery(mode); //NCI Discovery mode
+  nfc.startDiscovery(mode); //NCI Discovery mode
   Serial.println("Waiting for a P2P device...");
 }
 
