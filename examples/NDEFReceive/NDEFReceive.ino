@@ -156,14 +156,14 @@ void loop() {
       case PROT_T2T:
       case PROT_T3T:
       case PROT_ISODEP:
-        nfc.ProcessReaderMode(RfInterface, READ_NDEF);
+        nfc.processReaderMode(RfInterface, READ_NDEF);
         break;
 
       case PROT_ISO15693:
         break;
 
       case PROT_MIFARE:
-        nfc.ProcessReaderMode(RfInterface, READ_NDEF);
+        nfc.processReaderMode(RfInterface, READ_NDEF);
         break;
 
       default:
@@ -175,7 +175,7 @@ void loop() {
       nfc.ReaderActivateNext(&RfInterface);
     }
     //* Wait for card removal
-    nfc.ProcessReaderMode(RfInterface, PRESENCE_CHECK);
+    nfc.processReaderMode(RfInterface, PRESENCE_CHECK);
     Serial.println("CARD REMOVED!");
 
     nfc.stopDiscovery();

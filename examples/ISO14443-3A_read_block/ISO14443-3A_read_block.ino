@@ -127,7 +127,7 @@ void loop(){
         nfc.ReaderActivateNext(&RfInterface);
     }
     //* Wait for card removal 
-    nfc.ProcessReaderMode(RfInterface, PRESENCE_CHECK);
+    nfc.processReaderMode(RfInterface, PRESENCE_CHECK);
     Serial.println("CARD REMOVED!");
     
     nfc.stopDiscovery();

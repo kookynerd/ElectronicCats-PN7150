@@ -445,7 +445,7 @@ wait:
   return SUCCESS;
 }
 
-// Deprecaded, use waitForDiscoveryNotification() instead
+// Deprecated, use waitForDiscoveryNotification() instead
 bool Electroniccats_PN7150::WaitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout) {
   return Electroniccats_PN7150::waitForDiscoveryNotification(pRfIntf, tout);
 }
@@ -621,8 +621,30 @@ void Electroniccats_PN7150::processCardMode(RfIntf_t RfIntf) {
   }
 }
 
+// Deprecated, use processCardMode() instead
 void Electroniccats_PN7150::ProcessCardMode(RfIntf_t RfIntf) {
   Electroniccats_PN7150::processCardMode(RfIntf);
+}
+
+void Electroniccats_PN7150::processReaderMode(RfIntf_t RfIntf, RW_Operation_t Operation) {
+  switch (Operation) {
+    case READ_NDEF:
+      ReadNdef(RfIntf);
+      break;
+    case WRITE_NDEF:
+      WriteNdef(RfIntf);
+      break;
+    case PRESENCE_CHECK:
+      PresenceCheck(RfIntf);
+      break;
+    default:
+      break;
+  }
+}
+
+// Deprecated, use processReaderMode() instead
+void Electroniccats_PN7150::ProcessReaderMode(RfIntf_t RfIntf, RW_Operation_t Operation) {
+  Electroniccats_PN7150::processReaderMode(RfIntf, Operation);
 }
 
 void Electroniccats_PN7150::fillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) {
@@ -685,6 +707,7 @@ void Electroniccats_PN7150::fillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) 
   }
 }
 
+// Deprecated, use fillInterfaceInfo() instead
 void Electroniccats_PN7150::FillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) {
   Electroniccats_PN7150::fillInterfaceInfo(pRfIntf, pBuf);
 }
@@ -861,22 +884,6 @@ void Electroniccats_PN7150::WriteNdef(RfIntf_t RfIntf) {
       getMessage();
       getMessage(2000);
     }
-  }
-}
-
-void Electroniccats_PN7150::ProcessReaderMode(RfIntf_t RfIntf, RW_Operation_t Operation) {
-  switch (Operation) {
-    case READ_NDEF:
-      ReadNdef(RfIntf);
-      break;
-    case WRITE_NDEF:
-      WriteNdef(RfIntf);
-      break;
-    case PRESENCE_CHECK:
-      PresenceCheck(RfIntf);
-      break;
-    default:
-      break;
   }
 }
 
