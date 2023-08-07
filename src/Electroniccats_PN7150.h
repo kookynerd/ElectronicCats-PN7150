@@ -277,6 +277,8 @@ class Electroniccats_PN7150 {
   void ProcessCardMode(RfIntf_t RfIntf);  // Deprecated, use processCardMode() instead
   void processReaderMode(RfIntf_t RfIntf, RW_Operation_t Operation);
   void ProcessReaderMode(RfIntf_t RfIntf, RW_Operation_t Operation);  // Deprecated, use processReaderMode() instead
+  void processP2pMode(RfIntf_t RfIntf);
+  void ProcessP2pMode(RfIntf_t RfIntf);  // Deprecated, use processP2pMode() instead
   void fillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf);
   void FillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf);
   bool ReaderTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize);
@@ -289,7 +291,6 @@ class Electroniccats_PN7150 {
   void NdefPush_Cb(unsigned char *pNdefRecord, unsigned short NdefRecordSize);
   bool NxpNci_FactoryTest_Prbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate);
   bool NxpNci_FactoryTest_RfOn(void);
-  void ProcessP2pMode(RfIntf_t RfIntf);
   void ReadNdef(RfIntf_t RfIntf);
   void WriteNdef(RfIntf_t RfIntf);
 };

@@ -647,6 +647,98 @@ void Electroniccats_PN7150::ProcessReaderMode(RfIntf_t RfIntf, RW_Operation_t Op
   Electroniccats_PN7150::processReaderMode(RfIntf, Operation);
 }
 
+void Electroniccats_PN7150::processP2pMode(RfIntf_t RfIntf) {
+  uint8_t status = ERROR;
+  bool restart = false;
+  uint8_t NCILlcpSymm[] = {0x00, 0x00, 0x02, 0x00, 0x00};
+  uint8_t NCIRestartDiscovery[] = {0x21, 0x06, 0x01, 0x03};
+
+  /* Reset P2P_NDEF state */
+  P2P_NDEF_Reset();
+
+  /* Is Initiator mode ? */
+  if ((RfIntf.ModeTech & MODE_LISTEN) != MODE_LISTEN) {
+    /* Initiate communication (SYMM PDU) */
+    (void)writeData(NCILlcpSymm, sizeof(NCILlcpSymm));
+    getMessage();
+
+    /* Save status for discovery restart */
+    restart = true;
+  }
+  status = ERROR;
+  getMessage(2000);
+  if (rxMessageLength > 0)
+    status = SUCCESS;
+
+  /* Get frame from remote peer */
+  while (status == SUCCESS) {
+    /* is DATA_PACKET ? */
+    if ((rxBuffer[0] == 0x00) && (rxBuffer[1] == 0x00)) {
+      uint8_t Cmd[MAX_NCI_FRAME_SIZE];
+      uint16_t CmdSize;
+      /* Handle P2P communication */
+      P2P_NDEF_Next(&rxBuffer[3], rxBuffer[2], &Cmd[3], (unsigned short *)&CmdSize);
+      /* Compute DATA_PACKET to answer */
+      Cmd[0] = 0x00;
+      Cmd[1] = (CmdSize & 0xFF00) >> 8;
+      Cmd[2] = CmdSize & 0x00FF;
+      status = ERROR;
+      (void)writeData(Cmd, CmdSize + 3);
+      getMessage();
+      if (rxMessageLength > 0)
+        status = SUCCESS;
+    }
+    /* is CORE_INTERFACE_ERROR_NTF ?*/
+    else if ((rxBuffer[0] == 0x60) && (rxBuffer[1] == 0x08)) {
+      /* Come back to discovery state */
+      break;
+    }
+    /* is RF_DEACTIVATE_NTF ? */
+    else if ((rxBuffer[0] == 0x61) && (rxBuffer[1] == 0x06)) {
+      /* Come back to discovery state */
+      break;
+    }
+    /* is RF_DISCOVERY_NTF ? */
+    else if ((rxBuffer[0] == 0x61) && ((rxBuffer[1] == 0x05) || (rxBuffer[1] == 0x03))) {
+      do {
+        if ((rxBuffer[0] == 0x61) && ((rxBuffer[1] == 0x05) || (rxBuffer[1] == 0x03))) {
+          if ((rxBuffer[6] & MODE_LISTEN) != MODE_LISTEN)
+            restart = true;
+          else
+            restart = false;
+        }
+        status = ERROR;
+        (void)writeData(rxBuffer, rxMessageLength);
+        getMessage();
+        if (rxMessageLength > 0)
+          status = SUCCESS;
+      } while (rxMessageLength != 0);
+      /* Come back to discovery state */
+      break;
+    }
+
+    /* Wait for next frame from remote P2P, or notification event */
+    status = ERROR;
+    (void)writeData(rxBuffer, rxMessageLength);
+    getMessage();
+    if (rxMessageLength > 0)
+      status = SUCCESS;
+  }
+
+  /* Is Initiator mode ? */
+  if (restart) {
+    /* Communication ended, restart discovery loop */
+    (void)writeData(NCIRestartDiscovery, sizeof(NCIRestartDiscovery));
+    getMessage();
+    getMessage(100);
+  }
+}
+
+// Deprecated, use processP2pMode() instead
+void Electroniccats_PN7150::ProcessP2pMode(RfIntf_t RfIntf) {
+  Electroniccats_PN7150::processP2pMode(RfIntf);
+}
+
 void Electroniccats_PN7150::fillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) {
   uint8_t i, temp;
 
@@ -734,93 +826,6 @@ bool Electroniccats_PN7150::ReaderTagCmd(unsigned char *pCommand, unsigned char 
   memcpy(pAnswer, &rxBuffer[3], *pAnswerSize);
 
   return status;
-}
-
-void Electroniccats_PN7150::ProcessP2pMode(RfIntf_t RfIntf) {
-  uint8_t status = ERROR;
-  bool restart = false;
-  uint8_t NCILlcpSymm[] = {0x00, 0x00, 0x02, 0x00, 0x00};
-  uint8_t NCIRestartDiscovery[] = {0x21, 0x06, 0x01, 0x03};
-
-  /* Reset P2P_NDEF state */
-  P2P_NDEF_Reset();
-
-  /* Is Initiator mode ? */
-  if ((RfIntf.ModeTech & MODE_LISTEN) != MODE_LISTEN) {
-    /* Initiate communication (SYMM PDU) */
-    (void)writeData(NCILlcpSymm, sizeof(NCILlcpSymm));
-    getMessage();
-
-    /* Save status for discovery restart */
-    restart = true;
-  }
-  status = ERROR;
-  getMessage(2000);
-  if (rxMessageLength > 0)
-    status = SUCCESS;
-
-  /* Get frame from remote peer */
-  while (status == SUCCESS) {
-    /* is DATA_PACKET ? */
-    if ((rxBuffer[0] == 0x00) && (rxBuffer[1] == 0x00)) {
-      uint8_t Cmd[MAX_NCI_FRAME_SIZE];
-      uint16_t CmdSize;
-      /* Handle P2P communication */
-      P2P_NDEF_Next(&rxBuffer[3], rxBuffer[2], &Cmd[3], (unsigned short *)&CmdSize);
-      /* Compute DATA_PACKET to answer */
-      Cmd[0] = 0x00;
-      Cmd[1] = (CmdSize & 0xFF00) >> 8;
-      Cmd[2] = CmdSize & 0x00FF;
-      status = ERROR;
-      (void)writeData(Cmd, CmdSize + 3);
-      getMessage();
-      if (rxMessageLength > 0)
-        status = SUCCESS;
-    }
-    /* is CORE_INTERFACE_ERROR_NTF ?*/
-    else if ((rxBuffer[0] == 0x60) && (rxBuffer[1] == 0x08)) {
-      /* Come back to discovery state */
-      break;
-    }
-    /* is RF_DEACTIVATE_NTF ? */
-    else if ((rxBuffer[0] == 0x61) && (rxBuffer[1] == 0x06)) {
-      /* Come back to discovery state */
-      break;
-    }
-    /* is RF_DISCOVERY_NTF ? */
-    else if ((rxBuffer[0] == 0x61) && ((rxBuffer[1] == 0x05) || (rxBuffer[1] == 0x03))) {
-      do {
-        if ((rxBuffer[0] == 0x61) && ((rxBuffer[1] == 0x05) || (rxBuffer[1] == 0x03))) {
-          if ((rxBuffer[6] & MODE_LISTEN) != MODE_LISTEN)
-            restart = true;
-          else
-            restart = false;
-        }
-        status = ERROR;
-        (void)writeData(rxBuffer, rxMessageLength);
-        getMessage();
-        if (rxMessageLength > 0)
-          status = SUCCESS;
-      } while (rxMessageLength != 0);
-      /* Come back to discovery state */
-      break;
-    }
-
-    /* Wait for next frame from remote P2P, or notification event */
-    status = ERROR;
-    (void)writeData(rxBuffer, rxMessageLength);
-    getMessage();
-    if (rxMessageLength > 0)
-      status = SUCCESS;
-  }
-
-  /* Is Initiator mode ? */
-  if (restart) {
-    /* Communication ended, restart discovery loop */
-    (void)writeData(NCIRestartDiscovery, sizeof(NCIRestartDiscovery));
-    getMessage();
-    getMessage(100);
-  }
 }
 
 void Electroniccats_PN7150::ReadNdef(RfIntf_t RfIntf) {
