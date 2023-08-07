@@ -263,20 +263,21 @@ class Electroniccats_PN7150 {
   uint8_t ConfigMode(uint8_t modeSE);  // Deprecated, use configMode() instead
   uint8_t startDiscovery(uint8_t modeSE);
   uint8_t StartDiscovery(uint8_t modeSE);  // Deprecated, use startDiscovery() instead
+  bool stopDiscovery();
+  bool StopDiscovery();  // Deprecated, use stopDiscovery() instead
+  bool waitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout = 0);
+  bool WaitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout = 0);  // Deprecated, use waitForDiscoveryNotification() instead
   uint8_t connectNCI();
   uint8_t wakeupNCI();
   bool cardModeSend(unsigned char *pData, unsigned char DataSize);
   bool CardModeSend(unsigned char *pData, unsigned char DataSize);  // Deprecated, use cardModeSend() instead
   bool cardModeReceive(unsigned char *pData, unsigned char *pDataSize);
   bool CardModeReceive(unsigned char *pData, unsigned char *pDataSize);  // Deprecated, use cardModeReceive() instead
-  bool WaitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout = 0);
   void FillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf);
   bool ReaderTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize);
-  bool StopDiscovery(void);
   void ProcessReaderMode(RfIntf_t RfIntf, RW_Operation_t Operation);
   void PresenceCheck(RfIntf_t RfIntf);
   bool ReaderReActivate(RfIntf_t *pRfIntf);
-  void PrintBuf(const byte *data, const uint32_t numBytes);
   bool ReaderActivateNext(RfIntf_t *pRfIntf);
   bool ConfigureSettings(void);
   bool ConfigureSettings(uint8_t *nfcuid, uint8_t uidlen);

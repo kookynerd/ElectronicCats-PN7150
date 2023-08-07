@@ -137,7 +137,7 @@ void setup(){
 }
 
 void loop(){
-  if(!nfc.WaitForDiscoveryNotification(&RfInterface)){ // Waiting to detect cards
+  if(!nfc.waitForDiscoveryNotification(&RfInterface)){ // Waiting to detect cards
     switch(RfInterface.Protocol) {
       case PROT_MIFARE:
         Serial.println(" - Found MIFARE card");
@@ -176,7 +176,7 @@ void loop(){
     nfc.ProcessReaderMode(RfInterface, PRESENCE_CHECK);
     Serial.println("CARD REMOVED!");
     
-    nfc.StopDiscovery();
+    nfc.stopDiscovery();
     nfc.startDiscovery(mode);
   }
   ResetMode();

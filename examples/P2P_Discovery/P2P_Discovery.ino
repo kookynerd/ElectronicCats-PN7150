@@ -54,7 +54,7 @@ void setup(){
 }
 
 void loop(){
-  if(!nfc.WaitForDiscoveryNotification(&RfInterface)){ // Waiting to detect 
+  if(!nfc.waitForDiscoveryNotification(&RfInterface)){ // Waiting to detect 
     if (RfInterface.Interface == INTF_NFCDEP) {
       if ((RfInterface.ModeTech & MODE_LISTEN) == MODE_LISTEN) 
         Serial.println(" - P2P TARGET MODE: Activated from remote Initiator");

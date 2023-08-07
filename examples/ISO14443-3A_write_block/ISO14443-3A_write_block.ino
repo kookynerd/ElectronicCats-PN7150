@@ -107,7 +107,7 @@ void setup(){
 }
 
 void loop(){
-  if(!nfc.WaitForDiscoveryNotification(&RfInterface)){ // Waiting to detect cards
+  if(!nfc.waitForDiscoveryNotification(&RfInterface)){ // Waiting to detect cards
     switch(RfInterface.Protocol) {
       case PROT_T2T:
         Serial.println(" - Found ISO14443-3A(T2T) card");
@@ -146,7 +146,7 @@ void loop(){
     nfc.ProcessReaderMode(RfInterface, PRESENCE_CHECK);
     Serial.println("CARD REMOVED!");
     
-    nfc.StopDiscovery();
+    nfc.stopDiscovery();
     nfc.startDiscovery(mode);
   }
   ResetMode();

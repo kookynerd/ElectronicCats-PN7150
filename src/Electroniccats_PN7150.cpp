@@ -298,6 +298,158 @@ uint8_t Electroniccats_PN7150::StartDiscovery(uint8_t modeSE) {
   return Electroniccats_PN7150::startDiscovery(modeSE);
 }
 
+bool Electroniccats_PN7150::stopDiscovery() {
+  uint8_t NCIStopDiscovery[] = {0x21, 0x06, 0x01, 0x00};
+
+  (void)writeData(NCIStopDiscovery, sizeof(NCIStopDiscovery));
+  getMessage();
+  getMessage(1000);
+
+  return SUCCESS;
+}
+
+// Deprecated, use stopDiscovery() instead
+bool Electroniccats_PN7150::StopDiscovery() {
+  return Electroniccats_PN7150::stopDiscovery();
+}
+
+bool Electroniccats_PN7150::waitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout) {
+  uint8_t NCIRfDiscoverSelect[] = {0x21, 0x04, 0x03, 0x01, PROT_ISODEP, INTF_ISODEP};
+
+  // P2P Support
+  uint8_t NCIStopDiscovery[] = {0x21, 0x06, 0x01, 0x00};
+  uint8_t NCIRestartDiscovery[] = {0x21, 0x06, 0x01, 0x03};
+  uint8_t saved_NTF[7];
+
+  gNextTag_Protocol = PROT_UNDETERMINED;
+  bool getFlag = false;
+wait:
+  do {
+    getFlag = getMessage(
+        tout > 0 ? tout : 1337);  // Infinite loop, waiting for response
+  } while (((rxBuffer[0] != 0x61) || ((rxBuffer[1] != 0x05) && (rxBuffer[1] != 0x03))) && (getFlag == true));
+  gNextTag_Protocol = PROT_UNDETERMINED;
+
+  /* Is RF_INTF_ACTIVATED_NTF ? */
+  if (rxBuffer[1] == 0x05) {
+    pRfIntf->Interface = rxBuffer[4];
+    pRfIntf->Protocol = rxBuffer[5];
+    pRfIntf->ModeTech = rxBuffer[6];
+    pRfIntf->MoreTags = false;
+    FillInterfaceInfo(pRfIntf, &rxBuffer[10]);
+
+    // P2P
+    /* Verifying if not a P2P device also presenting T4T emulation */
+    if ((pRfIntf->Interface == INTF_ISODEP) && (pRfIntf->Protocol == PROT_ISODEP) && ((pRfIntf->ModeTech & MODE_LISTEN) != MODE_LISTEN)) {
+      memcpy(saved_NTF, rxBuffer, sizeof(saved_NTF));
+      while (1) {
+        /* Restart the discovery loop */
+        (void)writeData(NCIRestartDiscovery, sizeof(NCIRestartDiscovery));
+        getMessage();
+        getMessage(100);
+        /* Wait for discovery */
+        do {
+          getMessage(1000);  // Infinite loop, waiting for response
+        } while ((rxMessageLength == 4) && (rxBuffer[0] == 0x60) && (rxBuffer[1] == 0x07));
+
+        if ((rxMessageLength != 0) && (rxBuffer[0] == 0x61) && (rxBuffer[1] == 0x05)) {
+          /* Is same device detected ? */
+          if (memcmp(saved_NTF, rxBuffer, sizeof(saved_NTF)) == 0)
+            break;
+          /* Is P2P detected ? */
+          if (rxBuffer[5] == PROT_NFCDEP) {
+            pRfIntf->Interface = rxBuffer[4];
+            pRfIntf->Protocol = rxBuffer[5];
+            pRfIntf->ModeTech = rxBuffer[6];
+            pRfIntf->MoreTags = false;
+            FillInterfaceInfo(pRfIntf, &rxBuffer[10]);
+            break;
+          }
+        } else {
+          if (rxMessageLength != 0) {
+            /* Flush any other notification  */
+            while (rxMessageLength != 0)
+              getMessage(100);
+
+            /* Restart the discovery loop */
+            (void)writeData(NCIRestartDiscovery, sizeof(NCIRestartDiscovery));
+            getMessage();
+            getMessage(100);
+          }
+          goto wait;
+        }
+      }
+    }
+  } else { /* RF_DISCOVER_NTF */
+    pRfIntf->Interface = INTF_UNDETERMINED;
+    pRfIntf->Protocol = rxBuffer[4];
+    pRfIntf->ModeTech = rxBuffer[5];
+    pRfIntf->MoreTags = true;
+
+    /* Get next NTF for further activation */
+    do {
+      if (!getMessage(100))
+        return ERROR;
+    } while ((rxBuffer[0] != 0x61) || (rxBuffer[1] != 0x03));
+    gNextTag_Protocol = rxBuffer[4];
+
+    /* Remaining NTF ? */
+
+    while (rxBuffer[rxMessageLength - 1] == 0x02)
+      getMessage(100);
+
+    /* In case of multiple cards, select the first one */
+    NCIRfDiscoverSelect[4] = pRfIntf->Protocol;
+    if (pRfIntf->Protocol == PROT_ISODEP)
+      NCIRfDiscoverSelect[5] = INTF_ISODEP;
+    else if (pRfIntf->Protocol == PROT_NFCDEP)
+      NCIRfDiscoverSelect[5] = INTF_NFCDEP;
+    else if (pRfIntf->Protocol == PROT_MIFARE)
+      NCIRfDiscoverSelect[5] = INTF_TAGCMD;
+    else
+      NCIRfDiscoverSelect[5] = INTF_FRAME;
+
+    (void)writeData(NCIRfDiscoverSelect, sizeof(NCIRfDiscoverSelect));
+    getMessage(100);
+
+    if ((rxBuffer[0] == 0x41) || (rxBuffer[1] == 0x04) || (rxBuffer[3] == 0x00)) {
+      (void)writeData(rxBuffer, rxMessageLength);
+      getMessage(100);
+
+      if ((rxBuffer[0] == 0x61) || (rxBuffer[1] == 0x05)) {
+        pRfIntf->Interface = rxBuffer[4];
+        pRfIntf->Protocol = rxBuffer[5];
+        pRfIntf->ModeTech = rxBuffer[6];
+        FillInterfaceInfo(pRfIntf, &rxBuffer[10]);
+      }
+
+      /* In case of P2P target detected but lost, inform application to restart discovery */
+      else if (pRfIntf->Protocol == PROT_NFCDEP) {
+        /* Restart the discovery loop */
+        (void)writeData(NCIStopDiscovery, sizeof(NCIStopDiscovery));
+        getMessage();
+        getMessage(100);
+
+        (void)writeData(NCIStartDiscovery, NCIStartDiscovery_length);
+        getMessage();
+
+        goto wait;
+      }
+    }
+  }
+
+  /* In case of unknown target align protocol information */
+  if (pRfIntf->Interface == INTF_UNDETERMINED)
+    pRfIntf->Protocol = PROT_UNDETERMINED;
+
+  return SUCCESS;
+}
+
+// Deprecaded, use waitForDiscoveryNotification() instead
+bool Electroniccats_PN7150::WaitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout) {
+  return Electroniccats_PN7150::waitForDiscoveryNotification(pRfIntf, tout);
+}
+
 uint8_t Electroniccats_PN7150::connectNCI() {
   uint8_t i = 2;
   uint8_t NCICoreInit[] = {0x20, 0x01, 0x00};
@@ -551,138 +703,6 @@ bool Electroniccats_PN7150::ReaderTagCmd(unsigned char *pCommand, unsigned char 
   memcpy(pAnswer, &rxBuffer[3], *pAnswerSize);
 
   return status;
-}
-
-bool Electroniccats_PN7150::WaitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout) {
-  uint8_t NCIRfDiscoverSelect[] = {0x21, 0x04, 0x03, 0x01, PROT_ISODEP, INTF_ISODEP};
-
-  // P2P Support
-  uint8_t NCIStopDiscovery[] = {0x21, 0x06, 0x01, 0x00};
-  uint8_t NCIRestartDiscovery[] = {0x21, 0x06, 0x01, 0x03};
-  uint8_t saved_NTF[7];
-
-  gNextTag_Protocol = PROT_UNDETERMINED;
-  bool getFlag = false;
-wait:
-  do {
-    getFlag = getMessage(
-        tout > 0 ? tout : 1337);  // Infinite loop, waiting for response
-  } while (((rxBuffer[0] != 0x61) || ((rxBuffer[1] != 0x05) && (rxBuffer[1] != 0x03))) && (getFlag == true));
-  gNextTag_Protocol = PROT_UNDETERMINED;
-
-  /* Is RF_INTF_ACTIVATED_NTF ? */
-  if (rxBuffer[1] == 0x05) {
-    pRfIntf->Interface = rxBuffer[4];
-    pRfIntf->Protocol = rxBuffer[5];
-    pRfIntf->ModeTech = rxBuffer[6];
-    pRfIntf->MoreTags = false;
-    FillInterfaceInfo(pRfIntf, &rxBuffer[10]);
-
-    // P2P
-    /* Verifying if not a P2P device also presenting T4T emulation */
-    if ((pRfIntf->Interface == INTF_ISODEP) && (pRfIntf->Protocol == PROT_ISODEP) && ((pRfIntf->ModeTech & MODE_LISTEN) != MODE_LISTEN)) {
-      memcpy(saved_NTF, rxBuffer, sizeof(saved_NTF));
-      while (1) {
-        /* Restart the discovery loop */
-        (void)writeData(NCIRestartDiscovery, sizeof(NCIRestartDiscovery));
-        getMessage();
-        getMessage(100);
-        /* Wait for discovery */
-        do {
-          getMessage(1000);  // Infinite loop, waiting for response
-        } while ((rxMessageLength == 4) && (rxBuffer[0] == 0x60) && (rxBuffer[1] == 0x07));
-
-        if ((rxMessageLength != 0) && (rxBuffer[0] == 0x61) && (rxBuffer[1] == 0x05)) {
-          /* Is same device detected ? */
-          if (memcmp(saved_NTF, rxBuffer, sizeof(saved_NTF)) == 0)
-            break;
-          /* Is P2P detected ? */
-          if (rxBuffer[5] == PROT_NFCDEP) {
-            pRfIntf->Interface = rxBuffer[4];
-            pRfIntf->Protocol = rxBuffer[5];
-            pRfIntf->ModeTech = rxBuffer[6];
-            pRfIntf->MoreTags = false;
-            FillInterfaceInfo(pRfIntf, &rxBuffer[10]);
-            break;
-          }
-        } else {
-          if (rxMessageLength != 0) {
-            /* Flush any other notification  */
-            while (rxMessageLength != 0)
-              getMessage(100);
-
-            /* Restart the discovery loop */
-            (void)writeData(NCIRestartDiscovery, sizeof(NCIRestartDiscovery));
-            getMessage();
-            getMessage(100);
-          }
-          goto wait;
-        }
-      }
-    }
-  } else { /* RF_DISCOVER_NTF */
-    pRfIntf->Interface = INTF_UNDETERMINED;
-    pRfIntf->Protocol = rxBuffer[4];
-    pRfIntf->ModeTech = rxBuffer[5];
-    pRfIntf->MoreTags = true;
-
-    /* Get next NTF for further activation */
-    do {
-      if (!getMessage(100))
-        return ERROR;
-    } while ((rxBuffer[0] != 0x61) || (rxBuffer[1] != 0x03));
-    gNextTag_Protocol = rxBuffer[4];
-
-    /* Remaining NTF ? */
-
-    while (rxBuffer[rxMessageLength - 1] == 0x02)
-      getMessage(100);
-
-    /* In case of multiple cards, select the first one */
-    NCIRfDiscoverSelect[4] = pRfIntf->Protocol;
-    if (pRfIntf->Protocol == PROT_ISODEP)
-      NCIRfDiscoverSelect[5] = INTF_ISODEP;
-    else if (pRfIntf->Protocol == PROT_NFCDEP)
-      NCIRfDiscoverSelect[5] = INTF_NFCDEP;
-    else if (pRfIntf->Protocol == PROT_MIFARE)
-      NCIRfDiscoverSelect[5] = INTF_TAGCMD;
-    else
-      NCIRfDiscoverSelect[5] = INTF_FRAME;
-
-    (void)writeData(NCIRfDiscoverSelect, sizeof(NCIRfDiscoverSelect));
-    getMessage(100);
-
-    if ((rxBuffer[0] == 0x41) || (rxBuffer[1] == 0x04) || (rxBuffer[3] == 0x00)) {
-      (void)writeData(rxBuffer, rxMessageLength);
-      getMessage(100);
-
-      if ((rxBuffer[0] == 0x61) || (rxBuffer[1] == 0x05)) {
-        pRfIntf->Interface = rxBuffer[4];
-        pRfIntf->Protocol = rxBuffer[5];
-        pRfIntf->ModeTech = rxBuffer[6];
-        FillInterfaceInfo(pRfIntf, &rxBuffer[10]);
-      }
-
-      /* In case of P2P target detected but lost, inform application to restart discovery */
-      else if (pRfIntf->Protocol == PROT_NFCDEP) {
-        /* Restart the discovery loop */
-        (void)writeData(NCIStopDiscovery, sizeof(NCIStopDiscovery));
-        getMessage();
-        getMessage(100);
-
-        (void)writeData(NCIStartDiscovery, NCIStartDiscovery_length);
-        getMessage();
-
-        goto wait;
-      }
-    }
-  }
-
-  /* In case of unknown target align protocol information */
-  if (pRfIntf->Interface == INTF_UNDETERMINED)
-    pRfIntf->Protocol = PROT_UNDETERMINED;
-
-  return SUCCESS;
 }
 
 void Electroniccats_PN7150::ProcessP2pMode(RfIntf_t RfIntf) {
@@ -1008,16 +1028,6 @@ bool Electroniccats_PN7150::ReaderActivateNext(RfIntf_t *pRfIntf) {
   }
 
   return status;
-}
-
-bool Electroniccats_PN7150::StopDiscovery(void) {
-  uint8_t NCIStopDiscovery[] = {0x21, 0x06, 0x01, 0x00};
-
-  (void)writeData(NCIStopDiscovery, sizeof(NCIStopDiscovery));
-  getMessage();
-  getMessage(1000);
-
-  return SUCCESS;
 }
 
 bool Electroniccats_PN7150::ConfigureSettings(void) {

@@ -148,7 +148,7 @@ void setup() {
 }
 
 void loop() {
-  if (!nfc.WaitForDiscoveryNotification(&RfInterface)) {  // Waiting to detect cards
+  if (!nfc.waitForDiscoveryNotification(&RfInterface)) {  // Waiting to detect cards
     displayCardInfo(RfInterface);
     displayDeviceInfo();
     switch (RfInterface.Protocol) {
@@ -178,7 +178,7 @@ void loop() {
     nfc.ProcessReaderMode(RfInterface, PRESENCE_CHECK);
     Serial.println("CARD REMOVED!");
 
-    nfc.StopDiscovery();
+    nfc.stopDiscovery();
     nfc.startDiscovery(mode);
   }
   ResetMode();
