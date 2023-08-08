@@ -123,7 +123,7 @@ void setup(){
     while (1);
   }
   
-  if (nfc.ConfigureSettings()) {
+  if (nfc.configureSettings()) {
     Serial.println("The Configure Settings is failed!");
     while (1);
   }

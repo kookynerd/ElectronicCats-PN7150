@@ -261,6 +261,8 @@ class Electroniccats_PN7150 {
   int GetFwVersion();  // Deprecated, use getFirmwareVersion() instead
   uint8_t configMode(uint8_t modeSE);
   uint8_t ConfigMode(uint8_t modeSE);  // Deprecated, use configMode() instead
+  bool configureSettings(void);
+  bool ConfigureSettings(void);  // Deprecated, use configureSettings() instead
   uint8_t startDiscovery(uint8_t modeSE);
   uint8_t StartDiscovery(uint8_t modeSE);  // Deprecated, use startDiscovery() instead
   bool stopDiscovery();
@@ -289,7 +291,6 @@ class Electroniccats_PN7150 {
   bool ReaderReActivate(RfIntf_t *pRfIntf);  // Deprecated, use readerReActivate() instead
   bool readerActivateNext(RfIntf_t *pRfIntf);
   bool ReaderActivateNext(RfIntf_t *pRfIntf);  // Deprecated, use readerActivateNext() instead
-  bool ConfigureSettings(void);
   bool ConfigureSettings(uint8_t *nfcuid, uint8_t uidlen);
   void NdefPull_Cb(unsigned char *pNdefMessage, unsigned short NdefMessageSize);
   void NdefPush_Cb(unsigned char *pNdefRecord, unsigned short NdefRecordSize);
