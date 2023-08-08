@@ -295,7 +295,8 @@ class Electroniccats_PN7150 {
   bool ReaderActivateNext(RfIntf_t *pRfIntf);  // Deprecated, use readerActivateNext() instead
   void NdefPull_Cb(unsigned char *pNdefMessage, unsigned short NdefMessageSize);
   void NdefPush_Cb(unsigned char *pNdefRecord, unsigned short NdefRecordSize);
-  bool NxpNci_FactoryTest_Prbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate);
+  bool nciFactoryTestPrbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate);
+  bool NxpNci_FactoryTest_Prbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate);  // Deprecated, use nciFactoryTestPrbs() instead
   bool NxpNci_FactoryTest_RfOn(void);
   void ReadNdef(RfIntf_t RfIntf);
   void WriteNdef(RfIntf_t RfIntf);

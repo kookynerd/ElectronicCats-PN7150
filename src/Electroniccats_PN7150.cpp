@@ -1621,7 +1621,6 @@ void Electroniccats_PN7150::WriteNdef(RfIntf_t RfIntf) {
   }
 }
 
-// #if defined P2P_SUPPORT || defined RW_SUPPORT
 void Electroniccats_PN7150::NdefPull_Cb(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
   unsigned char *pNdefRecord = pNdefMessage;
   NdefRecord_t NdefRecord;
@@ -1731,23 +1730,12 @@ void Electroniccats_PN7150::NdefPull_Cb(unsigned char *pNdefMessage, unsigned sh
 
   Serial.println("");
 }
-// #endif // if defined P2P_SUPPORT || defined RW_SUPPORT
-
-// #if defined P2P_SUPPORT || defined CARDEMU_SUPPORT
-const char NDEF_MESSAGE[] = {0xD1,      // MB/ME/CF/1/IL/TNF
-                             0x01,      // TYPE LENGTH
-                             0x07,      // PAYLOAD LENTGH
-                             'T',       // TYPE
-                             0x02,      // Status
-                             'e', 'n',  // Language
-                             'T', 'e', 's', 't'};
 
 void Electroniccats_PN7150::NdefPush_Cb(unsigned char *pNdefRecord, unsigned short NdefRecordSize) {
   Serial.println("--- NDEF Record sent");
 }
-// #endif // if defined P2P_SUPPORT || defined CARDEMU_SUPPORT
 
-bool Electroniccats_PN7150::NxpNci_FactoryTest_Prbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate) {
+bool Electroniccats_PN7150::nciFactoryTestPrbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate) {
   uint8_t NCIPrbs_1stGen[] = {0x2F, 0x30, 0x04, 0x00, 0x00, 0x01, 0x01};
   uint8_t NCIPrbs_2ndGen[] = {0x2F, 0x30, 0x06, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01};
   uint8_t *NxpNci_cmd;
@@ -1775,6 +1763,11 @@ bool Electroniccats_PN7150::NxpNci_FactoryTest_Prbs(NxpNci_TechType_t type, NxpN
   }
 
   return SUCCESS;
+}
+
+// Deprecated, use nciFactoryTestPrbs instead
+bool Electroniccats_PN7150::NxpNci_FactoryTest_Prbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate) {
+  return Electroniccats_PN7150::nciFactoryTestPrbs(type, bitrate);
 }
 
 bool Electroniccats_PN7150::NxpNci_FactoryTest_RfOn(void) {
