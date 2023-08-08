@@ -262,7 +262,9 @@ class Electroniccats_PN7150 {
   uint8_t configMode(uint8_t modeSE);
   uint8_t ConfigMode(uint8_t modeSE);  // Deprecated, use configMode() instead
   bool configureSettings(void);
-  bool ConfigureSettings(void);  // Deprecated, use configureSettings() instead
+  bool ConfigureSettings(void);  // Deprecated, use configureSettings(void) instead
+  bool configureSettings(uint8_t *nfcuid, uint8_t uidlen);
+  bool ConfigureSettings(uint8_t *nfcuid, uint8_t uidlen);  // Deprecated, use configureSettings() instead
   uint8_t startDiscovery(uint8_t modeSE);
   uint8_t StartDiscovery(uint8_t modeSE);  // Deprecated, use startDiscovery() instead
   bool stopDiscovery();
@@ -291,7 +293,6 @@ class Electroniccats_PN7150 {
   bool ReaderReActivate(RfIntf_t *pRfIntf);  // Deprecated, use readerReActivate() instead
   bool readerActivateNext(RfIntf_t *pRfIntf);
   bool ReaderActivateNext(RfIntf_t *pRfIntf);  // Deprecated, use readerActivateNext() instead
-  bool ConfigureSettings(uint8_t *nfcuid, uint8_t uidlen);
   void NdefPull_Cb(unsigned char *pNdefMessage, unsigned short NdefMessageSize);
   void NdefPush_Cb(unsigned char *pNdefRecord, unsigned short NdefRecordSize);
   bool NxpNci_FactoryTest_Prbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate);
