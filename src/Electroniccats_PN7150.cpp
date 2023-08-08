@@ -1180,7 +1180,7 @@ void Electroniccats_PN7150::ProcessCardMode(RfIntf_t RfIntf) {
 void Electroniccats_PN7150::processReaderMode(RfIntf_t RfIntf, RW_Operation_t Operation) {
   switch (Operation) {
     case READ_NDEF:
-      ReadNdef(RfIntf);
+      readNdef(RfIntf);
       break;
     case WRITE_NDEF:
       WriteNdef(RfIntf);
@@ -1557,7 +1557,7 @@ bool Electroniccats_PN7150::ReaderActivateNext(RfIntf_t *pRfIntf) {
   return Electroniccats_PN7150::readerActivateNext(pRfIntf);
 }
 
-void Electroniccats_PN7150::ReadNdef(RfIntf_t RfIntf) {
+void Electroniccats_PN7150::readNdef(RfIntf_t RfIntf) {
   uint8_t Cmd[MAX_NCI_FRAME_SIZE];
   uint16_t CmdSize = 0;
 
@@ -1595,6 +1595,11 @@ void Electroniccats_PN7150::ReadNdef(RfIntf_t RfIntf) {
       }
     }
   }
+}
+
+// Deprecated, use readNdef() instead
+void Electroniccats_PN7150::ReadNdef(RfIntf_t RfIntf) {
+  Electroniccats_PN7150::readNdef(RfIntf);
 }
 
 void Electroniccats_PN7150::WriteNdef(RfIntf_t RfIntf) {
