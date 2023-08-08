@@ -4,7 +4,7 @@ Mode::Mode() {
     mode = 1;
 }
 
-bool Mode::set(unsigned int mode) {
+bool Mode::set(int mode) {
     if (mode < 1 || mode > 3) {
         return false;
     }

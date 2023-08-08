@@ -1682,3 +1682,10 @@ bool Electroniccats_PN7150::NxpNci_FactoryTest_RfOn() {
   return Electroniccats_PN7150::nciFactoryTestRfOn();
 }
 
+bool Electroniccats_PN7150::setMode(int mode) {
+  return this->mode.set(mode);
+}
+
+int Electroniccats_PN7150::getMode() {
+  return this->mode.get();
+}

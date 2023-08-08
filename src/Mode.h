@@ -9,7 +9,7 @@ class Mode {
 
 	public:
 		Mode();
-		bool set(unsigned int mode);
+		bool set(int mode);
 		int get();
 		enum {
 			READER_WRITER = 1,
