@@ -293,8 +293,6 @@ class Electroniccats_PN7150 {
   bool ReaderReActivate(RfIntf_t *pRfIntf);  // Deprecated, use readerReActivate() instead
   bool readerActivateNext(RfIntf_t *pRfIntf);
   bool ReaderActivateNext(RfIntf_t *pRfIntf);  // Deprecated, use readerActivateNext() instead
-  void NdefPull_Cb(unsigned char *pNdefMessage, unsigned short NdefMessageSize);
-  void NdefPush_Cb(unsigned char *pNdefRecord, unsigned short NdefRecordSize);
   bool nciFactoryTestPrbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate);
   bool NxpNci_FactoryTest_Prbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate);  // Deprecated, use nciFactoryTestPrbs() instead
   bool NxpNci_FactoryTest_RfOn(void);
