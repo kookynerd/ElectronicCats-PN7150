@@ -1656,7 +1656,7 @@ bool Electroniccats_PN7150::NxpNci_FactoryTest_Prbs(NxpNci_TechType_t type, NxpN
   return Electroniccats_PN7150::nciFactoryTestPrbs(type, bitrate);
 }
 
-bool Electroniccats_PN7150::NxpNci_FactoryTest_RfOn(void) {
+bool Electroniccats_PN7150::nciFactoryTestRfOn() {
   uint8_t NCIRfOn[] = {0x2F, 0x3D, 0x02, 0x20, 0x01};
 
   (void)writeData(NCIRfOn, sizeof(NCIRfOn));
@@ -1666,4 +1666,9 @@ bool Electroniccats_PN7150::NxpNci_FactoryTest_RfOn(void) {
     return ERROR;
 
   return SUCCESS;
+}
+
+// Deprecated, use nciFactoryTestRfOn instead
+bool Electroniccats_PN7150::NxpNci_FactoryTest_RfOn() {
+  return Electroniccats_PN7150::nciFactoryTestRfOn();
 }
