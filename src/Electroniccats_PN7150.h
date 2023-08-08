@@ -295,11 +295,12 @@ class Electroniccats_PN7150 {
   bool ReaderActivateNext(RfIntf_t *pRfIntf);  // Deprecated, use readerActivateNext() instead
   void readNdef(RfIntf_t RfIntf);
   void ReadNdef(RfIntf_t RfIntf);  // Deprecated, use readNdef() instead
+  void writeNdef(RfIntf_t RfIntf);
+  void WriteNdef(RfIntf_t RfIntf);  // Deprecated, use writeNdef() instead
   bool nciFactoryTestPrbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate);
   bool NxpNci_FactoryTest_Prbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate);  // Deprecated, use nciFactoryTestPrbs() instead
   bool nciFactoryTestRfOn();
   bool NxpNci_FactoryTest_RfOn();  // Deprecated, use nciFactoryTestRfOn() instead
-  void WriteNdef(RfIntf_t RfIntf);
 };
 
 #endif

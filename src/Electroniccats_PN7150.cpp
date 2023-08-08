@@ -1183,7 +1183,7 @@ void Electroniccats_PN7150::processReaderMode(RfIntf_t RfIntf, RW_Operation_t Op
       readNdef(RfIntf);
       break;
     case WRITE_NDEF:
-      WriteNdef(RfIntf);
+      writeNdef(RfIntf);
       break;
     case PRESENCE_CHECK:
       presenceCheck(RfIntf);
@@ -1602,7 +1602,7 @@ void Electroniccats_PN7150::ReadNdef(RfIntf_t RfIntf) {
   Electroniccats_PN7150::readNdef(RfIntf);
 }
 
-void Electroniccats_PN7150::WriteNdef(RfIntf_t RfIntf) {
+void Electroniccats_PN7150::writeNdef(RfIntf_t RfIntf) {
   uint8_t Cmd[MAX_NCI_FRAME_SIZE];
   uint16_t CmdSize = 0;
 
@@ -1624,6 +1624,10 @@ void Electroniccats_PN7150::WriteNdef(RfIntf_t RfIntf) {
       getMessage(2000);
     }
   }
+}
+
+void Electroniccats_PN7150::WriteNdef(RfIntf_t RfIntf) {
+  Electroniccats_PN7150::writeNdef(RfIntf);
 }
 
 bool Electroniccats_PN7150::nciFactoryTestPrbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate) {
