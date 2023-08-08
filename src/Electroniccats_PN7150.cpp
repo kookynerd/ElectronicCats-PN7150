@@ -893,7 +893,7 @@ void Electroniccats_PN7150::FillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) 
   Electroniccats_PN7150::fillInterfaceInfo(pRfIntf, pBuf);
 }
 
-bool Electroniccats_PN7150::ReaderTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize) {
+bool Electroniccats_PN7150::readerTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize) {
   bool status = ERROR;
   uint8_t Cmd[MAX_NCI_FRAME_SIZE];
 
@@ -915,6 +915,11 @@ bool Electroniccats_PN7150::ReaderTagCmd(unsigned char *pCommand, unsigned char 
   memcpy(pAnswer, &rxBuffer[3], *pAnswerSize);
 
   return status;
+}
+
+// Deprecated, use readerTagCmd() instead
+bool Electroniccats_PN7150::ReaderTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize) {
+  return Electroniccats_PN7150::readerTagCmd(pCommand, CommandSize, pAnswer, pAnswerSize);
 }
 
 void Electroniccats_PN7150::ReadNdef(RfIntf_t RfIntf) {

@@ -55,7 +55,7 @@ void PCD_ISO14443_3A_scenario (void){
     unsigned char WriteBlock[] = {0xA2, BLK_NB_ISO14443_3A, DATA_WRITE_ISO14443_3A};
     
     // Write
-    status = nfc.ReaderTagCmd(WriteBlock, sizeof(WriteBlock), Resp, &RespSize);
+    status = nfc.readerTagCmd(WriteBlock, sizeof(WriteBlock), Resp, &RespSize);
     if((status == NFC_ERROR) || (Resp[RespSize-1] != 0))
     {
         Serial.print("Error writing block: "); 
@@ -68,7 +68,7 @@ void PCD_ISO14443_3A_scenario (void){
     Serial.println(WriteBlock[1]);
 
     //Read block
-    status = nfc.ReaderTagCmd(ReadBlock, sizeof(ReadBlock), Resp, &RespSize);
+    status = nfc.readerTagCmd(ReadBlock, sizeof(ReadBlock), Resp, &RespSize);
     if((status == NFC_ERROR) || (Resp[RespSize-1] != 0x00)){
         Serial.print("Error reading block: "); 
         Serial.print(ReadBlock[1],HEX); 

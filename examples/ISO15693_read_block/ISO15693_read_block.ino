@@ -53,7 +53,7 @@ void PCD_ISO15693_scenario (void){
     unsigned char RespSize;
     unsigned char ReadBlock[] = {0x02, 0x20, BLK_NB_ISO15693};
 
-    status = nfc.ReaderTagCmd(ReadBlock, sizeof(ReadBlock), Resp, &RespSize);
+    status = nfc.readerTagCmd(ReadBlock, sizeof(ReadBlock), Resp, &RespSize);
     if((status == NFC_ERROR) || (Resp[RespSize-1] != 0x00)){
         Serial.print("Error reading block: "); 
         Serial.print(ReadBlock[2],HEX); 

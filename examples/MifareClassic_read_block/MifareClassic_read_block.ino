@@ -59,12 +59,12 @@ void PCD_MIFARE_scenario (void){
     unsigned char Read[] = {0x10, 0x30, BLK_NB_MFC};
 
     /* Authenticate */
-    status = nfc.ReaderTagCmd(Auth, sizeof(Auth), Resp, &RespSize);
+    status = nfc.readerTagCmd(Auth, sizeof(Auth), Resp, &RespSize);
     if((status == NFC_ERROR) || (Resp[RespSize-1] != 0))
         Serial.println("Auth error!");
     
     /* Read block */
-    status = nfc.ReaderTagCmd(Read, sizeof(Read), Resp, &RespSize);
+    status = nfc.readerTagCmd(Read, sizeof(Read), Resp, &RespSize);
     if((status == NFC_ERROR) || (Resp[RespSize-1] != 0))
         Serial.print("Error reading sector!");
     

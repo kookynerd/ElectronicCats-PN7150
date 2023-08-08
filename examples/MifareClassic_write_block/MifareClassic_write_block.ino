@@ -65,14 +65,14 @@ uint8_t PCD_MIFARE_scenario (void){
     unsigned char WritePart2[] = {0x10, DATA_WRITE_MFC};
 
     /* Authenticate */
-    status = nfc.ReaderTagCmd(Auth, sizeof(Auth), Resp, &RespSize);
+    status = nfc.readerTagCmd(Auth, sizeof(Auth), Resp, &RespSize);
     if((status == NFC_ERROR) || (Resp[RespSize-1] != 0)){
         Serial.println("Auth error!");
         return 1;
     }
     
     /* Read block */
-    status = nfc.ReaderTagCmd(Read, sizeof(Read), Resp, &RespSize);
+    status = nfc.readerTagCmd(Read, sizeof(Read), Resp, &RespSize);
     if((status == NFC_ERROR) || (Resp[RespSize-1] != 0)){
         Serial.print("Error reading block!");
         return 2;
@@ -86,18 +86,18 @@ uint8_t PCD_MIFARE_scenario (void){
     PrintBuf(Resp+1, RespSize-2);
     
     /* Write block */
-    status = nfc.ReaderTagCmd(WritePart1, sizeof(WritePart1), Resp, &RespSize);
+    status = nfc.readerTagCmd(WritePart1, sizeof(WritePart1), Resp, &RespSize);
     if((status == NFC_ERROR) || (Resp[RespSize-1] != 0)){
         Serial.print("Error writing block!");
         return 3;
     }
-    status = nfc.ReaderTagCmd(WritePart2, sizeof(WritePart2), Resp, &RespSize);
+    status = nfc.readerTagCmd(WritePart2, sizeof(WritePart2), Resp, &RespSize);
     if((status == NFC_ERROR) || (Resp[RespSize-1] != 0)){
         Serial.print("Error writing block!");
         return 4;
     }
     /* Read block again to see te changes*/
-    status = nfc.ReaderTagCmd(Read, sizeof(Read), Resp, &RespSize);
+    status = nfc.readerTagCmd(Read, sizeof(Read), Resp, &RespSize);
     if((status == NFC_ERROR) || (Resp[RespSize-1] != 0))
     {
         Serial.print("Error reading block!");
