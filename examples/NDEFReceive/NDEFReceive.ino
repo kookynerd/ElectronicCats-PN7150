@@ -36,6 +36,7 @@ void PrintBuf(const byte *data, const uint32_t numBytes) {  // Print hex data bu
   }
   Serial.println();
 }
+
 void displayCardInfo(RfIntf_t RfIntf) {  // Funtion in charge to show the card/s in te field
   char tmp[16];
   while (1) {

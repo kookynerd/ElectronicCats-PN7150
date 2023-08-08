@@ -1681,3 +1681,4 @@ bool Electroniccats_PN7150::nciFactoryTestRfOn() {
 bool Electroniccats_PN7150::NxpNci_FactoryTest_RfOn() {
   return Electroniccats_PN7150::nciFactoryTestRfOn();
 }
+

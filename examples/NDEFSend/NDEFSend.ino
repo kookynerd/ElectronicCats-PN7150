@@ -72,6 +72,10 @@ void setup() {
   }
 
   nfc.startDiscovery(mode);
+  nfc.mode.set(nfc.mode.P2P);
+  Serial.println("Mode: " + String(nfc.mode.get()));
+  nfc.mode.set(2);
+  Serial.println("Mode: " + String(nfc.mode.get()));
   Serial.print("Waiting for an NDEF device");
 }
 
