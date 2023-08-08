@@ -949,6 +949,63 @@ bool Electroniccats_PN7150::ReaderReActivate(RfIntf_t *pRfIntf) {
   return Electroniccats_PN7150::readerReActivate(pRfIntf);
 }
 
+bool Electroniccats_PN7150::readerActivateNext(RfIntf_t *pRfIntf) {
+  uint8_t NCIStopDiscovery[] = {0x21, 0x06, 0x01, 0x01};
+  uint8_t NCIRfDiscoverSelect[] = {0x21, 0x04, 0x03, 0x02, PROT_ISODEP, INTF_ISODEP};
+
+  bool status = ERROR;
+
+  pRfIntf->MoreTags = false;
+
+  if (gNextTag_Protocol == PROT_UNDETERMINED) {
+    pRfIntf->Interface = INTF_UNDETERMINED;
+    pRfIntf->Protocol = PROT_UNDETERMINED;
+    return ERROR;
+  }
+
+  /* First disconnect current tag */
+  (void)writeData(NCIStopDiscovery, sizeof(NCIStopDiscovery));
+  getMessage();
+
+  if ((rxBuffer[0] != 0x41) && (rxBuffer[1] != 0x06) && (rxBuffer[3] != 0x00))
+    return ERROR;
+  getMessage(100);
+
+  if ((rxBuffer[0] != 0x61) && (rxBuffer[1] != 0x06))
+    return ERROR;
+
+  NCIRfDiscoverSelect[4] = gNextTag_Protocol;
+  if (gNextTag_Protocol == PROT_ISODEP)
+    NCIRfDiscoverSelect[5] = INTF_ISODEP;
+  else if (gNextTag_Protocol == PROT_ISODEP)
+    NCIRfDiscoverSelect[5] = INTF_NFCDEP;
+  else if (gNextTag_Protocol == PROT_MIFARE)
+    NCIRfDiscoverSelect[5] = INTF_TAGCMD;
+  else
+    NCIRfDiscoverSelect[5] = INTF_FRAME;
+
+  (void)writeData(NCIRfDiscoverSelect, sizeof(NCIRfDiscoverSelect));
+  getMessage();
+
+  if ((rxBuffer[0] == 0x41) && (rxBuffer[1] == 0x04) && (rxBuffer[3] == 0x00)) {
+    getMessage(100);
+    if ((rxBuffer[0] == 0x61) || (rxBuffer[1] == 0x05)) {
+      pRfIntf->Interface = rxBuffer[4];
+      pRfIntf->Protocol = rxBuffer[5];
+      pRfIntf->ModeTech = rxBuffer[6];
+      fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
+      status = SUCCESS;
+    }
+  }
+
+  return status;
+}
+
+// Deprecated, use readerActivateNext() instead
+bool Electroniccats_PN7150::ReaderActivateNext(RfIntf_t *pRfIntf) {
+  return Electroniccats_PN7150::readerActivateNext(pRfIntf);
+}
+
 void Electroniccats_PN7150::ReadNdef(RfIntf_t RfIntf) {
   uint8_t Cmd[MAX_NCI_FRAME_SIZE];
   uint16_t CmdSize = 0;
@@ -1011,58 +1068,6 @@ void Electroniccats_PN7150::WriteNdef(RfIntf_t RfIntf) {
       getMessage(2000);
     }
   }
-}
-
-bool Electroniccats_PN7150::ReaderActivateNext(RfIntf_t *pRfIntf) {
-  uint8_t NCIStopDiscovery[] = {0x21, 0x06, 0x01, 0x01};
-  uint8_t NCIRfDiscoverSelect[] = {0x21, 0x04, 0x03, 0x02, PROT_ISODEP, INTF_ISODEP};
-
-  bool status = ERROR;
-
-  pRfIntf->MoreTags = false;
-
-  if (gNextTag_Protocol == PROT_UNDETERMINED) {
-    pRfIntf->Interface = INTF_UNDETERMINED;
-    pRfIntf->Protocol = PROT_UNDETERMINED;
-    return ERROR;
-  }
-
-  /* First disconnect current tag */
-  (void)writeData(NCIStopDiscovery, sizeof(NCIStopDiscovery));
-  getMessage();
-
-  if ((rxBuffer[0] != 0x41) && (rxBuffer[1] != 0x06) && (rxBuffer[3] != 0x00))
-    return ERROR;
-  getMessage(100);
-
-  if ((rxBuffer[0] != 0x61) && (rxBuffer[1] != 0x06))
-    return ERROR;
-
-  NCIRfDiscoverSelect[4] = gNextTag_Protocol;
-  if (gNextTag_Protocol == PROT_ISODEP)
-    NCIRfDiscoverSelect[5] = INTF_ISODEP;
-  else if (gNextTag_Protocol == PROT_ISODEP)
-    NCIRfDiscoverSelect[5] = INTF_NFCDEP;
-  else if (gNextTag_Protocol == PROT_MIFARE)
-    NCIRfDiscoverSelect[5] = INTF_TAGCMD;
-  else
-    NCIRfDiscoverSelect[5] = INTF_FRAME;
-
-  (void)writeData(NCIRfDiscoverSelect, sizeof(NCIRfDiscoverSelect));
-  getMessage();
-
-  if ((rxBuffer[0] == 0x41) && (rxBuffer[1] == 0x04) && (rxBuffer[3] == 0x00)) {
-    getMessage(100);
-    if ((rxBuffer[0] == 0x61) || (rxBuffer[1] == 0x05)) {
-      pRfIntf->Interface = rxBuffer[4];
-      pRfIntf->Protocol = rxBuffer[5];
-      pRfIntf->ModeTech = rxBuffer[6];
-      fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
-      status = SUCCESS;
-    }
-  }
-
-  return status;
 }
 
 bool Electroniccats_PN7150::ConfigureSettings(void) {

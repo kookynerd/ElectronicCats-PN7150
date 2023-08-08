@@ -111,7 +111,7 @@ void displayCardInfo(RfIntf_t RfIntf) {  // Funtion in charge to show the card/s
         break;
     }
     if (RfIntf.MoreTags) {  // It will try to identify more NFC cards if they are the same technology
-      if (nfc.ReaderActivateNext(&RfIntf) == NFC_ERROR) break;
+      if (nfc.readerActivateNext(&RfIntf) == NFC_ERROR) break;
     } else
       break;
   }
@@ -172,7 +172,7 @@ void loop() {
 
     //* It can detect multiple cards at the same time if they use the same protocol
     if (RfInterface.MoreTags) {
-      nfc.ReaderActivateNext(&RfInterface);
+      nfc.readerActivateNext(&RfInterface);
     }
     //* Wait for card removal
     nfc.processReaderMode(RfInterface, PRESENCE_CHECK);

@@ -133,7 +133,7 @@ void loop(){
     
     //* It can detect multiple cards at the same time if they use the same protocol 
     if(RfInterface.MoreTags) {
-        nfc.ReaderActivateNext(&RfInterface);
+        nfc.readerActivateNext(&RfInterface);
     }
     //* Wait for card removal 
     nfc.processReaderMode(RfInterface, PRESENCE_CHECK);
