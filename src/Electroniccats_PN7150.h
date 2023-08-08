@@ -285,7 +285,8 @@ class Electroniccats_PN7150 {
   void FillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf);  // Deprecated, use fillInterfaceInfo() instead
   bool readerTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize);
   bool ReaderTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize);  // Deprecated, use readerTagCmd() instead
-  bool ReaderReActivate(RfIntf_t *pRfIntf);
+  bool readerReActivate(RfIntf_t *pRfIntf);
+  bool ReaderReActivate(RfIntf_t *pRfIntf);  // Deprecated, use readerReActivate() instead
   bool ReaderActivateNext(RfIntf_t *pRfIntf);
   bool ConfigureSettings(void);
   bool ConfigureSettings(uint8_t *nfcuid, uint8_t uidlen);

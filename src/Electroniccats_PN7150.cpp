@@ -922,6 +922,33 @@ bool Electroniccats_PN7150::ReaderTagCmd(unsigned char *pCommand, unsigned char 
   return Electroniccats_PN7150::readerTagCmd(pCommand, CommandSize, pAnswer, pAnswerSize);
 }
 
+bool Electroniccats_PN7150::readerReActivate(RfIntf_t *pRfIntf) {
+  uint8_t NCIDeactivate[] = {0x21, 0x06, 0x01, 0x01};
+  uint8_t NCIActivate[] = {0x21, 0x04, 0x03, 0x01, 0x00, 0x00};
+
+  /* First de-activate the target */
+  (void)writeData(NCIDeactivate, sizeof(NCIDeactivate));
+  getMessage();
+  getMessage(100);
+
+  /* Then re-activate the target */
+  NCIActivate[4] = pRfIntf->Protocol;
+  NCIActivate[5] = pRfIntf->Interface;
+
+  (void)writeData(NCIDeactivate, sizeof(NCIDeactivate));
+  getMessage();
+  getMessage(100);
+
+  if ((rxBuffer[0] != 0x61) || (rxBuffer[1] != 0x05))
+    return ERROR;
+  return SUCCESS;
+}
+
+// Deprecated, use readerReActivate() instead
+bool Electroniccats_PN7150::ReaderReActivate(RfIntf_t *pRfIntf) {
+  return Electroniccats_PN7150::readerReActivate(pRfIntf);
+}
+
 void Electroniccats_PN7150::ReadNdef(RfIntf_t RfIntf) {
   uint8_t Cmd[MAX_NCI_FRAME_SIZE];
   uint16_t CmdSize = 0;
@@ -984,28 +1011,6 @@ void Electroniccats_PN7150::WriteNdef(RfIntf_t RfIntf) {
       getMessage(2000);
     }
   }
-}
-
-bool Electroniccats_PN7150::ReaderReActivate(RfIntf_t *pRfIntf) {
-  uint8_t NCIDeactivate[] = {0x21, 0x06, 0x01, 0x01};
-  uint8_t NCIActivate[] = {0x21, 0x04, 0x03, 0x01, 0x00, 0x00};
-
-  /* First de-activate the target */
-  (void)writeData(NCIDeactivate, sizeof(NCIDeactivate));
-  getMessage();
-  getMessage(100);
-
-  /* Then re-activate the target */
-  NCIActivate[4] = pRfIntf->Protocol;
-  NCIActivate[5] = pRfIntf->Interface;
-
-  (void)writeData(NCIDeactivate, sizeof(NCIDeactivate));
-  getMessage();
-  getMessage(100);
-
-  if ((rxBuffer[0] != 0x61) || (rxBuffer[1] != 0x05))
-    return ERROR;
-  return SUCCESS;
 }
 
 bool Electroniccats_PN7150::ReaderActivateNext(RfIntf_t *pRfIntf) {
