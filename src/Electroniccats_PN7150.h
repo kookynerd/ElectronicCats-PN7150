@@ -238,7 +238,7 @@ typedef union {
   NxpNci_RfIntf_info_VPP_t NFC_VPP;
 } NxpNci_RfIntf_Info_t;
 
-class Electroniccats_PN7150 {
+class Electroniccats_PN7150 : public Mode {
  private:
   uint8_t _IRQpin, _VENpin, _I2Caddress;
   TwoWire *_wire;
@@ -254,7 +254,7 @@ class Electroniccats_PN7150 {
 
  public:
   Electroniccats_PN7150(uint8_t IRQpin, uint8_t VENpin, uint8_t I2Caddress, TwoWire *wire = &Wire);
-  Mode mode;
+  // Mode mode;
   uint8_t begin(void);
   bool hasMessage() const;
   uint8_t writeData(uint8_t data[], uint32_t dataLength) const;  // write data from DeviceHost to PN7150. Returns success (0) or Fail (> 0)
@@ -303,8 +303,6 @@ class Electroniccats_PN7150 {
   bool NxpNci_FactoryTest_Prbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate);  // Deprecated, use nciFactoryTestPrbs() instead
   bool nciFactoryTestRfOn();
   bool NxpNci_FactoryTest_RfOn();  // Deprecated, use nciFactoryTestRfOn() instead
-  bool setMode(int mode);
-  int getMode();
 };
 
 #endif

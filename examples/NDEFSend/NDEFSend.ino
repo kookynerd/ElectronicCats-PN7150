@@ -72,6 +72,7 @@ void setup() {
   }
 
   nfc.startDiscovery(mode);
+
   nfc.setMode(nfc.mode.READER_WRITER);
   Serial.println("Mode: " + String(nfc.getMode()));
   nfc.setMode(nfc.mode.EMULATION);
