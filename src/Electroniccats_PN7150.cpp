@@ -163,8 +163,12 @@ int Electroniccats_PN7150::GetFwVersion() {
 }
 
 uint8_t Electroniccats_PN7150::configMode(uint8_t modeSE) {
-  unsigned mode = (modeSE == 1 ? MODE_RW : modeSE == 2 ? MODE_CARDEMU
-                                                       : MODE_P2P);
+  // TODO: refactor modeSE to mode
+  unsigned mode = (modeSE == 1 ? MODE_RW : modeSE == 2 ? MODE_CARDEMU : MODE_P2P);
+  
+  if (!Electroniccats_PN7150::setMode(modeSE)) {
+    return ERROR;
+  }
 
   uint8_t Command[MAX_NCI_FRAME_SIZE];
 
@@ -1091,6 +1095,8 @@ bool Electroniccats_PN7150::cardModeReceive(unsigned char *pData, unsigned char 
   Serial.println("[DEBUG] cardModeReceive exec");
 #endif
 
+  delay(1);
+
   bool status = NFC_ERROR;
   uint8_t Ans[MAX_NCI_FRAME_SIZE];
 
@@ -1680,4 +1686,10 @@ bool Electroniccats_PN7150::nciFactoryTestRfOn() {
 // Deprecated, use nciFactoryTestRfOn instead
 bool Electroniccats_PN7150::NxpNci_FactoryTest_RfOn() {
   return Electroniccats_PN7150::nciFactoryTestRfOn();
+}
+
+bool Electroniccats_PN7150::reset() {
+  int mode = Electroniccats_PN7150::getMode();
+  Electroniccats_PN7150::configMode(mode);
+  Electroniccats_PN7150::startDiscovery(mode);
 }

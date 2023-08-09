@@ -182,7 +182,8 @@ void loop() {
     nfc.stopDiscovery();
     nfc.startDiscovery(mode);
   }
-  ResetMode();
+  // ResetMode();
+  nfc.reset();
   delay(500);
 }
 

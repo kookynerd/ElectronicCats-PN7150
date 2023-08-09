@@ -1,7 +1,7 @@
 #include "Mode.h"
 
 Mode::Mode() {
-  this->_mode = 1;
+  this->_mode = mode.READER_WRITER;
 }
 
 bool Mode::setMode(int mode) {

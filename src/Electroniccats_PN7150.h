@@ -303,6 +303,7 @@ class Electroniccats_PN7150 : public Mode {
   bool NxpNci_FactoryTest_Prbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate);  // Deprecated, use nciFactoryTestPrbs() instead
   bool nciFactoryTestRfOn();
   bool NxpNci_FactoryTest_RfOn();  // Deprecated, use nciFactoryTestRfOn() instead
+  bool reset();
 };
 
 #endif

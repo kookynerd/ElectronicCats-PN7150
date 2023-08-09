@@ -73,10 +73,6 @@ void setup() {
 
   nfc.startDiscovery(mode);
 
-  nfc.setMode(nfc.mode.READER_WRITER);
-  Serial.println("Mode: " + String(nfc.getMode()));
-  nfc.setMode(nfc.mode.EMULATION);
-  Serial.println("Mode: " + String(nfc.getMode()));
   Serial.print("Waiting for an NDEF device");
 }
 
@@ -85,7 +81,8 @@ void loop() {
 }
 
 void checkReaders() {
-  Serial.print(".");
+  // Serial.print(".");
+  unsigned long startTime = millis();
   if (nfc.cardModeReceive(Cmd, &CmdSize) == 0) {  // Data in buffer?
     if ((CmdSize >= 2) && (Cmd[0] == 0x00)) {     // Expect at least two bytes
       if (Cmd[1] == 0xA4) {
@@ -96,6 +93,7 @@ void checkReaders() {
       Serial.print("Waiting for an NDEF device");
     }
   }
+  Serial.println("Elapsed time: " + String(millis() - startTime) + "ms");
 }
 
 void sendMessageCallback(unsigned char *pNdefRecord, unsigned short NdefRecordSize) {
