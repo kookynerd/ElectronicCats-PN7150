@@ -266,7 +266,12 @@ uint8_t Electroniccats_PN7150::configMode(uint8_t modeSE) {
   return SUCCESS;
 }
 
-// Deprecated, use configMode() instead
+uint8_t Electroniccats_PN7150::configMode() {
+  int mode = Electroniccats_PN7150::getMode();
+  return Electroniccats_PN7150::configMode(mode);
+}
+
+// Deprecated, use configMode(void) instead
 uint8_t Electroniccats_PN7150::ConfigMode(uint8_t modeSE) {
   return Electroniccats_PN7150::configMode(modeSE);
 }

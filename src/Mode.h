@@ -15,10 +15,12 @@ class Mode {
  private:
   int _mode;
 
+ protected:
+  bool setMode(int mode);
+
  public:
   Mode();
   Mode_t mode;
-  bool setMode(int mode);
   void setReaderWriterMode();
   void setEmulationMode();
   void setP2PMode();

@@ -262,7 +262,8 @@ class Electroniccats_PN7150 : public Mode {
   int getFirmwareVersion();
   int GetFwVersion();  // Deprecated, use getFirmwareVersion() instead
   uint8_t configMode(uint8_t modeSE);
-  uint8_t ConfigMode(uint8_t modeSE);  // Deprecated, use configMode() instead
+  uint8_t configMode(void);
+  uint8_t ConfigMode(uint8_t modeSE);  // Deprecated, use configMode(void) instead
   bool configureSettings(void);
   bool ConfigureSettings(void);  // Deprecated, use configureSettings(void) instead
   bool configureSettings(uint8_t *nfcuid, uint8_t uidlen);
