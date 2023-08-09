@@ -163,11 +163,11 @@ int Electroniccats_PN7150::GetFwVersion() {
 }
 
 uint8_t Electroniccats_PN7150::configMode(uint8_t modeSE) {
-  // TODO: refactor modeSE to mode
   unsigned mode = (modeSE == 1 ? MODE_RW : modeSE == 2 ? MODE_CARDEMU : MODE_P2P);
   
+  // Update internal mode
   if (!Electroniccats_PN7150::setMode(modeSE)) {
-    return ERROR;
+    return ERROR;  // Invalid mode, out of range
   }
 
   uint8_t Command[MAX_NCI_FRAME_SIZE];
@@ -828,6 +828,12 @@ bool Electroniccats_PN7150::ConfigureSettings(uint8_t *uidcf, uint8_t uidlen) {
 }
 
 uint8_t Electroniccats_PN7150::startDiscovery(uint8_t modeSE) {
+  int mode = Electroniccats_PN7150::getMode();
+  if (mode != modeSE) {
+    Electroniccats_PN7150::setMode(modeSE);
+    Electroniccats_PN7150::configMode();
+  }
+
   unsigned char TechTabSize = (modeSE == 1 ? sizeof(DiscoveryTechnologiesRW) : modeSE == 2 ? sizeof(DiscoveryTechnologiesCE)
                                                                                            : sizeof(DiscoveryTechnologiesP2P));
 
@@ -853,7 +859,12 @@ uint8_t Electroniccats_PN7150::startDiscovery(uint8_t modeSE) {
     return SUCCESS;
 }
 
-// Deprecated, use startDiscovery() instead
+uint8_t Electroniccats_PN7150::startDiscovery() {
+  int mode = Electroniccats_PN7150::getMode();
+  return Electroniccats_PN7150::startDiscovery(mode);
+}
+
+// Deprecated, use startDiscovery(void) instead
 uint8_t Electroniccats_PN7150::StartDiscovery(uint8_t modeSE) {
   return Electroniccats_PN7150::startDiscovery(modeSE);
 }
@@ -1695,6 +1706,7 @@ bool Electroniccats_PN7150::NxpNci_FactoryTest_RfOn() {
 
 bool Electroniccats_PN7150::reset() {
   int mode = Electroniccats_PN7150::getMode();
+  Electroniccats_PN7150::stopDiscovery();
   Electroniccats_PN7150::configMode(mode);
   Electroniccats_PN7150::startDiscovery(mode);
 

@@ -16,7 +16,7 @@ class Mode {
   int _mode;
 
  protected:
-  bool setMode(int mode);
+  bool setMode(int mode);  // Only for internal use
 
  public:
   Mode();
