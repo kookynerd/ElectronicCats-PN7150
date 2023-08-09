@@ -1712,27 +1712,36 @@ bool Electroniccats_PN7150::NxpNci_FactoryTest_RfOn() {
 
 bool Electroniccats_PN7150::reset() {
   if (Electroniccats_PN7150::configMode()) {
-    return ERROR;
+    return false;
   }
 
   if (Electroniccats_PN7150::startDiscovery()) {
-    return ERROR;
+    return false;
   }
 
-  return SUCCESS;
+  return true;
 }
 
-void Electroniccats_PN7150::setReaderWriterMode() {
+bool Electroniccats_PN7150::setReaderWriterMode() {
   Electroniccats_PN7150::setMode(mode.READER_WRITER);
-  Electroniccats_PN7150::reset();
+  if (!Electroniccats_PN7150::reset()) {
+    return false;
+  }
+  return true;
 }
 
-void Electroniccats_PN7150::setEmulationMode() {
+bool Electroniccats_PN7150::setEmulationMode() {
   Electroniccats_PN7150::setMode(mode.EMULATION);
-  Electroniccats_PN7150::reset();
+  if (!Electroniccats_PN7150::reset()) {
+    return false;
+  }
+  return true;
 }
 
-void Electroniccats_PN7150::setP2PMode() {
+bool Electroniccats_PN7150::setP2PMode() {
   Electroniccats_PN7150::setMode(mode.P2P);
-  Electroniccats_PN7150::reset();
+  if (!Electroniccats_PN7150::reset()) {
+    return false;
+  }
+  return true;
 }

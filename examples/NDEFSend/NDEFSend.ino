@@ -11,8 +11,6 @@ void sendMessageCallback(unsigned char *pNdefRecord, unsigned short NdefRecordSi
 Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);  // Creates a global NFC device interface object, attached to pins 11 (IRQ) and 13 (VEN) and using the default I2C address 0x28
 RfIntf_t RfInterface;                                            // Interface to save data for multiple tags
 
-uint8_t mode = 2;  // modes: 1 = Reader/ Writer, 2 = Emulation, 3 = Peer to peer P2P
-
 unsigned char STATUSOK[] = {0x90, 0x00}, Cmd[256], CmdSize;
 
 const char uri[] = "google.com";
@@ -65,17 +63,18 @@ void setup() {
       ;
   }
 
+  // Needed to detect readers
   nfc.setEmulationMode();
 
-  // if (nfc.configMode()) {
-  //   Serial.println("The Configure Mode failed!");
-  //   while (1)
-  //     ;
-  // }
+  if (nfc.configMode()) {
+    Serial.println("The Configure Mode failed!");
+    while (1)
+      ;
+  }
 
   nfc.startDiscovery();
 
-  Serial.print("Waiting for an NDEF device");
+  Serial.println("Waiting for an NDEF device");
 }
 
 void loop() {

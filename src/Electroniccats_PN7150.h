@@ -306,9 +306,9 @@ class Electroniccats_PN7150 : public Mode {
   bool nciFactoryTestRfOn();
   bool NxpNci_FactoryTest_RfOn();  // Deprecated, use nciFactoryTestRfOn() instead
   bool reset();
-  void setReaderWriterMode();
-  void setEmulationMode();
-  void setP2PMode();
+  bool setReaderWriterMode();
+  bool setEmulationMode();
+  bool setP2PMode();
 };
 
 #endif
