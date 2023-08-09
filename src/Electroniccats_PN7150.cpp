@@ -1692,4 +1692,6 @@ bool Electroniccats_PN7150::reset() {
   int mode = Electroniccats_PN7150::getMode();
   Electroniccats_PN7150::configMode(mode);
   Electroniccats_PN7150::startDiscovery(mode);
+
+  return SUCCESS;
 }

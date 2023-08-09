@@ -19,6 +19,9 @@ class Mode {
   Mode();
   Mode_t mode;
   bool setMode(int mode);
+  void setReaderWriterMode();
+  void setEmulationMode();
+  void setP2PMode();
   int getMode();
 };
 
