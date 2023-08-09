@@ -892,6 +892,7 @@ bool Electroniccats_PN7150::StopDiscovery() {
 
 bool Electroniccats_PN7150::waitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout) {
   uint8_t NCIRfDiscoverSelect[] = {0x21, 0x04, 0x03, 0x01, PROT_ISODEP, INTF_ISODEP};
+  this->remoteDevice = pRfIntf;
 
   // P2P Support
   uint8_t NCIStopDiscovery[] = {0x21, 0x06, 0x01, 0x00};

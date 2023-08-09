@@ -254,7 +254,7 @@ class Electroniccats_PN7150 : public Mode {
 
  public:
   Electroniccats_PN7150(uint8_t IRQpin, uint8_t VENpin, uint8_t I2Caddress, TwoWire *wire = &Wire);
-  // Mode mode;
+  RfIntf_t *remoteDevice;
   uint8_t begin(void);
   bool hasMessage() const;
   uint8_t writeData(uint8_t data[], uint32_t dataLength) const;  // write data from DeviceHost to PN7150. Returns success (0) or Fail (> 0)

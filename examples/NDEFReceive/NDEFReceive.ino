@@ -211,6 +211,28 @@ void displayDeviceInfo() {
       break;
   }
 
+  Serial.print("Interface: ");
+  switch (nfc.remoteDevice->Interface) {
+    case INTF_ISODEP:
+      Serial.println("ISO-DEP");
+      break;
+    case INTF_NFCDEP:
+      Serial.println("NFC-DEP");
+      break;
+    case INTF_TAGCMD:
+      Serial.println("TAG");
+      break;
+    case INTF_FRAME:
+      Serial.println("FRAME");
+      break;
+    case INTF_UNDETERMINED:
+      Serial.println("UNDETERMINED");
+      break;
+    default:
+      Serial.println("UNKNOWN");
+      break;
+  }
+
   Serial.print("Protocol: ");
   switch (RfInterface.Protocol) {
     case PROT_UNDETERMINED:
