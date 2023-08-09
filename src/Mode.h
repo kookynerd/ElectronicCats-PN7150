@@ -21,9 +21,6 @@ class Mode {
  public:
   Mode();
   Mode_t mode;
-  void setReaderWriterMode();
-  void setEmulationMode();
-  void setP2PMode();
   int getMode();
 };
 

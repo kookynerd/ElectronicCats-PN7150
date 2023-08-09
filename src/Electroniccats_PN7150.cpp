@@ -162,13 +162,19 @@ int Electroniccats_PN7150::GetFwVersion() {
   return getFirmwareVersion();
 }
 
+/// @brief Update the internal mode, stop discovery, and build the command to configure the PN7150 chip based on the input mode
+/// @param modeSE
+/// @return SUCCESS or ERROR
 uint8_t Electroniccats_PN7150::configMode(uint8_t modeSE) {
-  unsigned mode = (modeSE == 1 ? MODE_RW : modeSE == 2 ? MODE_CARDEMU : MODE_P2P);
-  
+  unsigned mode = (modeSE == 1 ? MODE_RW : modeSE == 2 ? MODE_CARDEMU
+                                                       : MODE_P2P);
+
   // Update internal mode
   if (!Electroniccats_PN7150::setMode(modeSE)) {
     return ERROR;  // Invalid mode, out of range
   }
+
+  Electroniccats_PN7150::stopDiscovery();
 
   uint8_t Command[MAX_NCI_FRAME_SIZE];
 
@@ -1705,10 +1711,28 @@ bool Electroniccats_PN7150::NxpNci_FactoryTest_RfOn() {
 }
 
 bool Electroniccats_PN7150::reset() {
-  int mode = Electroniccats_PN7150::getMode();
-  Electroniccats_PN7150::stopDiscovery();
-  Electroniccats_PN7150::configMode(mode);
-  Electroniccats_PN7150::startDiscovery(mode);
+  if (Electroniccats_PN7150::configMode()) {
+    return ERROR;
+  }
+
+  if (Electroniccats_PN7150::startDiscovery()) {
+    return ERROR;
+  }
 
   return SUCCESS;
+}
+
+void Electroniccats_PN7150::setReaderWriterMode() {
+  Electroniccats_PN7150::setMode(mode.READER_WRITER);
+  Electroniccats_PN7150::reset();
+}
+
+void Electroniccats_PN7150::setEmulationMode() {
+  Electroniccats_PN7150::setMode(mode.EMULATION);
+  Electroniccats_PN7150::reset();
+}
+
+void Electroniccats_PN7150::setP2PMode() {
+  Electroniccats_PN7150::setMode(mode.P2P);
+  Electroniccats_PN7150::reset();
 }

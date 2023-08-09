@@ -13,18 +13,6 @@ bool Mode::setMode(int mode) {
   return true;
 }
 
-void Mode::setReaderWriterMode() {
-  this->_mode = mode.READER_WRITER;
-}
-
-void Mode::setEmulationMode() {
-  this->_mode = mode.EMULATION;
-}
-
-void Mode::setP2PMode() {
-  this->_mode = mode.P2P;
-}
-
 int Mode::getMode() {
   return this->_mode;
 }

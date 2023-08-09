@@ -67,11 +67,11 @@ void setup() {
 
   nfc.setEmulationMode();
 
-  if (nfc.configMode()) {
-    Serial.println("The Configure Mode failed!");
-    while (1)
-      ;
-  }
+  // if (nfc.configMode()) {
+  //   Serial.println("The Configure Mode failed!");
+  //   while (1)
+  //     ;
+  // }
 
   nfc.startDiscovery();
 
