@@ -20,12 +20,12 @@
 
 #include <Arduino.h>  // Gives us access to all typical Arduino types and functions
                       // The HW interface between The PN7150 and the DeviceHost is I2C, so we need the I2C library.library
-// #include "RW_NDEF.h"
 #include "P2P_NDEF.h"
 #include "RW_NDEF.h"
 #include "T4T_NDEF_emu.h"
 #include "ndef_helper.h"
 #include "Mode.h"
+#include "RemoteDevice.h"
 
 // #define DEBUG3
 
@@ -125,60 +125,6 @@ typedef enum {
   BR_848
 } NxpNci_Bitrate_t;
 #endif
-/*
- * Definition of discovered remote device properties information
- */
-
-/* POLL passive type A */
-struct RfIntf_info_APP_t {
-  unsigned char SensRes[2];
-  unsigned char NfcIdLen;
-  unsigned char NfcId[10];
-  unsigned char SelResLen;
-  unsigned char SelRes[1];
-  unsigned char RatsLen;
-  unsigned char Rats[20];
-};
-
-/* POLL passive type B */
-struct RfIntf_info_BPP_t {
-  unsigned char SensResLen;
-  unsigned char SensRes[12];
-  unsigned char AttribResLen;
-  unsigned char AttribRes[17];
-};
-
-/* POLL passive type F */
-struct RfIntf_info_FPP_t {
-  unsigned char BitRate;
-  unsigned char SensResLen;
-  unsigned char SensRes[18];
-};
-
-/* POLL passive type ISO15693 */
-struct RfIntf_info_VPP_t {
-  unsigned char AFI;
-  unsigned char DSFID;
-  unsigned char ID[8];
-};
-
-typedef union {
-  RfIntf_info_APP_t NFC_APP;
-  RfIntf_info_BPP_t NFC_BPP;
-  RfIntf_info_FPP_t NFC_FPP;
-  RfIntf_info_VPP_t NFC_VPP;
-} RfIntf_Info_t;
-
-/*
- * Definition of discovered remote device properties
- */
-struct RfIntf_t {
-  unsigned char Interface;
-  unsigned char Protocol;
-  unsigned char ModeTech;
-  bool MoreTags;
-  RfIntf_Info_t Info;
-};
 
 /*
  * Definition of operations handled when processing Reader mode
@@ -238,7 +184,7 @@ typedef union {
   NxpNci_RfIntf_info_VPP_t NFC_VPP;
 } NxpNci_RfIntf_Info_t;
 
-class Electroniccats_PN7150 : public Mode {
+class Electroniccats_PN7150 : public Mode, public RemoteDevice {
  private:
   uint8_t _IRQpin, _VENpin, _I2Caddress;
   TwoWire *_wire;
@@ -254,7 +200,6 @@ class Electroniccats_PN7150 : public Mode {
 
  public:
   Electroniccats_PN7150(uint8_t IRQpin, uint8_t VENpin, uint8_t I2Caddress, TwoWire *wire = &Wire);
-  RfIntf_t *remoteDevice;
   uint8_t begin(void);
   bool hasMessage() const;
   uint8_t writeData(uint8_t data[], uint32_t dataLength) const;  // write data from DeviceHost to PN7150. Returns success (0) or Fail (> 0)
@@ -309,6 +254,7 @@ class Electroniccats_PN7150 : public Mode {
   bool setReaderWriterMode();
   bool setEmulationMode();
   bool setP2PMode();
+  unsigned char getInterfaceType();
 };
 
 #endif

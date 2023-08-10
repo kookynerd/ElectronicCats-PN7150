@@ -1746,3 +1746,7 @@ bool Electroniccats_PN7150::setP2PMode() {
   }
   return true;
 }
+
+unsigned char Electroniccats_PN7150::getInterfaceType() {
+  return this->remoteDevice->Interface;
+}
