@@ -238,7 +238,8 @@ class Electroniccats_PN7150 : public Mode, public RemoteDevice {
   void processP2pMode(RfIntf_t RfIntf);
   void ProcessP2pMode(RfIntf_t RfIntf);  // Deprecated, use processP2pMode() instead
   void presenceCheck(RfIntf_t RfIntf);
-  void PresenceCheck(RfIntf_t RfIntf);  // Deprecated, use presenceCheck() instead
+  void waitForTagRemoval();
+  void PresenceCheck(RfIntf_t RfIntf);  // Deprecated, use waitForTagRemoval() instead
   bool readerTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize);
   bool ReaderTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize);  // Deprecated, use readerTagCmd() instead
   bool readerReActivate(RfIntf_t *pRfIntf);

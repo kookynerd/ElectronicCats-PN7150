@@ -4,7 +4,6 @@
 #define PN7150_ADDR (0x28)
 
 Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);  // creates a global NFC device interface object, attached to pins 7 (IRQ) and 8 (VEN) and using the default I2C address 0x28
-RfIntf_t RfIntf;                                                 // Intarface to save data for multiple tags
 
 const char ndefMessage[] = {0xD1,                      // MB/ME/CF/1/IL/TNF
                             0x01,                      // Type length (1 byte)
@@ -40,13 +39,13 @@ void setup() {
   Serial.println("Initializing...");
   if (nfc.connectNCI()) {  // Wake up the board
     Serial.println("Error while setting up the mode, check connections!");
-    while (1)
+    while (true)
       ;
   }
 
   if (nfc.configureSettings()) {
     Serial.println("The Configure Settings is failed!");
-    while (1)
+    while (true)
       ;
   }
 
@@ -54,7 +53,7 @@ void setup() {
 
   if (nfc.configMode()) {  // Set up the configuration mode
     Serial.println("The Configure Mode is failed!!");
-    while (1)
+    while (true)
       ;
   }
   nfc.startDiscovery();  // NCI Discovery mode
@@ -62,14 +61,13 @@ void setup() {
 }
 
 void loop() {
-  if (!nfc.waitForDiscoveryNotification(&RfIntf)) {  // Waiting to detect cards
+  if (!nfc.waitForDiscoveryNotification()) {  // Waiting to detect cards
     displayDeviceInfo();
     switch (nfc.remoteDevice.protocol) {
       case PROT_T1T:
       case PROT_T2T:
       case PROT_T3T:
       case PROT_ISODEP:
-        // nfc.processReaderMode(RfIntf, READ_NDEF);  // TODO: update it to use the new API
         nfc.readNdefMessage();
         break;
 
@@ -77,7 +75,6 @@ void loop() {
         break;
 
       case PROT_MIFARE:
-        // nfc.processReaderMode(RfIntf, READ_NDEF);
         nfc.readNdefMessage();
         break;
 
@@ -90,11 +87,11 @@ void loop() {
       nfc.activateNextTagDiscovery();
       Serial.println("Multiple cards are detected!");
     }
-    // Wait for card removal
     Serial.println("Remove the Card");
-    nfc.processReaderMode(RfIntf, PRESENCE_CHECK);
+    nfc.waitForTagRemoval();
     Serial.println("Card removed!");
   }
+
   Serial.println("Restarting...");
   nfc.reset();
   Serial.println("Waiting for a Card...");

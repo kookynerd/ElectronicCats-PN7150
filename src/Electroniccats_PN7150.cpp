@@ -1354,7 +1354,7 @@ void Electroniccats_PN7150::presenceCheck(RfIntf_t RfIntf) {
   uint8_t NCIDeactivate[] = {0x21, 0x06, 0x01, 0x01};
   uint8_t NCISelectMIFARE[] = {0x21, 0x04, 0x03, 0x01, 0x80, 0x80};
 
-  switch (RfIntf.Protocol) {
+  switch (this->remoteDevice.protocol) {
     case PROT_T1T:
       do {
         delay(500);
@@ -1394,8 +1394,9 @@ void Electroniccats_PN7150::presenceCheck(RfIntf_t RfIntf) {
     case PROT_ISO15693:
       do {
         delay(500);
-        for (i = 0; i < 8; i++)
-          NCIPresCheckIso15693[i + 6] = RfIntf.Info.NFC_VPP.ID[7 - i];
+        for (i = 0; i < 8; i++) {
+          NCIPresCheckIso15693[i + 6] = this->remoteDevice.info.nfcVPP.id[7 - i];
+        }
         (void)writeData(NCIPresCheckIso15693, sizeof(NCIPresCheckIso15693));
         getMessage();
         getMessage(100);
@@ -1426,7 +1427,11 @@ void Electroniccats_PN7150::presenceCheck(RfIntf_t RfIntf) {
   }
 }
 
-// Deprecated, use presenceCheck() instead
+void Electroniccats_PN7150::waitForTagRemoval() {
+  Electroniccats_PN7150::presenceCheck(this->dummyRfInterface);
+}
+
+// Deprecated, use waitForTagRemoval() instead
 void Electroniccats_PN7150::PresenceCheck(RfIntf_t RfIntf) {
   Electroniccats_PN7150::presenceCheck(RfIntf);
 }
