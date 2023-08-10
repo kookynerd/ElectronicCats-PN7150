@@ -188,7 +188,7 @@ class Electroniccats_PN7150 : public Mode, public RemoteDevice {
  private:
   uint8_t _IRQpin, _VENpin, _I2Caddress;
   TwoWire *_wire;
-  RfIntf_t dummyRfIntf;
+  RfIntf_t dummyRfInterface;
   uint8_t rxBuffer[MaxPayloadSize + MsgHeaderSize];  // buffer where we store bytes received until they form a complete message
   void setTimeOut(unsigned long);                    // set a timeOut for an expected next event, eg reception of Response after sending a Command
   bool isTimeOut() const;
@@ -244,7 +244,8 @@ class Electroniccats_PN7150 : public Mode, public RemoteDevice {
   bool readerReActivate(RfIntf_t *pRfIntf);
   bool ReaderReActivate(RfIntf_t *pRfIntf);  // Deprecated, use readerReActivate() instead
   bool readerActivateNext(RfIntf_t *pRfIntf);
-  bool ReaderActivateNext(RfIntf_t *pRfIntf);  // Deprecated, use readerActivateNext() instead
+  bool activateNextTagDiscovery();
+  bool ReaderActivateNext(RfIntf_t *pRfIntf);  // Deprecated, use activateNextTagDiscovery() instead
   void readNdef(RfIntf_t RfIntf);
   void readNdefMessage();
   void ReadNdef(RfIntf_t RfIntf);  // Deprecated, use readNdefMessage() instead

@@ -86,8 +86,9 @@ void loop() {
     }
 
     // It can detect multiple cards at the same time if they use the same protocol
-    if (nfc.remoteDevice.hasMoreTags) {
-      nfc.readerActivateNext(&RfIntf);
+    if (nfc.remoteDevice.moreTagsAvailable) {
+      nfc.activateNextTagDiscovery();
+      Serial.println("Multiple cards are detected!");
     }
     // Wait for card removal
     Serial.println("Remove the Card");

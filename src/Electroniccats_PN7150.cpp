@@ -916,7 +916,7 @@ wait:
     pRfIntf->ModeTech = rxBuffer[6];
     this->remoteDevice.modeTech = rxBuffer[6];
     pRfIntf->MoreTags = false;
-    this->remoteDevice.hasMoreTags = false;
+    this->remoteDevice.moreTagsAvailable = false;
     fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
     fillInterfaceInfo(&rxBuffer[10]);
 
@@ -947,7 +947,7 @@ wait:
             pRfIntf->ModeTech = rxBuffer[6];
             this->remoteDevice.modeTech = rxBuffer[6];
             pRfIntf->MoreTags = false;
-            this->remoteDevice.hasMoreTags = false;
+            this->remoteDevice.moreTagsAvailable = false;
             fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
             fillInterfaceInfo(&rxBuffer[10]);
             break;
@@ -975,7 +975,7 @@ wait:
     pRfIntf->ModeTech = rxBuffer[5];
     this->remoteDevice.modeTech = rxBuffer[5];
     pRfIntf->MoreTags = true;
-    this->remoteDevice.hasMoreTags = true;
+    this->remoteDevice.moreTagsAvailable = true;
 
     /* Get next NTF for further activation */
     do {
@@ -1043,7 +1043,7 @@ wait:
 }
 
 bool Electroniccats_PN7150::waitForDiscoveryNotification(uint8_t tout) {
-  return Electroniccats_PN7150::waitForDiscoveryNotification(&this->dummyRfIntf, tout);
+  return Electroniccats_PN7150::waitForDiscoveryNotification(&this->dummyRfInterface, tout);
 }
 
 // Deprecated, use waitForDiscoveryNotification() instead
@@ -1640,10 +1640,13 @@ bool Electroniccats_PN7150::readerActivateNext(RfIntf_t *pRfIntf) {
   bool status = ERROR;
 
   pRfIntf->MoreTags = false;
+  this->remoteDevice.moreTagsAvailable = false;
 
   if (gNextTag_Protocol == PROT_UNDETERMINED) {
     pRfIntf->Interface = INTF_UNDETERMINED;
+    this->remoteDevice.interface = INTF_UNDETERMINED;
     pRfIntf->Protocol = PROT_UNDETERMINED;
+    this->remoteDevice.protocol = PROT_UNDETERMINED;
     return ERROR;
   }
 
@@ -1675,14 +1678,22 @@ bool Electroniccats_PN7150::readerActivateNext(RfIntf_t *pRfIntf) {
     getMessage(100);
     if ((rxBuffer[0] == 0x61) || (rxBuffer[1] == 0x05)) {
       pRfIntf->Interface = rxBuffer[4];
+      this->remoteDevice.interface = rxBuffer[4];
       pRfIntf->Protocol = rxBuffer[5];
+      this->remoteDevice.protocol = rxBuffer[5];
       pRfIntf->ModeTech = rxBuffer[6];
+      this->remoteDevice.modeTech = rxBuffer[6];
       fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
+      fillInterfaceInfo(&rxBuffer[10]);
       status = SUCCESS;
     }
   }
 
   return status;
+}
+
+bool Electroniccats_PN7150::activateNextTagDiscovery() {
+  return Electroniccats_PN7150::readerActivateNext(&this->dummyRfInterface);
 }
 
 // Deprecated, use readerActivateNext() instead
@@ -1731,7 +1742,7 @@ void Electroniccats_PN7150::readNdef(RfIntf_t RfIntf) {
 }
 
 void Electroniccats_PN7150::readNdefMessage(void) {
-  Electroniccats_PN7150::readNdef(this->dummyRfIntf);
+  Electroniccats_PN7150::readNdef(this->dummyRfInterface);
 }
 
 // Deprecated, use readNdef() instead
@@ -1764,7 +1775,7 @@ void Electroniccats_PN7150::writeNdef(RfIntf_t RfIntf) {
 }
 
 void Electroniccats_PN7150::writeNdefMessage(void) {
-  Electroniccats_PN7150::writeNdef(this->dummyRfIntf);
+  Electroniccats_PN7150::writeNdef(this->dummyRfInterface);
 }
 
 // Deprecated, use writeNdefMessage() instead

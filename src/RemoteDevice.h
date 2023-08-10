@@ -103,7 +103,7 @@ struct RfIntfCC_t {
   unsigned char interface;
   unsigned char protocol;
   unsigned char modeTech;
-  bool hasMoreTags;
+  bool moreTagsAvailable;
   RfIntfInfoCC_t info;
 };
 
