@@ -916,7 +916,7 @@ wait:
     pRfIntf->ModeTech = rxBuffer[6];
     this->remoteDevice.modeTech = rxBuffer[6];
     pRfIntf->MoreTags = false;
-    this->remoteDevice.moreTags = false;
+    this->remoteDevice.hasMoreTags = false;
     fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
     fillInterfaceInfo(&rxBuffer[10]);
 
@@ -947,7 +947,7 @@ wait:
             pRfIntf->ModeTech = rxBuffer[6];
             this->remoteDevice.modeTech = rxBuffer[6];
             pRfIntf->MoreTags = false;
-            this->remoteDevice.moreTags = false;
+            this->remoteDevice.hasMoreTags = false;
             fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
             fillInterfaceInfo(&rxBuffer[10]);
             break;
@@ -975,7 +975,7 @@ wait:
     pRfIntf->ModeTech = rxBuffer[5];
     this->remoteDevice.modeTech = rxBuffer[5];
     pRfIntf->MoreTags = true;
-    this->remoteDevice.moreTags = true;
+    this->remoteDevice.hasMoreTags = true;
 
     /* Get next NTF for further activation */
     do {
@@ -1694,7 +1694,6 @@ void Electroniccats_PN7150::readNdef(RfIntf_t RfIntf) {
   uint8_t Cmd[MAX_NCI_FRAME_SIZE];
   uint16_t CmdSize = 0;
 
-  // RW_NDEF_Reset(RfIntf.Protocol);
   RW_NDEF_Reset(this->remoteDevice.protocol);
 
   while (1) {
@@ -1713,7 +1712,6 @@ void Electroniccats_PN7150::readNdef(RfIntf_t RfIntf) {
       getMessage(1000);
 
       // Manage chaining in case of T4T
-      // if ((RfIntf.Interface = INTF_ISODEP) && rxBuffer[0] == 0x10) {
       if (this->remoteDevice.interface == INTF_ISODEP && rxBuffer[0] == 0x10) {
         uint8_t tmp[MAX_NCI_FRAME_SIZE];
         uint8_t tmpSize = 0;
@@ -1745,7 +1743,7 @@ void Electroniccats_PN7150::writeNdef(RfIntf_t RfIntf) {
   uint8_t Cmd[MAX_NCI_FRAME_SIZE];
   uint16_t CmdSize = 0;
 
-  RW_NDEF_Reset(RfIntf.Protocol);
+  RW_NDEF_Reset(this->remoteDevice.protocol);
 
   while (1) {
     RW_NDEF_Write_Next(&rxBuffer[3], rxBuffer[2], &Cmd[3], (unsigned short *)&CmdSize);
@@ -1765,6 +1763,11 @@ void Electroniccats_PN7150::writeNdef(RfIntf_t RfIntf) {
   }
 }
 
+void Electroniccats_PN7150::writeNdefMessage(void) {
+  Electroniccats_PN7150::writeNdef(this->dummyRfIntf);
+}
+
+// Deprecated, use writeNdefMessage() instead
 void Electroniccats_PN7150::WriteNdef(RfIntf_t RfIntf) {
   Electroniccats_PN7150::writeNdef(RfIntf);
 }

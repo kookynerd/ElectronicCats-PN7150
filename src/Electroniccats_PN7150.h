@@ -249,7 +249,8 @@ class Electroniccats_PN7150 : public Mode, public RemoteDevice {
   void readNdefMessage();
   void ReadNdef(RfIntf_t RfIntf);  // Deprecated, use readNdefMessage() instead
   void writeNdef(RfIntf_t RfIntf);
-  void WriteNdef(RfIntf_t RfIntf);  // Deprecated, use writeNdef() instead
+  void writeNdefMessage();
+  void WriteNdef(RfIntf_t RfIntf);  // Deprecated, use writeNdefMessage() instead
   bool nciFactoryTestPrbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate);
   bool NxpNci_FactoryTest_Prbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate);  // Deprecated, use nciFactoryTestPrbs() instead
   bool nciFactoryTestRfOn();

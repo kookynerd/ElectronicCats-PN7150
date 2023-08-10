@@ -4,7 +4,7 @@
 #define PN7150_ADDR (0x28)
 
 Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);  // creates a global NFC device interface object, attached to pins 7 (IRQ) and 8 (VEN) and using the default I2C address 0x28
-RfIntf_t RfIntf;                                            // Intarface to save data for multiple tags
+RfIntf_t RfIntf;                                                 // Intarface to save data for multiple tags
 
 const char ndefMessage[] = {0xD1,                      // MB/ME/CF/1/IL/TNF
                             0x01,                      // Type length (1 byte)
@@ -86,7 +86,7 @@ void loop() {
     }
 
     // It can detect multiple cards at the same time if they use the same protocol
-    if (nfc.remoteDevice.moreTags) {
+    if (nfc.remoteDevice.hasMoreTags) {
       nfc.readerActivateNext(&RfIntf);
     }
     // Wait for card removal
@@ -203,7 +203,7 @@ void ndefPull_Cb(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = '\0';
         Serial.print("Text record: ");
         // Serial.println(&NdefRecord.recordPayload[NdefRecord.recordPayload[0]+1]);
-        Serial.println(reinterpret_cast<const char*>(&NdefRecord.recordPayload[NdefRecord.recordPayload[0] + 1]));
+        Serial.println(reinterpret_cast<const char *>(&NdefRecord.recordPayload[NdefRecord.recordPayload[0] + 1]));
         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = save;
       } break;
 
@@ -212,7 +212,7 @@ void ndefPull_Cb(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = '\0';
         Serial.print("URI record: ");
         // Serial.println(ndef_helper_UriHead(NdefRecord.recordPayload[0]), &NdefRecord.recordPayload[1]);
-        Serial.println(reinterpret_cast<const char*>(ndef_helper_UriHead(NdefRecord.recordPayload[0]), &NdefRecord.recordPayload[1]));
+        Serial.println(reinterpret_cast<const char *>(ndef_helper_UriHead(NdefRecord.recordPayload[0]), &NdefRecord.recordPayload[1]));
         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = save;
       } break;
 
