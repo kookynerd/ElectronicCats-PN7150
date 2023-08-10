@@ -20,12 +20,12 @@
 
 #include <Arduino.h>  // Gives us access to all typical Arduino types and functions
                       // The HW interface between The PN7150 and the DeviceHost is I2C, so we need the I2C library.library
+#include "Mode.h"
 #include "P2P_NDEF.h"
 #include "RW_NDEF.h"
+#include "RemoteDevice.h"
 #include "T4T_NDEF_emu.h"
 #include "ndef_helper.h"
-#include "Mode.h"
-#include "RemoteDevice.h"
 
 // #define DEBUG3
 
@@ -188,6 +188,7 @@ class Electroniccats_PN7150 : public Mode, public RemoteDevice {
  private:
   uint8_t _IRQpin, _VENpin, _I2Caddress;
   TwoWire *_wire;
+  RfIntf_t dummyRfIntf;
   uint8_t rxBuffer[MaxPayloadSize + MsgHeaderSize];  // buffer where we store bytes received until they form a complete message
   void setTimeOut(unsigned long);                    // set a timeOut for an expected next event, eg reception of Response after sending a Command
   bool isTimeOut() const;
@@ -222,6 +223,7 @@ class Electroniccats_PN7150 : public Mode, public RemoteDevice {
   bool stopDiscovery();
   bool StopDiscovery();  // Deprecated, use stopDiscovery() instead
   bool waitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout = 0);
+  bool waitForDiscoveryNotification(uint8_t tout = 0);
   bool WaitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout = 0);  // Deprecated, use waitForDiscoveryNotification() instead
   uint8_t connectNCI();
   uint8_t wakeupNCI();
@@ -244,7 +246,8 @@ class Electroniccats_PN7150 : public Mode, public RemoteDevice {
   bool readerActivateNext(RfIntf_t *pRfIntf);
   bool ReaderActivateNext(RfIntf_t *pRfIntf);  // Deprecated, use readerActivateNext() instead
   void readNdef(RfIntf_t RfIntf);
-  void ReadNdef(RfIntf_t RfIntf);  // Deprecated, use readNdef() instead
+  void readNdefMessage();
+  void ReadNdef(RfIntf_t RfIntf);  // Deprecated, use readNdefMessage() instead
   void writeNdef(RfIntf_t RfIntf);
   void WriteNdef(RfIntf_t RfIntf);  // Deprecated, use writeNdef() instead
   bool nciFactoryTestPrbs(NxpNci_TechType_t type, NxpNci_Bitrate_t bitrate);

@@ -1042,6 +1042,10 @@ wait:
   return SUCCESS;
 }
 
+bool Electroniccats_PN7150::waitForDiscoveryNotification(uint8_t tout) {
+  return Electroniccats_PN7150::waitForDiscoveryNotification(&this->dummyRfIntf, tout);
+}
+
 // Deprecated, use waitForDiscoveryNotification() instead
 bool Electroniccats_PN7150::WaitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout) {
   return Electroniccats_PN7150::waitForDiscoveryNotification(pRfIntf, tout);
@@ -1690,7 +1694,8 @@ void Electroniccats_PN7150::readNdef(RfIntf_t RfIntf) {
   uint8_t Cmd[MAX_NCI_FRAME_SIZE];
   uint16_t CmdSize = 0;
 
-  RW_NDEF_Reset(RfIntf.Protocol);
+  // RW_NDEF_Reset(RfIntf.Protocol);
+  RW_NDEF_Reset(this->remoteDevice.protocol);
 
   while (1) {
     RW_NDEF_Read_Next(&rxBuffer[3], rxBuffer[2], &Cmd[3], (unsigned short *)&CmdSize);
@@ -1708,7 +1713,8 @@ void Electroniccats_PN7150::readNdef(RfIntf_t RfIntf) {
       getMessage(1000);
 
       // Manage chaining in case of T4T
-      if ((RfIntf.Interface = INTF_ISODEP) && rxBuffer[0] == 0x10) {
+      // if ((RfIntf.Interface = INTF_ISODEP) && rxBuffer[0] == 0x10) {
+      if (this->remoteDevice.interface == INTF_ISODEP && rxBuffer[0] == 0x10) {
         uint8_t tmp[MAX_NCI_FRAME_SIZE];
         uint8_t tmpSize = 0;
         while (rxBuffer[0] == 0x10) {
@@ -1724,6 +1730,10 @@ void Electroniccats_PN7150::readNdef(RfIntf_t RfIntf) {
       }
     }
   }
+}
+
+void Electroniccats_PN7150::readNdefMessage(void) {
+  Electroniccats_PN7150::readNdef(this->dummyRfIntf);
 }
 
 // Deprecated, use readNdef() instead
