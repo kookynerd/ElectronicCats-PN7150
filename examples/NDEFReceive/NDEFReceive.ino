@@ -212,7 +212,7 @@ void displayDeviceInfo() {
   }
 
   Serial.print("Interface: ");
-  switch (nfc.getInterfaceType()) {
+  switch (nfc.remoteDevice.interface) {
     case INTF_ISODEP:
       Serial.println("ISO-DEP");
       break;

@@ -197,6 +197,9 @@ class Electroniccats_PN7150 : public Mode, public RemoteDevice {
   uint32_t rxMessageLength;  // length of the last message received. As these are not 0x00 terminated, we need to remember the length
   uint8_t gNfcController_generation = 0;
   uint8_t gNfcController_fw_version[3] = {0};
+  void fillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf);
+  void fillInterfaceInfo(uint8_t *pBuf);
+  void FillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf);  // Deprecated, use fillInterfaceInfo(uint8_t *pBuf) instead
 
  public:
   Electroniccats_PN7150(uint8_t IRQpin, uint8_t VENpin, uint8_t I2Caddress, TwoWire *wire = &Wire);
@@ -234,8 +237,6 @@ class Electroniccats_PN7150 : public Mode, public RemoteDevice {
   void ProcessP2pMode(RfIntf_t RfIntf);  // Deprecated, use processP2pMode() instead
   void presenceCheck(RfIntf_t RfIntf);
   void PresenceCheck(RfIntf_t RfIntf);  // Deprecated, use presenceCheck() instead
-  void fillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf);
-  void FillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf);  // Deprecated, use fillInterfaceInfo() instead
   bool readerTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize);
   bool ReaderTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize);  // Deprecated, use readerTagCmd() instead
   bool readerReActivate(RfIntf_t *pRfIntf);
@@ -254,7 +255,6 @@ class Electroniccats_PN7150 : public Mode, public RemoteDevice {
   bool setReaderWriterMode();
   bool setEmulationMode();
   bool setP2PMode();
-  unsigned char getInterfaceType();
 };
 
 #endif
