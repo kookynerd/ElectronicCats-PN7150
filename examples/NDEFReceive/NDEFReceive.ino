@@ -64,6 +64,7 @@ void loop() {
   if (!nfc.waitForDiscoveryNotification()) {  // Waiting to detect cards
     displayDeviceInfo();
     switch (nfc.remoteDevice.protocol) {
+      // TODO: add getProtocol() to the API and make the available protocols more accessible
       case PROT_T1T:
       case PROT_T2T:
       case PROT_T3T:

@@ -27,6 +27,7 @@
 #include "T4T_NDEF_emu.h"
 #include "ndef_helper.h"
 
+// #define DEBGU2
 // #define DEBUG3
 
 #if defined(TEENSYDUINO) && defined(KINETISK)  // Teensy 3.0, 3.1, 3.2, 3.5, 3.6 :  Special, more optimized I2C library for Teensy boards
@@ -141,48 +142,48 @@ typedef enum {
  * Definition of discovered remote device properties information
  */
 /* POLL passive type A */
-typedef struct
-{
-  unsigned char SensRes[2];
-  unsigned char NfcIdLen;
-  unsigned char NfcId[10];
-  unsigned char SelResLen;
-  unsigned char SelRes[1];
-  unsigned char RatsLen;
-  unsigned char Rats[20];
-} NxpNci_RfIntf_info_APP_t;
+// typedef struct
+// {
+//   unsigned char SensRes[2];
+//   unsigned char NfcIdLen;
+//   unsigned char NfcId[10];
+//   unsigned char SelResLen;
+//   unsigned char SelRes[1];
+//   unsigned char RatsLen;
+//   unsigned char Rats[20];
+// } NxpNci_RfIntf_info_APP_t;
 
-/* POLL passive type B */
-typedef struct
-{
-  unsigned char SensResLen;
-  unsigned char SensRes[12];
-  unsigned char AttribResLen;
-  unsigned char AttribRes[17];
-} NxpNci_RfIntf_info_BPP_t;
+// /* POLL passive type B */
+// typedef struct
+// {
+//   unsigned char SensResLen;
+//   unsigned char SensRes[12];
+//   unsigned char AttribResLen;
+//   unsigned char AttribRes[17];
+// } NxpNci_RfIntf_info_BPP_t;
 
-/* POLL passive type F */
-typedef struct
-{
-  unsigned char BitRate;
-  unsigned char SensResLen;
-  unsigned char SensRes[18];
-} NxpNci_RfIntf_info_FPP_t;
+// /* POLL passive type F */
+// typedef struct
+// {
+//   unsigned char BitRate;
+//   unsigned char SensResLen;
+//   unsigned char SensRes[18];
+// } NxpNci_RfIntf_info_FPP_t;
 
-/* POLL passive type ISO15693 */
-typedef struct
-{
-  unsigned char AFI;
-  unsigned char DSFID;
-  unsigned char ID[8];
-} NxpNci_RfIntf_info_VPP_t;
+// /* POLL passive type ISO15693 */
+// typedef struct
+// {
+//   unsigned char AFI;
+//   unsigned char DSFID;
+//   unsigned char ID[8];
+// } NxpNci_RfIntf_info_VPP_t;
 
-typedef union {
-  NxpNci_RfIntf_info_APP_t NFC_APP;
-  NxpNci_RfIntf_info_BPP_t NFC_BPP;
-  NxpNci_RfIntf_info_FPP_t NFC_FPP;
-  NxpNci_RfIntf_info_VPP_t NFC_VPP;
-} NxpNci_RfIntf_Info_t;
+// typedef union {
+//   NxpNci_RfIntf_info_APP_t NFC_APP;
+//   NxpNci_RfIntf_info_BPP_t NFC_BPP;
+//   NxpNci_RfIntf_info_FPP_t NFC_FPP;
+//   NxpNci_RfIntf_info_VPP_t NFC_VPP;
+// } NxpNci_RfIntf_Info_t;
 
 class Electroniccats_PN7150 : public Mode, public RemoteDevice {
  private:
