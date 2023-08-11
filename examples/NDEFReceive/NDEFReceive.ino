@@ -125,28 +125,28 @@ void displayDeviceInfo() {
 
   Serial.print("Protocol: ");
   switch (nfc.remoteDevice.protocol) {
-    case PROT_UNDETERMINED:
+    case nfc.protocol.UNDETERMINED:
       Serial.println("UNDETERMINED");
       break;
-    case PROT_T1T:
+    case nfc.protocol.T1T:
       Serial.println("T1T");
       break;
-    case PROT_T2T:
+    case nfc.protocol.T2T:
       Serial.println("T2T");
       break;
-    case PROT_T3T:
+    case nfc.protocol.T3T:
       Serial.println("T3T");
       break;
-    case PROT_ISODEP:
+    case nfc.protocol.ISODEP:
       Serial.println("ISO-DEP");
       break;
-    case PROT_NFCDEP:
+    case nfc.protocol.NFCDEP:
       Serial.println("NFC-DEP");
       break;
-    case PROT_ISO15693:
+    case nfc.protocol.ISO15693:
       Serial.println("ISO15693");
       break;
-    case PROT_MIFARE:
+    case nfc.protocol.MIFARE:
       Serial.println("MIFARE");
       break;
     default:

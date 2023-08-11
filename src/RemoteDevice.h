@@ -2,6 +2,7 @@
 #define RemoteDevice_H
 
 #include "Arduino.h"
+#include "Protocol.h"
 
 /*
  * Definition of discovered remote device properties information
@@ -110,6 +111,7 @@ struct RfIntfCC_t {
 class RemoteDevice {
  public:
   RfIntfCC_t remoteDevice;
+  Protocol protocol;
 };
 
 #endif
