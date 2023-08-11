@@ -154,19 +154,19 @@ void displayDeviceInfo() {
       break;
   }
 
-  Serial.print("Mode: ");
+  Serial.print("Technology: ");
   switch (nfc.remoteDevice.modeTech) {
-    case MODE_POLL:
-      Serial.println("POLL");
+    case nfc.modeTech.POLL | nfc.tech.PASSIVE_NFCA:
+      Serial.println("PASSIVE NFC A");
       break;
-    case MODE_LISTEN:
-      Serial.println("LISTEN");
+    case nfc.modeTech.POLL | nfc.tech.PASSIVE_NFCB:
+      Serial.println("PASSIVE NFC B");
       break;
-    case MODE_MASK:
-      Serial.println("MASK");
+    case nfc.modeTech.POLL | nfc.tech.PASSIVE_NFCF:
+      Serial.println("PASSIVE NFC F");
       break;
-    default:
-      Serial.println("UNKNOWN");
+    case nfc.modeTech.POLL | nfc.tech.PASSIVE_15693:
+      Serial.println("PASSIVE 15693");
       break;
   }
 }

@@ -64,35 +64,6 @@
 #define MODE_RW (1 << 2)
 
 /*
- * Flag definition used as Mode values
- */
-#define MODE_POLL 0x00
-#define MODE_LISTEN 0x80
-#define MODE_MASK 0xF0
-
-/*
- * Flag definition used as Technologies values
- */
-#define TECH_PASSIVE_NFCA 0
-#define TECH_PASSIVE_NFCB 1
-#define TECH_PASSIVE_NFCF 2
-#define TECH_ACTIVE_NFCA 3
-#define TECH_ACTIVE_NFCF 5
-#define TECH_PASSIVE_15693 6
-
-/*
- * Flag definition used as Protocol values
- */
-#define PROT_UNDETERMINED 0x0
-#define PROT_T1T 0x1       // NFC FORUM Type 1 Tag (based on Topaz/Jewel) ISO 14443A
-#define PROT_T2T 0x2       // NFC Type 2 Tag ISO 14443B
-#define PROT_T3T 0x3       // NFC Type 3 Tag Sony FeliCa standard
-#define PROT_ISODEP 0x4    // NFC Type 4 Tag ISO14443-4
-#define PROT_NFCDEP 0x5    // NFC Data Exchange Protocol
-#define PROT_ISO15693 0x6  // NFC-V
-#define PROT_MIFARE 0x80   // NFC Type 5 MIFARE Classic
-
-/*
  * Flag definition used as Interface values
  */
 #define INTF_UNDETERMINED 0x0
@@ -137,53 +108,6 @@ typedef enum {
 #endif
   PRESENCE_CHECK
 } RW_Operation_t;
-
-/*
- * Definition of discovered remote device properties information
- */
-/* POLL passive type A */
-// typedef struct
-// {
-//   unsigned char SensRes[2];
-//   unsigned char NfcIdLen;
-//   unsigned char NfcId[10];
-//   unsigned char SelResLen;
-//   unsigned char SelRes[1];
-//   unsigned char RatsLen;
-//   unsigned char Rats[20];
-// } NxpNci_RfIntf_info_APP_t;
-
-// /* POLL passive type B */
-// typedef struct
-// {
-//   unsigned char SensResLen;
-//   unsigned char SensRes[12];
-//   unsigned char AttribResLen;
-//   unsigned char AttribRes[17];
-// } NxpNci_RfIntf_info_BPP_t;
-
-// /* POLL passive type F */
-// typedef struct
-// {
-//   unsigned char BitRate;
-//   unsigned char SensResLen;
-//   unsigned char SensRes[18];
-// } NxpNci_RfIntf_info_FPP_t;
-
-// /* POLL passive type ISO15693 */
-// typedef struct
-// {
-//   unsigned char AFI;
-//   unsigned char DSFID;
-//   unsigned char ID[8];
-// } NxpNci_RfIntf_info_VPP_t;
-
-// typedef union {
-//   NxpNci_RfIntf_info_APP_t NFC_APP;
-//   NxpNci_RfIntf_info_BPP_t NFC_BPP;
-//   NxpNci_RfIntf_info_FPP_t NFC_FPP;
-//   NxpNci_RfIntf_info_VPP_t NFC_VPP;
-// } NxpNci_RfIntf_Info_t;
 
 class Electroniccats_PN7150 : public Mode, public RemoteDevice {
  private:

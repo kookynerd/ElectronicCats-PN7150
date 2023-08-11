@@ -3,6 +3,8 @@
 
 #include "Arduino.h"
 #include "Protocol.h"
+#include "Technology.h"
+#include "ModeTech.h"
 
 /*
  * Definition of discovered remote device properties information
@@ -112,6 +114,8 @@ class RemoteDevice {
  public:
   RfIntfCC_t remoteDevice;
   Protocol protocol;
+  Technology tech;
+  ModeTech modeTech;
 };
 
 #endif
