@@ -891,7 +891,7 @@ bool Electroniccats_PN7150::StopDiscovery() {
 }
 
 bool Electroniccats_PN7150::waitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout) {
-  uint8_t NCIRfDiscoverSelect[] = {0x21, 0x04, 0x03, 0x01, PROT_ISODEP, INTF_ISODEP};
+  uint8_t NCIRfDiscoverSelect[] = {0x21, 0x04, 0x03, 0x01, protocol.ISODEP, interface.ISODEP};
 
   // P2P Support
   uint8_t NCIStopDiscovery[] = {0x21, 0x06, 0x01, 0x00};
@@ -910,20 +910,14 @@ wait:
   /* Is RF_INTF_ACTIVATED_NTF ? */
   if (rxBuffer[1] == 0x05) {
     pRfIntf->Interface = rxBuffer[4];
-    // this->remoteDeviceStruct.interface = rxBuffer[4];
-    this->remoteDevice.setInterface(rxBuffer[4]);
+    remoteDevice.setInterface(rxBuffer[4]);
     pRfIntf->Protocol = rxBuffer[5];
-    // this->remoteDeviceStruct.protocol = rxBuffer[5];
-    this->remoteDevice.setProtocol(rxBuffer[5]);
+    remoteDevice.setProtocol(rxBuffer[5]);
     pRfIntf->ModeTech = rxBuffer[6];
-    // this->remoteDeviceStruct.modeTech = rxBuffer[6];
-    this->remoteDevice.setModeTech(rxBuffer[6]);
+    remoteDevice.setModeTech(rxBuffer[6]);
     pRfIntf->MoreTags = false;
-    // this->remoteDeviceStruct.moreTagsAvailable = false;
-    this->remoteDevice.setMoreTagsAvailable(false);
-    // fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
-    // fillInterfaceInfo(&rxBuffer[10]);
-    this->remoteDevice.setInfo(pRfIntf, &rxBuffer[10]);
+    remoteDevice.setMoreTagsAvailable(false);
+    remoteDevice.setInfo(pRfIntf, &rxBuffer[10]);
 
     // P2P
     /* Verifying if not a P2P device also presenting T4T emulation */
@@ -946,16 +940,14 @@ wait:
           /* Is P2P detected ? */
           if (rxBuffer[5] == PROT_NFCDEP) {
             pRfIntf->Interface = rxBuffer[4];
-            this->remoteDevice.setInterface(rxBuffer[4]);
+            remoteDevice.setInterface(rxBuffer[4]);
             pRfIntf->Protocol = rxBuffer[5];
-            this->remoteDevice.setProtocol(rxBuffer[5]);
+            remoteDevice.setProtocol(rxBuffer[5]);
             pRfIntf->ModeTech = rxBuffer[6];
-            this->remoteDevice.setModeTech(rxBuffer[6]);
+            remoteDevice.setModeTech(rxBuffer[6]);
             pRfIntf->MoreTags = false;
-            this->remoteDevice.setMoreTagsAvailable(false);
-            // fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
-            // fillInterfaceInfo(&rxBuffer[10]);
-            this->remoteDevice.setInfo(pRfIntf, &rxBuffer[10]);
+            remoteDevice.setMoreTagsAvailable(false);
+            remoteDevice.setInfo(pRfIntf, &rxBuffer[10]);
             break;
           }
         } else {
@@ -975,13 +967,13 @@ wait:
     }
   } else { /* RF_DISCOVER_NTF */
     pRfIntf->Interface = INTF_UNDETERMINED;
-    this->remoteDevice.setInterface(INTF_UNDETERMINED);
+    remoteDevice.setInterface(interface.UNDETERMINED);
     pRfIntf->Protocol = rxBuffer[4];
-    this->remoteDevice.setProtocol(rxBuffer[4]);
+    remoteDevice.setProtocol(rxBuffer[4]);
     pRfIntf->ModeTech = rxBuffer[5];
-    this->remoteDevice.setModeTech(rxBuffer[5]);
+    remoteDevice.setModeTech(rxBuffer[5]);
     pRfIntf->MoreTags = true;
-    this->remoteDevice.setMoreTagsAvailable(true);
+    remoteDevice.setMoreTagsAvailable(true);
 
     /* Get next NTF for further activation */
     do {
@@ -996,15 +988,15 @@ wait:
       getMessage(100);
 
     /* In case of multiple cards, select the first one */
-    NCIRfDiscoverSelect[4] = pRfIntf->Protocol;
-    if (pRfIntf->Protocol == PROT_ISODEP)
-      NCIRfDiscoverSelect[5] = INTF_ISODEP;
-    else if (pRfIntf->Protocol == PROT_NFCDEP)
-      NCIRfDiscoverSelect[5] = INTF_NFCDEP;
-    else if (pRfIntf->Protocol == PROT_MIFARE)
-      NCIRfDiscoverSelect[5] = INTF_TAGCMD;
+    NCIRfDiscoverSelect[4] = remoteDevice.getProtocol();
+    if (remoteDevice.getProtocol() == protocol.ISODEP)
+      NCIRfDiscoverSelect[5] = interface.ISODEP;
+    else if (remoteDevice.getProtocol() == protocol.NFCDEP)
+      NCIRfDiscoverSelect[5] = interface.NFCDEP;
+    else if (remoteDevice.getProtocol() == protocol.MIFARE)
+      NCIRfDiscoverSelect[5] = interface.TAGCMD;
     else
-      NCIRfDiscoverSelect[5] = INTF_FRAME;
+      NCIRfDiscoverSelect[5] = interface.FRAME;
 
     (void)writeData(NCIRfDiscoverSelect, sizeof(NCIRfDiscoverSelect));
     getMessage(100);
@@ -1015,18 +1007,16 @@ wait:
 
       if ((rxBuffer[0] == 0x61) || (rxBuffer[1] == 0x05)) {
         pRfIntf->Interface = rxBuffer[4];
-        this->remoteDevice.setInterface(rxBuffer[4]);
+        remoteDevice.setInterface(rxBuffer[4]);
         pRfIntf->Protocol = rxBuffer[5];
-        this->remoteDevice.setProtocol(rxBuffer[5]);
+        remoteDevice.setProtocol(rxBuffer[5]);
         pRfIntf->ModeTech = rxBuffer[6];
-        this->remoteDevice.setModeTech(rxBuffer[6]);
-        // fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
-        // fillInterfaceInfo(&rxBuffer[10]);
-        this->remoteDevice.setInfo(pRfIntf, &rxBuffer[10]);
+        remoteDevice.setModeTech(rxBuffer[6]);
+        remoteDevice.setInfo(pRfIntf, &rxBuffer[10]);
       }
 
       /* In case of P2P target detected but lost, inform application to restart discovery */
-      else if (this->remoteDevice.getProtocol() == PROT_NFCDEP) {
+      else if (remoteDevice.getProtocol() == protocol.NFCDEP) {
         /* Restart the discovery loop */
         (void)writeData(NCIStopDiscovery, sizeof(NCIStopDiscovery));
         getMessage();
@@ -1041,9 +1031,9 @@ wait:
   }
 
   /* In case of unknown target align protocol information */
-  if (pRfIntf->Interface == INTF_UNDETERMINED) {
+  if (remoteDevice.getInterface() == interface.UNDETERMINED) {
     pRfIntf->Protocol = PROT_UNDETERMINED;
-    this->remoteDevice.setProtocol(protocol.UNDETERMINED);
+    remoteDevice.setProtocol(protocol.UNDETERMINED);
   }
 
   return SUCCESS;
@@ -1441,11 +1431,6 @@ void Electroniccats_PN7150::waitForTagRemoval() {
 // Deprecated, use waitForTagRemoval() instead
 void Electroniccats_PN7150::PresenceCheck(RfIntf_t RfIntf) {
   Electroniccats_PN7150::presenceCheck(RfIntf);
-}
-
-// Deprecated, use fillInterfaceInfo(uint8_t *pBuf) instead
-void Electroniccats_PN7150::FillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) {
-  Electroniccats_PN7150::fillInterfaceInfo(pRfIntf, pBuf);
 }
 
 bool Electroniccats_PN7150::readerTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize) {

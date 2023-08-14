@@ -114,9 +114,6 @@ class Electroniccats_PN7150 : public Mode {
   uint32_t rxMessageLength;  // length of the last message received. As these are not 0x00 terminated, we need to remember the length
   uint8_t gNfcController_generation = 0;
   uint8_t gNfcController_fw_version[3] = {0};
-  void fillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf);
-  void fillInterfaceInfo(uint8_t *pBuf);
-  void FillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf);  // Deprecated, use fillInterfaceInfo(uint8_t *pBuf) instead
 
  public:
   Electroniccats_PN7150(uint8_t IRQpin, uint8_t VENpin, uint8_t I2Caddress, TwoWire *wire = &Wire);

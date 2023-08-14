@@ -112,7 +112,7 @@ struct RfIntfCC_t {
 };
 
 class RemoteDevice {
- protected:
+ private:
   RfIntfCC_t remoteDeviceStruct;
 
  public:

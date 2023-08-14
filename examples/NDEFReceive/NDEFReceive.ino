@@ -62,24 +62,18 @@ void setup() {
 }
 
 void loop() {
-  if (!nfc.waitForDiscoveryNotification()) {  // Waiting to detect cards
+  if (!nfc.waitForDiscoveryNotification()) {  // Wait for a card
     displayDeviceInfo();
     switch (nfc.remoteDevice.getProtocol()) {
-      // TODO: add getProtocol() to the API and make the available protocols more accessible
-      case PROT_T1T:
-      case PROT_T2T:
-      case PROT_T3T:
-      case PROT_ISODEP:
+      // Read NDEF message from NFC Forum Type 1, 2, 3, 4, 5 tags
+      case nfc.protocol.T1T:
+      case nfc.protocol.T2T:
+      case nfc.protocol.T3T:
+      case nfc.protocol.ISODEP:
+      case nfc.protocol.MIFARE:
         nfc.readNdefMessage();
         break;
-
-      case PROT_ISO15693:
-        break;
-
-      case PROT_MIFARE:
-        nfc.readNdefMessage();
-        break;
-
+      case nfc.protocol.ISO15693:
       default:
         break;
     }
@@ -104,19 +98,19 @@ void displayDeviceInfo() {
   Serial.println();
   Serial.print("Interface: ");
   switch (nfc.remoteDevice.getInterface()) {
-    case INTF_ISODEP:
+    case nfc.interface.ISODEP:
       Serial.println("ISO-DEP");
       break;
-    case INTF_NFCDEP:
+    case nfc.interface.NFCDEP:
       Serial.println("NFC-DEP");
       break;
-    case INTF_TAGCMD:
+    case nfc.interface.TAGCMD:
       Serial.println("TAG");
       break;
-    case INTF_FRAME:
+    case nfc.interface.FRAME:
       Serial.println("FRAME");
       break;
-    case INTF_UNDETERMINED:
+    case nfc.interface.UNDETERMINED:
       Serial.println("UNDETERMINED");
       break;
     default:
