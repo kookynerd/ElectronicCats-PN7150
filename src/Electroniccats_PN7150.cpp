@@ -1392,7 +1392,7 @@ void Electroniccats_PN7150::presenceCheck(RfIntf_t RfIntf) {
       do {
         delay(500);
         for (i = 0; i < 8; i++) {
-          NCIPresCheckIso15693[i + 6] = remoteDevice.getVPPID(7 - i);
+          NCIPresCheckIso15693[i + 6] = remoteDevice.getVPPID()[7 - i];
         }
         (void)writeData(NCIPresCheckIso15693, sizeof(NCIPresCheckIso15693));
         getMessage();
@@ -1693,6 +1693,10 @@ bool Electroniccats_PN7150::NxpNci_FactoryTest_RfOn() {
 }
 
 bool Electroniccats_PN7150::reset() {
+  if (Electroniccats_PN7150::stopDiscovery()) {
+    return false;
+  }
+
   if (Electroniccats_PN7150::configMode()) {
     return false;
   }

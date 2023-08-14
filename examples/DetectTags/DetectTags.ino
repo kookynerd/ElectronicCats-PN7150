@@ -35,21 +35,38 @@ void PrintBuf(const byte* data, const uint32_t numBytes) {  // Print hex data bu
   Serial.println();
 }
 
+String getHexRepresentation(const byte* data, const uint32_t numBytes) {
+  String hexString;
+  for (uint32_t szPos = 0; szPos < numBytes; szPos++) {
+    hexString += "0x";
+    if (data[szPos] <= 0xF)
+      hexString += "0";
+    hexString += String(data[szPos] & 0xFF, HEX);
+    if ((numBytes > 1) && (szPos != numBytes - 1)) {
+      hexString += " ";
+    }
+  }
+  return hexString;
+}
+
 void displayCardInfo(RfIntf_t RfIntf) {  // Funtion in charge to show the card/s in te field
   char tmp[16];
+  int index = 0;
+  static String nfcID;
+
   while (1) {
-    switch (RfIntf.Protocol) {  // Indetify card protocol
-      case PROT_T1T:
-      case PROT_T2T:
-      case PROT_T3T:
-      case PROT_ISODEP:
+    switch (nfc.remoteDevice.getProtocol()) {  // Indetify card protocol
+      case nfc.protocol.T1T:
+      case nfc.protocol.T2T:
+      case nfc.protocol.T3T:
+      case nfc.protocol.ISODEP:
         Serial.print(" - POLL MODE: Remote activated tag type: ");
-        Serial.println(RfIntf.Protocol);
+        Serial.println(nfc.remoteDevice.getProtocol());
         break;
-      case PROT_ISO15693:
+      case nfc.protocol.ISO15693:
         Serial.println(" - POLL MODE: Remote ISO15693 card activated");
         break;
-      case PROT_MIFARE:
+      case nfc.protocol.MIFARE:
         Serial.println(" - POLL MODE: Remote MIFARE card activated");
         break;
       default:
@@ -57,18 +74,21 @@ void displayCardInfo(RfIntf_t RfIntf) {  // Funtion in charge to show the card/s
         return;
     }
 
-    switch (RfIntf.ModeTech) {  // Indetify card technology
-      case (MODE_POLL | TECH_PASSIVE_NFCA):
+    switch (nfc.remoteDevice.getModeTech()) {  // Indetify card technology
+      case (nfc.modeTech.POLL | nfc.tech.PASSIVE_NFCA):
         Serial.print("\tSENS_RES = ");
-        sprintf(tmp, "0x%.2X", RfIntf.Info.NFC_APP.SensRes[0]);
+        sprintf(tmp, "0x%.2X", nfc.remoteDevice.getAPPSensRes(index));
         Serial.print(tmp);
         Serial.print(" ");
-        sprintf(tmp, "0x%.2X", RfIntf.Info.NFC_APP.SensRes[1]);
+        index++;
+        sprintf(tmp, "0x%.2X", nfc.remoteDevice.getAPPSensRes(index));
         Serial.print(tmp);
         Serial.println(" ");
 
         Serial.print("\tNFCID = ");
-        PrintBuf(RfIntf.Info.NFC_APP.NfcId, RfIntf.Info.NFC_APP.NfcIdLen);
+        nfcID = getHexRepresentation(nfc.remoteDevice.getAPPID(), nfc.remoteDevice.getAPPIDLen());
+        // nfcID = getHexRepresentation(RfIntf.Info.NFC_APP.NfcId, RfIntf.Info.NFC_APP.NfcIdLen);
+        Serial.println(nfcID);
 
         if (RfIntf.Info.NFC_APP.SelResLen != 0) {
           Serial.print("\tSEL_RES = ");
@@ -146,35 +166,21 @@ void setup() {
 }
 
 void loop() {
-  if (!nfc.waitForDiscoveryNotification(&RfInterface)) {  // Waiting to detect cards
+  if (!nfc.waitForDiscoveryNotification()) {  // Waiting to detect cards
     displayCardInfo(RfInterface);
-    switch (RfInterface.Protocol) {
-      case PROT_T1T:
-      case PROT_T2T:
-      case PROT_T3T:
-      case PROT_ISODEP:
-        nfc.processReaderMode(RfInterface, READ_NDEF);
-        break;
 
-      case PROT_ISO15693:
-        break;
-
-      case PROT_MIFARE:
-        nfc.processReaderMode(RfInterface, READ_NDEF);
-        break;
-
-      default:
-        break;
+    // It can detect multiple cards at the same time if they use the same protocol
+    if (nfc.remoteDevice.hasMoreTags()) {
+      nfc.activateNextTagDiscovery();
+      Serial.println("Multiple cards are detected!");
     }
-
-    //* It can detect multiple cards at the same time if they use the same protocol
-    if (RfInterface.MoreTags) {
-      nfc.readerActivateNext(&RfInterface);
-    }
-    //* Wait for card removal
-    nfc.processReaderMode(RfInterface, PRESENCE_CHECK);
-    Serial.println("CARD REMOVED!");
+    Serial.println("Remove the Card");
+    nfc.waitForTagRemoval();
+    Serial.println("Card removed!");
   }
-  nfc.reset(); 
+
+  Serial.println("Restarting...");
+  nfc.reset();
+  Serial.println("Waiting for a Card...");
   delay(500);
 }

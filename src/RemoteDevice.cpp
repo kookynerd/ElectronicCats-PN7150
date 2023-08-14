@@ -16,9 +16,20 @@ bool RemoteDevice::hasMoreTags() const {
   return this->remoteDeviceStruct.moreTagsAvailable;
 }
 
-// TODO: validate memory access
-unsigned char RemoteDevice::getVPPID(int position) const {
-	return this->remoteDeviceStruct.info.nfcVPP.id[position];
+unsigned char RemoteDevice::getAPPSensRes(int index) const {
+  return this->remoteDeviceStruct.info.nfcAPP.sensRes[index];
+}
+
+const unsigned char* RemoteDevice::getAPPID() const {
+  return this->remoteDeviceStruct.info.nfcAPP.nfcId;
+}
+
+unsigned char RemoteDevice::getAPPIDLen() const {
+  return this->remoteDeviceStruct.info.nfcAPP.nfcIdLen;
+}
+
+const unsigned char* RemoteDevice::getVPPID() const {
+	return this->remoteDeviceStruct.info.nfcVPP.id;
 }
 
 void RemoteDevice::setInterface(unsigned char interface) {
