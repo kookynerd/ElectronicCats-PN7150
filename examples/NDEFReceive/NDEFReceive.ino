@@ -3,7 +3,8 @@
 #define PN7150_VEN (13)
 #define PN7150_ADDR (0x28)
 
-Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);  // creates a global NFC device interface object, attached to pins 7 (IRQ) and 8 (VEN) and using the default I2C address 0x28
+// Create a global NFC device interface object, attached to pins 11 (IRQ) and 13 (VEN) and using the default I2C address 0x28
+Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);
 
 const char ndefMessage[] = {0xD1,                      // MB/ME/CF/1/IL/TNF
                             0x01,                      // Type length (1 byte)
@@ -63,7 +64,7 @@ void setup() {
 void loop() {
   if (!nfc.waitForDiscoveryNotification()) {  // Waiting to detect cards
     displayDeviceInfo();
-    switch (nfc.remoteDevice.protocol) {
+    switch (nfc.remoteDevice.getProtocol()) {
       // TODO: add getProtocol() to the API and make the available protocols more accessible
       case PROT_T1T:
       case PROT_T2T:
@@ -84,7 +85,7 @@ void loop() {
     }
 
     // It can detect multiple cards at the same time if they use the same protocol
-    if (nfc.remoteDevice.moreTagsAvailable) {
+    if (nfc.remoteDevice.hasMoreTags()) {
       nfc.activateNextTagDiscovery();
       Serial.println("Multiple cards are detected!");
     }
@@ -102,7 +103,7 @@ void loop() {
 void displayDeviceInfo() {
   Serial.println();
   Serial.print("Interface: ");
-  switch (nfc.remoteDevice.interface) {
+  switch (nfc.remoteDevice.getInterface()) {
     case INTF_ISODEP:
       Serial.println("ISO-DEP");
       break;
@@ -124,7 +125,7 @@ void displayDeviceInfo() {
   }
 
   Serial.print("Protocol: ");
-  switch (nfc.remoteDevice.protocol) {
+  switch (nfc.remoteDevice.getProtocol()) {
     case nfc.protocol.UNDETERMINED:
       Serial.println("UNDETERMINED");
       break;
@@ -155,7 +156,7 @@ void displayDeviceInfo() {
   }
 
   Serial.print("Technology: ");
-  switch (nfc.remoteDevice.modeTech) {
+  switch (nfc.remoteDevice.getModeTech()) {
     case nfc.modeTech.POLL | nfc.tech.PASSIVE_NFCA:
       Serial.println("PASSIVE NFC A");
       break;

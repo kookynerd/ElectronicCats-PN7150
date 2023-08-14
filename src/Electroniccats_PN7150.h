@@ -63,15 +63,6 @@
 #define MODE_P2P (1 << 1)
 #define MODE_RW (1 << 2)
 
-/*
- * Flag definition used as Interface values
- */
-#define INTF_UNDETERMINED 0x0
-#define INTF_FRAME 0x1
-#define INTF_ISODEP 0x2
-#define INTF_NFCDEP 0x3
-#define INTF_TAGCMD 0x80
-
 #define MaxPayloadSize 255  // See NCI specification V1.0, section 3.1
 #define MsgHeaderSize 3
 
@@ -109,7 +100,7 @@ typedef enum {
   PRESENCE_CHECK
 } RW_Operation_t;
 
-class Electroniccats_PN7150 : public Mode, public RemoteDevice {
+class Electroniccats_PN7150 : public Mode {
  private:
   uint8_t _IRQpin, _VENpin, _I2Caddress;
   TwoWire *_wire;
@@ -130,6 +121,11 @@ class Electroniccats_PN7150 : public Mode, public RemoteDevice {
  public:
   Electroniccats_PN7150(uint8_t IRQpin, uint8_t VENpin, uint8_t I2Caddress, TwoWire *wire = &Wire);
   uint8_t begin(void);
+  RemoteDevice remoteDevice;
+  Protocol protocol;
+  Technology tech;
+  ModeTech modeTech;
+  Interface interface;
   bool hasMessage() const;
   uint8_t writeData(uint8_t data[], uint32_t dataLength) const;  // write data from DeviceHost to PN7150. Returns success (0) or Fail (> 0)
   uint32_t readData(uint8_t data[]) const;                       // read data from PN7150, returns the amount of bytes read

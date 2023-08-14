@@ -910,15 +910,20 @@ wait:
   /* Is RF_INTF_ACTIVATED_NTF ? */
   if (rxBuffer[1] == 0x05) {
     pRfIntf->Interface = rxBuffer[4];
-    this->remoteDevice.interface = rxBuffer[4];
+    // this->remoteDeviceStruct.interface = rxBuffer[4];
+    this->remoteDevice.setInterface(rxBuffer[4]);
     pRfIntf->Protocol = rxBuffer[5];
-    this->remoteDevice.protocol = rxBuffer[5];
+    // this->remoteDeviceStruct.protocol = rxBuffer[5];
+    this->remoteDevice.setProtocol(rxBuffer[5]);
     pRfIntf->ModeTech = rxBuffer[6];
-    this->remoteDevice.modeTech = rxBuffer[6];
+    // this->remoteDeviceStruct.modeTech = rxBuffer[6];
+    this->remoteDevice.setModeTech(rxBuffer[6]);
     pRfIntf->MoreTags = false;
-    this->remoteDevice.moreTagsAvailable = false;
-    fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
-    fillInterfaceInfo(&rxBuffer[10]);
+    // this->remoteDeviceStruct.moreTagsAvailable = false;
+    this->remoteDevice.setMoreTagsAvailable(false);
+    // fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
+    // fillInterfaceInfo(&rxBuffer[10]);
+    this->remoteDevice.setInfo(pRfIntf, &rxBuffer[10]);
 
     // P2P
     /* Verifying if not a P2P device also presenting T4T emulation */
@@ -941,15 +946,16 @@ wait:
           /* Is P2P detected ? */
           if (rxBuffer[5] == PROT_NFCDEP) {
             pRfIntf->Interface = rxBuffer[4];
-            this->remoteDevice.interface = rxBuffer[4];
+            this->remoteDevice.setInterface(rxBuffer[4]);
             pRfIntf->Protocol = rxBuffer[5];
-            this->remoteDevice.protocol = rxBuffer[5];
+            this->remoteDevice.setProtocol(rxBuffer[5]);
             pRfIntf->ModeTech = rxBuffer[6];
-            this->remoteDevice.modeTech = rxBuffer[6];
+            this->remoteDevice.setModeTech(rxBuffer[6]);
             pRfIntf->MoreTags = false;
-            this->remoteDevice.moreTagsAvailable = false;
-            fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
-            fillInterfaceInfo(&rxBuffer[10]);
+            this->remoteDevice.setMoreTagsAvailable(false);
+            // fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
+            // fillInterfaceInfo(&rxBuffer[10]);
+            this->remoteDevice.setInfo(pRfIntf, &rxBuffer[10]);
             break;
           }
         } else {
@@ -969,13 +975,13 @@ wait:
     }
   } else { /* RF_DISCOVER_NTF */
     pRfIntf->Interface = INTF_UNDETERMINED;
-    this->remoteDevice.interface = INTF_UNDETERMINED;
+    this->remoteDevice.setInterface(INTF_UNDETERMINED);
     pRfIntf->Protocol = rxBuffer[4];
-    this->remoteDevice.protocol = rxBuffer[4];
+    this->remoteDevice.setProtocol(rxBuffer[4]);
     pRfIntf->ModeTech = rxBuffer[5];
-    this->remoteDevice.modeTech = rxBuffer[5];
+    this->remoteDevice.setModeTech(rxBuffer[5]);
     pRfIntf->MoreTags = true;
-    this->remoteDevice.moreTagsAvailable = true;
+    this->remoteDevice.setMoreTagsAvailable(true);
 
     /* Get next NTF for further activation */
     do {
@@ -1009,17 +1015,18 @@ wait:
 
       if ((rxBuffer[0] == 0x61) || (rxBuffer[1] == 0x05)) {
         pRfIntf->Interface = rxBuffer[4];
-        this->remoteDevice.interface = rxBuffer[4];
+        this->remoteDevice.setInterface(rxBuffer[4]);
         pRfIntf->Protocol = rxBuffer[5];
-        this->remoteDevice.protocol = rxBuffer[5];
+        this->remoteDevice.setProtocol(rxBuffer[5]);
         pRfIntf->ModeTech = rxBuffer[6];
-        this->remoteDevice.modeTech = rxBuffer[6];
-        fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
-        fillInterfaceInfo(&rxBuffer[10]);
+        this->remoteDevice.setModeTech(rxBuffer[6]);
+        // fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
+        // fillInterfaceInfo(&rxBuffer[10]);
+        this->remoteDevice.setInfo(pRfIntf, &rxBuffer[10]);
       }
 
       /* In case of P2P target detected but lost, inform application to restart discovery */
-      else if (pRfIntf->Protocol == PROT_NFCDEP) {
+      else if (this->remoteDevice.getProtocol() == PROT_NFCDEP) {
         /* Restart the discovery loop */
         (void)writeData(NCIStopDiscovery, sizeof(NCIStopDiscovery));
         getMessage();
@@ -1036,7 +1043,7 @@ wait:
   /* In case of unknown target align protocol information */
   if (pRfIntf->Interface == INTF_UNDETERMINED) {
     pRfIntf->Protocol = PROT_UNDETERMINED;
-    this->remoteDevice.protocol = PROT_UNDETERMINED;
+    this->remoteDevice.setProtocol(protocol.UNDETERMINED);
   }
 
   return SUCCESS;
@@ -1354,7 +1361,7 @@ void Electroniccats_PN7150::presenceCheck(RfIntf_t RfIntf) {
   uint8_t NCIDeactivate[] = {0x21, 0x06, 0x01, 0x01};
   uint8_t NCISelectMIFARE[] = {0x21, 0x04, 0x03, 0x01, 0x80, 0x80};
 
-  switch (this->remoteDevice.protocol) {
+  switch (remoteDevice.getProtocol()) {
     case PROT_T1T:
       do {
         delay(500);
@@ -1395,7 +1402,7 @@ void Electroniccats_PN7150::presenceCheck(RfIntf_t RfIntf) {
       do {
         delay(500);
         for (i = 0; i < 8; i++) {
-          NCIPresCheckIso15693[i + 6] = this->remoteDevice.info.nfcVPP.id[7 - i];
+          NCIPresCheckIso15693[i + 6] = remoteDevice.getVPPID(7 - i);
         }
         (void)writeData(NCIPresCheckIso15693, sizeof(NCIPresCheckIso15693));
         getMessage();
@@ -1434,147 +1441,6 @@ void Electroniccats_PN7150::waitForTagRemoval() {
 // Deprecated, use waitForTagRemoval() instead
 void Electroniccats_PN7150::PresenceCheck(RfIntf_t RfIntf) {
   Electroniccats_PN7150::presenceCheck(RfIntf);
-}
-
-void Electroniccats_PN7150::fillInterfaceInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) {
-  uint8_t i, temp;
-
-  switch (pRfIntf->ModeTech) {
-    case (MODE_POLL | TECH_PASSIVE_NFCA):
-      memcpy(pRfIntf->Info.NFC_APP.SensRes, &pBuf[0], 2);
-      temp = 2;
-      pRfIntf->Info.NFC_APP.NfcIdLen = pBuf[temp];
-      temp++;
-      memcpy(pRfIntf->Info.NFC_APP.NfcId, &pBuf[3], pRfIntf->Info.NFC_APP.NfcIdLen);
-      temp += pBuf[2];
-      pRfIntf->Info.NFC_APP.SelResLen = pBuf[temp];
-      temp++;
-
-      if (pRfIntf->Info.NFC_APP.SelResLen == 1)
-        pRfIntf->Info.NFC_APP.SelRes[0] = pBuf[temp];
-
-      temp += 4;
-      if (pBuf[temp] != 0) {
-        temp++;
-        pRfIntf->Info.NFC_APP.RatsLen = pBuf[temp];
-        memcpy(pRfIntf->Info.NFC_APP.Rats, &pBuf[temp + 1], pBuf[temp]);
-      } else {
-        pRfIntf->Info.NFC_APP.RatsLen = 0;
-      }
-      break;
-
-    case (MODE_POLL | TECH_PASSIVE_NFCB):
-      pRfIntf->Info.NFC_BPP.SensResLen = pBuf[0];
-      memcpy(pRfIntf->Info.NFC_BPP.SensRes, &pBuf[1], pRfIntf->Info.NFC_BPP.SensResLen);
-      temp = pBuf[0] + 4;
-      if (pBuf[temp] != 0) {
-        temp++;
-        pRfIntf->Info.NFC_BPP.AttribResLen = pBuf[temp];
-        memcpy(pRfIntf->Info.NFC_BPP.AttribRes, &pBuf[temp + 1], pBuf[temp]);
-      } else {
-        pRfIntf->Info.NFC_BPP.AttribResLen = 0;
-      }
-      break;
-
-    case (MODE_POLL | TECH_PASSIVE_NFCF):
-      pRfIntf->Info.NFC_FPP.BitRate = pBuf[0];
-      pRfIntf->Info.NFC_FPP.SensResLen = pBuf[1];
-      memcpy(pRfIntf->Info.NFC_FPP.SensRes, &pBuf[2], pRfIntf->Info.NFC_FPP.SensResLen);
-      break;
-
-    case (MODE_POLL | TECH_PASSIVE_15693):
-      pRfIntf->Info.NFC_VPP.AFI = pBuf[0];
-      pRfIntf->Info.NFC_VPP.DSFID = pBuf[1];
-
-      for (i = 0; i < 8; i++)
-        pRfIntf->Info.NFC_VPP.ID[7 - i] = pBuf[2 + i];
-
-      break;
-
-    default:
-      break;
-  }
-}
-
-void Electroniccats_PN7150::fillInterfaceInfo(uint8_t *pBuf) {
-  uint8_t i, temp;
-
-  switch (this->remoteDevice.modeTech) {
-    case (MODE_POLL | TECH_PASSIVE_NFCA):
-      // memcpy(pRfIntf->Info.NFC_APP.SensRes, &pBuf[0], 2);
-      memcpy(this->remoteDevice.info.nfcAPP.sensRes, &pBuf[0], 2);
-      temp = 2;
-      // pRfIntf->Info.NFC_APP.NfcIdLen = pBuf[temp];
-      this->remoteDevice.info.nfcAPP.nfcIdLen = pBuf[temp];
-      temp++;
-      // memcpy(pRfIntf->Info.NFC_APP.NfcId, &pBuf[3], pRfIntf->Info.NFC_APP.NfcIdLen);
-      memcpy(this->remoteDevice.info.nfcAPP.nfcId, &pBuf[3], this->remoteDevice.info.nfcAPP.nfcIdLen);
-      temp += pBuf[2];
-      // pRfIntf->Info.NFC_APP.SelResLen = pBuf[temp];
-      this->remoteDevice.info.nfcAPP.selResLen = pBuf[temp];
-      temp++;
-
-      if (this->remoteDevice.info.nfcAPP.selResLen == 1) {
-        // pRfIntf->Info.NFC_APP.SelRes[0] = pBuf[temp];
-        this->remoteDevice.info.nfcAPP.selRes[0] = pBuf[temp];
-      }
-
-      temp += 4;
-      if (pBuf[temp] != 0) {
-        temp++;
-        // pRfIntf->Info.NFC_APP.RatsLen = pBuf[temp];
-        this->remoteDevice.info.nfcAPP.ratsLen = pBuf[temp];
-        // memcpy(pRfIntf->Info.NFC_APP.Rats, &pBuf[temp + 1], pBuf[temp]);
-        memcpy(this->remoteDevice.info.nfcAPP.rats, &pBuf[temp + 1], pBuf[temp]);
-      } else {
-        // pRfIntf->Info.NFC_APP.RatsLen = 0;
-        this->remoteDevice.info.nfcAPP.ratsLen = 0;
-      }
-      break;
-
-    case (MODE_POLL | TECH_PASSIVE_NFCB):
-      // pRfIntf->Info.NFC_BPP.SensResLen = pBuf[0];
-      this->remoteDevice.info.nfcBPP.sensResLen = pBuf[0];
-      // memcpy(pRfIntf->Info.NFC_BPP.SensRes, &pBuf[1], pRfIntf->Info.NFC_BPP.SensResLen);
-      memcpy(this->remoteDevice.info.nfcBPP.sensRes, &pBuf[1], this->remoteDevice.info.nfcBPP.sensResLen);
-      temp = pBuf[0] + 4;
-      if (pBuf[temp] != 0) {
-        temp++;
-        // pRfIntf->Info.NFC_BPP.AttribResLen = pBuf[temp];
-        this->remoteDevice.info.nfcBPP.attribResLen = pBuf[temp];
-        // memcpy(pRfIntf->Info.NFC_BPP.AttribRes, &pBuf[temp + 1], pBuf[temp]);
-        memcpy(this->remoteDevice.info.nfcBPP.attribRes, &pBuf[temp + 1], pBuf[temp]);
-      } else {
-        // pRfIntf->Info.NFC_BPP.AttribResLen = 0;
-        this->remoteDevice.info.nfcBPP.attribResLen = 0;
-      }
-      break;
-
-    case (MODE_POLL | TECH_PASSIVE_NFCF):
-      // pRfIntf->Info.NFC_FPP.BitRate = pBuf[0];
-      this->remoteDevice.info.nfcFPP.bitRate = pBuf[0];
-      // pRfIntf->Info.NFC_FPP.SensResLen = pBuf[1];
-      this->remoteDevice.info.nfcFPP.sensResLen = pBuf[1];
-      // memcpy(pRfIntf->Info.NFC_FPP.SensRes, &pBuf[2], pRfIntf->Info.NFC_FPP.SensResLen);
-      memcpy(this->remoteDevice.info.nfcFPP.sensRes, &pBuf[2], this->remoteDevice.info.nfcFPP.sensResLen);
-      break;
-
-    case (MODE_POLL | TECH_PASSIVE_15693):
-      // pRfIntf->Info.NFC_VPP.AFI = pBuf[0];
-      this->remoteDevice.info.nfcVPP.afi = pBuf[0];
-      // pRfIntf->Info.NFC_VPP.DSFID = pBuf[1];
-      this->remoteDevice.info.nfcVPP.dsfid = pBuf[1];
-
-      for (i = 0; i < 8; i++) {
-        // pRfIntf->Info.NFC_VPP.ID[7 - i] = pBuf[2 + i];
-        this->remoteDevice.info.nfcVPP.id[7 - i] = pBuf[2 + i];
-      }
-
-      break;
-
-    default:
-      break;
-  }
 }
 
 // Deprecated, use fillInterfaceInfo(uint8_t *pBuf) instead
@@ -1645,13 +1511,13 @@ bool Electroniccats_PN7150::readerActivateNext(RfIntf_t *pRfIntf) {
   bool status = ERROR;
 
   pRfIntf->MoreTags = false;
-  this->remoteDevice.moreTagsAvailable = false;
+  remoteDevice.setMoreTagsAvailable(false);
 
-  if (gNextTag_Protocol == PROT_UNDETERMINED) {
+  if (gNextTag_Protocol == protocol.UNDETERMINED) {
     pRfIntf->Interface = INTF_UNDETERMINED;
-    this->remoteDevice.interface = INTF_UNDETERMINED;
+    remoteDevice.setInterface(interface.UNDETERMINED);
     pRfIntf->Protocol = PROT_UNDETERMINED;
-    this->remoteDevice.protocol = PROT_UNDETERMINED;
+    remoteDevice.setProtocol(protocol.UNDETERMINED);
     return ERROR;
   }
 
@@ -1672,7 +1538,7 @@ bool Electroniccats_PN7150::readerActivateNext(RfIntf_t *pRfIntf) {
   else if (gNextTag_Protocol == PROT_ISODEP)
     NCIRfDiscoverSelect[5] = INTF_NFCDEP;
   else if (gNextTag_Protocol == PROT_MIFARE)
-    NCIRfDiscoverSelect[5] = INTF_TAGCMD;
+    NCIRfDiscoverSelect[5] = INTF_TAGCMD;  // TODO: check this
   else
     NCIRfDiscoverSelect[5] = INTF_FRAME;
 
@@ -1683,13 +1549,14 @@ bool Electroniccats_PN7150::readerActivateNext(RfIntf_t *pRfIntf) {
     getMessage(100);
     if ((rxBuffer[0] == 0x61) || (rxBuffer[1] == 0x05)) {
       pRfIntf->Interface = rxBuffer[4];
-      this->remoteDevice.interface = rxBuffer[4];
+      remoteDevice.setInterface(rxBuffer[4]);
       pRfIntf->Protocol = rxBuffer[5];
-      this->remoteDevice.protocol = rxBuffer[5];
+      remoteDevice.setProtocol(rxBuffer[5]);
       pRfIntf->ModeTech = rxBuffer[6];
-      this->remoteDevice.modeTech = rxBuffer[6];
-      fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
-      fillInterfaceInfo(&rxBuffer[10]);
+      remoteDevice.setModeTech(rxBuffer[6]);
+      // fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
+      // fillInterfaceInfo(&rxBuffer[10]);
+      remoteDevice.setInfo(pRfIntf, &rxBuffer[10]);
       status = SUCCESS;
     }
   }
@@ -1710,7 +1577,7 @@ void Electroniccats_PN7150::readNdef(RfIntf_t RfIntf) {
   uint8_t Cmd[MAX_NCI_FRAME_SIZE];
   uint16_t CmdSize = 0;
 
-  RW_NDEF_Reset(this->remoteDevice.protocol);
+  RW_NDEF_Reset(remoteDevice.getProtocol());
 
   while (1) {
     RW_NDEF_Read_Next(&rxBuffer[3], rxBuffer[2], &Cmd[3], (unsigned short *)&CmdSize);
@@ -1728,7 +1595,7 @@ void Electroniccats_PN7150::readNdef(RfIntf_t RfIntf) {
       getMessage(1000);
 
       // Manage chaining in case of T4T
-      if (this->remoteDevice.interface == INTF_ISODEP && rxBuffer[0] == 0x10) {
+      if (remoteDevice.getInterface() == INTF_ISODEP && rxBuffer[0] == 0x10) {
         uint8_t tmp[MAX_NCI_FRAME_SIZE];
         uint8_t tmpSize = 0;
         while (rxBuffer[0] == 0x10) {
@@ -1759,7 +1626,7 @@ void Electroniccats_PN7150::writeNdef(RfIntf_t RfIntf) {
   uint8_t Cmd[MAX_NCI_FRAME_SIZE];
   uint16_t CmdSize = 0;
 
-  RW_NDEF_Reset(this->remoteDevice.protocol);
+  RW_NDEF_Reset(remoteDevice.getProtocol());
 
   while (1) {
     RW_NDEF_Write_Next(&rxBuffer[3], rxBuffer[2], &Cmd[3], (unsigned short *)&CmdSize);

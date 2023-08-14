@@ -2,9 +2,10 @@
 #define RemoteDevice_H
 
 #include "Arduino.h"
+#include "Interface.h"
+#include "ModeTech.h"
 #include "Protocol.h"
 #include "Technology.h"
-#include "ModeTech.h"
 
 /*
  * Definition of discovered remote device properties information
@@ -111,11 +112,20 @@ struct RfIntfCC_t {
 };
 
 class RemoteDevice {
+ protected:
+  RfIntfCC_t remoteDeviceStruct;
+
  public:
-  RfIntfCC_t remoteDevice;
-  Protocol protocol;
-  Technology tech;
-  ModeTech modeTech;
+  unsigned char getInterface() const;
+  unsigned char getProtocol() const;
+  unsigned char getModeTech() const;
+  bool hasMoreTags() const;
+  unsigned char getVPPID(int position) const;
+  void setInterface(unsigned char interface);
+  void setProtocol(unsigned char protocol);
+  void setModeTech(unsigned char modeTech);
+  void setMoreTagsAvailable(bool moreTags);
+  void setInfo(RfIntf_t *pRfIntf, uint8_t *pBuf);
 };
 
 #endif
