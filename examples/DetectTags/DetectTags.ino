@@ -52,6 +52,8 @@ String getHexRepresentation(const byte* data, const uint32_t numBytes) {
 void displayCardInfo(RfIntf_t RfIntf) {  // Funtion in charge to show the card/s in te field
   char tmp[16];
   int index = 0;
+  static String sensRes;
+  static String sensResLen;
   static String nfcID;
 
   while (1) {
@@ -77,24 +79,19 @@ void displayCardInfo(RfIntf_t RfIntf) {  // Funtion in charge to show the card/s
     switch (nfc.remoteDevice.getModeTech()) {  // Indetify card technology
       case (nfc.modeTech.POLL | nfc.tech.PASSIVE_NFCA):
         Serial.print("\tSENS_RES = ");
-        sprintf(tmp, "0x%.2X", nfc.remoteDevice.getAPPSensRes(index));
-        Serial.print(tmp);
-        Serial.print(" ");
-        index++;
-        sprintf(tmp, "0x%.2X", nfc.remoteDevice.getAPPSensRes(index));
-        Serial.print(tmp);
-        Serial.println(" ");
+        Serial.println(getHexRepresentation(nfc.remoteDevice.getAPPSensRes(), nfc.remoteDevice.getAPPSensResLen()));
+        Serial.println("\tSENS_RES Length = " + String(nfc.remoteDevice.getAPPSensResLen()) + " bytes");
 
         Serial.print("\tNFCID = ");
         nfcID = getHexRepresentation(nfc.remoteDevice.getAPPID(), nfc.remoteDevice.getAPPIDLen());
-        // nfcID = getHexRepresentation(RfIntf.Info.NFC_APP.NfcId, RfIntf.Info.NFC_APP.NfcIdLen);
         Serial.println(nfcID);
+        Serial.println("\tNFCID Length = " + String(nfc.remoteDevice.getAPPIDLen()) + " bytes");
 
-        if (RfIntf.Info.NFC_APP.SelResLen != 0) {
+        // if (RfIntf.Info.NFC_APP.SelResLen != 0) {
+        if (nfc.remoteDevice.getAPPSelResLen() != 0) {
           Serial.print("\tSEL_RES = ");
-          sprintf(tmp, "0x%.2X", RfIntf.Info.NFC_APP.SelRes[0]);
-          Serial.print(tmp);
-          Serial.println(" ");
+          Serial.println(getHexRepresentation(nfc.remoteDevice.getAPPSelRes(), nfc.remoteDevice.getAPPSelResLen()));
+          Serial.println("\tSEL_RES Length; = " + String(nfc.remoteDevice.getAPPSelResLen()) + " bytes");
         }
         break;
 
@@ -166,6 +163,7 @@ void setup() {
 }
 
 void loop() {
+  // TODO: invert the logic to make it more readable
   if (!nfc.waitForDiscoveryNotification()) {  // Waiting to detect cards
     displayCardInfo(RfInterface);
 

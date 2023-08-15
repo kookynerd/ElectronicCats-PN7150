@@ -25,6 +25,7 @@ struct RfIntf_info_APP_t {
 /* POLL passive type A camelCase */
 struct RfIntfInfoAppCC_t {
   unsigned char sensRes[2];
+  unsigned char sensResLen;
   unsigned char nfcId[10];
   unsigned char nfcIdLen;
   unsigned char selRes[1];
@@ -120,14 +121,17 @@ class RemoteDevice {
   unsigned char getProtocol() const;
   unsigned char getModeTech() const;
   bool hasMoreTags() const;
-  unsigned char getAPPSensRes(int index) const;
+  const unsigned char* getAPPSensRes() const;
+  unsigned char getAPPSensResLen() const;
   const unsigned char* getAPPID() const;
   unsigned char getAPPIDLen() const;
-  unsigned char getAPPSelRes(int index) const;
+  const unsigned char* getAPPSelRes() const;
   unsigned char getAPPSelResLen() const;
-  unsigned char getAPPRats(int index) const;
+  const unsigned char* getAPPRats() const;
   unsigned char getAPPRatsLen() const;
   const unsigned char* getVPPID() const;
+  /**************************************/
+  const unsigned char* getSensRes() const;
   void setInterface(unsigned char interface);
   void setProtocol(unsigned char protocol);
   void setModeTech(unsigned char modeTech);

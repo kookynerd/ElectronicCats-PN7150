@@ -16,8 +16,12 @@ bool RemoteDevice::hasMoreTags() const {
   return this->remoteDeviceStruct.moreTagsAvailable;
 }
 
-unsigned char RemoteDevice::getAPPSensRes(int index) const {
-  return this->remoteDeviceStruct.info.nfcAPP.sensRes[index];
+const unsigned char* RemoteDevice::getAPPSensRes() const {
+  return this->remoteDeviceStruct.info.nfcAPP.sensRes;
+}
+
+unsigned char RemoteDevice::getAPPSensResLen() const {
+  return this->remoteDeviceStruct.info.nfcAPP.sensResLen;
 }
 
 const unsigned char* RemoteDevice::getAPPID() const {
@@ -26,6 +30,22 @@ const unsigned char* RemoteDevice::getAPPID() const {
 
 unsigned char RemoteDevice::getAPPIDLen() const {
   return this->remoteDeviceStruct.info.nfcAPP.nfcIdLen;
+}
+
+const unsigned char* RemoteDevice::getAPPSelRes() const {
+  return this->remoteDeviceStruct.info.nfcAPP.selRes;
+}
+
+unsigned char RemoteDevice::getAPPSelResLen() const {
+  return this->remoteDeviceStruct.info.nfcAPP.selResLen;
+}
+
+const unsigned char* RemoteDevice::getAPPRats() const {
+  return this->remoteDeviceStruct.info.nfcAPP.rats;
+}
+
+unsigned char RemoteDevice::getAPPRatsLen() const {
+  return this->remoteDeviceStruct.info.nfcAPP.ratsLen;
 }
 
 const unsigned char* RemoteDevice::getVPPID() const {
@@ -55,6 +75,7 @@ void RemoteDevice::setInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) {
     case (MODE_POLL | TECH_PASSIVE_NFCA):
       memcpy(pRfIntf->Info.NFC_APP.SensRes, &pBuf[0], 2);
 			memcpy(remoteDeviceStruct.info.nfcAPP.sensRes, &pBuf[0], 2);
+      remoteDeviceStruct.info.nfcAPP.sensResLen = 2;
       temp = 2;
       pRfIntf->Info.NFC_APP.NfcIdLen = pBuf[temp];
 			remoteDeviceStruct.info.nfcAPP.nfcIdLen = pBuf[temp];
