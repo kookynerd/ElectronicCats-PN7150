@@ -11,7 +11,7 @@
 #define TECH_ACTIVE_NFCF 5
 #define TECH_PASSIVE_15693 6
 
-class Technology {
+class Tech {
  public:
   enum Value {
     PASSIVE_NFCA = 0,
@@ -19,7 +19,8 @@ class Technology {
     PASSIVE_NFCF = 2,
     ACTIVE_NFCA = 3,
     ACTIVE_NFCF = 5,
-    PASSIVE_15693 = 6
+    PASSIVE_15693 = 6,
+    PASSIVE_NFCV = 6
   };
 };
 

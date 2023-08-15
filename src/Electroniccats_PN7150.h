@@ -120,7 +120,7 @@ class Electroniccats_PN7150 : public Mode {
   uint8_t begin(void);
   RemoteDevice remoteDevice;
   Protocol protocol;
-  Technology tech;
+  Tech tech;
   ModeTech modeTech;
   Interface interface;
   bool hasMessage() const;

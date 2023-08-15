@@ -5,7 +5,7 @@
 #include "Interface.h"
 #include "ModeTech.h"
 #include "Protocol.h"
-#include "Technology.h"
+#include "Tech.h"
 
 /*
  * Definition of discovered remote device properties information
@@ -115,6 +115,8 @@ struct RfIntfCC_t {
 class RemoteDevice {
  private:
   RfIntfCC_t remoteDeviceStruct;
+  Tech tech;
+  ModeTech modeTech;
 
  public:
   unsigned char getInterface() const;
@@ -131,7 +133,9 @@ class RemoteDevice {
   unsigned char getAPPRatsLen() const;
   const unsigned char* getVPPID() const;
   /**************************************/
+  // TODO: add generic getters
   const unsigned char* getSensRes() const;
+  unsigned char getSensResLen() const;
   void setInterface(unsigned char interface);
   void setProtocol(unsigned char protocol);
   void setModeTech(unsigned char modeTech);

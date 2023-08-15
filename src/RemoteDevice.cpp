@@ -52,6 +52,51 @@ const unsigned char* RemoteDevice::getVPPID() const {
 	return this->remoteDeviceStruct.info.nfcVPP.id;
 }
 
+const unsigned char* RemoteDevice::getSensRes() const {
+  switch (remoteDeviceStruct.modeTech) {
+    case (modeTech.POLL | tech.PASSIVE_NFCA):
+      return this->remoteDeviceStruct.info.nfcAPP.sensRes;
+      break;
+    
+    case (modeTech.POLL | tech.PASSIVE_NFCB):
+      return this->remoteDeviceStruct.info.nfcBPP.sensRes;
+      break;
+
+    case (modeTech.POLL | tech.PASSIVE_NFCF):
+      return this->remoteDeviceStruct.info.nfcFPP.sensRes;
+      break;
+
+    case (modeTech.POLL | tech.PASSIVE_NFCV):
+      return this->remoteDeviceStruct.info.nfcVPP.id;
+      break;
+
+    default:
+      return NULL;
+      break;
+  }
+}
+
+unsigned char RemoteDevice::getSensResLen() const {
+  switch (remoteDeviceStruct.modeTech) {
+    case (modeTech.POLL | tech.PASSIVE_NFCA):
+      return this->remoteDeviceStruct.info.nfcAPP.sensResLen;
+      break;
+    
+    case (modeTech.POLL | tech.PASSIVE_NFCB):
+      return this->remoteDeviceStruct.info.nfcBPP.sensResLen;
+      break;
+
+    case (modeTech.POLL | tech.PASSIVE_NFCF):
+      return this->remoteDeviceStruct.info.nfcFPP.sensResLen;
+      break;
+
+    case (modeTech.POLL | tech.PASSIVE_NFCV):
+    default:
+      return 0;
+      break;
+  }
+}
+
 void RemoteDevice::setInterface(unsigned char interface) {
   this->remoteDeviceStruct.interface = interface;
 }

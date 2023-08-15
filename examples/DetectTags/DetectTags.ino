@@ -79,19 +79,16 @@ void displayCardInfo(RfIntf_t RfIntf) {  // Funtion in charge to show the card/s
     switch (nfc.remoteDevice.getModeTech()) {  // Indetify card technology
       case (nfc.modeTech.POLL | nfc.tech.PASSIVE_NFCA):
         Serial.print("\tSENS_RES = ");
-        Serial.println(getHexRepresentation(nfc.remoteDevice.getAPPSensRes(), nfc.remoteDevice.getAPPSensResLen()));
-        Serial.println("\tSENS_RES Length = " + String(nfc.remoteDevice.getAPPSensResLen()) + " bytes");
+        Serial.println(getHexRepresentation(nfc.remoteDevice.getSensRes(), nfc.remoteDevice.getSensResLen()));
 
         Serial.print("\tNFCID = ");
         nfcID = getHexRepresentation(nfc.remoteDevice.getAPPID(), nfc.remoteDevice.getAPPIDLen());
         Serial.println(nfcID);
-        Serial.println("\tNFCID Length = " + String(nfc.remoteDevice.getAPPIDLen()) + " bytes");
 
         // if (RfIntf.Info.NFC_APP.SelResLen != 0) {
         if (nfc.remoteDevice.getAPPSelResLen() != 0) {
           Serial.print("\tSEL_RES = ");
           Serial.println(getHexRepresentation(nfc.remoteDevice.getAPPSelRes(), nfc.remoteDevice.getAPPSelResLen()));
-          Serial.println("\tSEL_RES Length; = " + String(nfc.remoteDevice.getAPPSelResLen()) + " bytes");
         }
         break;
 
