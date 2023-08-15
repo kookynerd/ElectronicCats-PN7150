@@ -16,57 +16,23 @@ bool RemoteDevice::hasMoreTags() const {
   return this->remoteDeviceStruct.moreTagsAvailable;
 }
 
-const unsigned char* RemoteDevice::getAPPSensRes() const {
-  return this->remoteDeviceStruct.info.nfcAPP.sensRes;
-}
-
-unsigned char RemoteDevice::getAPPSensResLen() const {
-  return this->remoteDeviceStruct.info.nfcAPP.sensResLen;
-}
-
-const unsigned char* RemoteDevice::getAPPID() const {
-  return this->remoteDeviceStruct.info.nfcAPP.nfcId;
-}
-
-unsigned char RemoteDevice::getAPPIDLen() const {
-  return this->remoteDeviceStruct.info.nfcAPP.nfcIdLen;
-}
-
-const unsigned char* RemoteDevice::getAPPSelRes() const {
-  return this->remoteDeviceStruct.info.nfcAPP.selRes;
-}
-
-unsigned char RemoteDevice::getAPPSelResLen() const {
-  return this->remoteDeviceStruct.info.nfcAPP.selResLen;
-}
-
-const unsigned char* RemoteDevice::getAPPRats() const {
-  return this->remoteDeviceStruct.info.nfcAPP.rats;
-}
-
-unsigned char RemoteDevice::getAPPRatsLen() const {
-  return this->remoteDeviceStruct.info.nfcAPP.ratsLen;
-}
-
-const unsigned char* RemoteDevice::getVPPID() const {
-	return this->remoteDeviceStruct.info.nfcVPP.id;
-}
-
+// Getters for device information
+ 
 const unsigned char* RemoteDevice::getSensRes() const {
   switch (remoteDeviceStruct.modeTech) {
-    case (modeTech.POLL | tech.PASSIVE_NFCA):
+    case (tech.PASSIVE_NFCA):
       return this->remoteDeviceStruct.info.nfcAPP.sensRes;
       break;
     
-    case (modeTech.POLL | tech.PASSIVE_NFCB):
+    case (tech.PASSIVE_NFCB):
       return this->remoteDeviceStruct.info.nfcBPP.sensRes;
       break;
 
-    case (modeTech.POLL | tech.PASSIVE_NFCF):
+    case (tech.PASSIVE_NFCF):
       return this->remoteDeviceStruct.info.nfcFPP.sensRes;
       break;
 
-    case (modeTech.POLL | tech.PASSIVE_NFCV):
+    case (tech.PASSIVE_NFCV):
       return this->remoteDeviceStruct.info.nfcVPP.id;
       break;
 
@@ -78,21 +44,201 @@ const unsigned char* RemoteDevice::getSensRes() const {
 
 unsigned char RemoteDevice::getSensResLen() const {
   switch (remoteDeviceStruct.modeTech) {
-    case (modeTech.POLL | tech.PASSIVE_NFCA):
+    case (tech.PASSIVE_NFCA):
       return this->remoteDeviceStruct.info.nfcAPP.sensResLen;
       break;
     
-    case (modeTech.POLL | tech.PASSIVE_NFCB):
+    case (tech.PASSIVE_NFCB):
       return this->remoteDeviceStruct.info.nfcBPP.sensResLen;
       break;
 
-    case (modeTech.POLL | tech.PASSIVE_NFCF):
+    case (tech.PASSIVE_NFCF):
       return this->remoteDeviceStruct.info.nfcFPP.sensResLen;
       break;
 
-    case (modeTech.POLL | tech.PASSIVE_NFCV):
+    case (tech.PASSIVE_NFCV):
     default:
       return 0;
+      break;
+  }
+}
+
+const unsigned char* RemoteDevice::getNFCID() const {
+  switch (remoteDeviceStruct.modeTech) {
+    case (tech.PASSIVE_NFCA):
+      return this->remoteDeviceStruct.info.nfcAPP.nfcId;
+      break;
+
+    case (tech.PASSIVE_NFCB):
+    case (tech.PASSIVE_NFCF):
+    case (tech.PASSIVE_NFCV):
+    default:
+      return NULL;
+      break;
+  }
+}
+
+unsigned char RemoteDevice::getNFCIDLen() const {
+  switch (remoteDeviceStruct.modeTech) {
+    case (tech.PASSIVE_NFCA):
+      return this->remoteDeviceStruct.info.nfcAPP.nfcIdLen;
+      break;
+
+    case (tech.PASSIVE_NFCB):
+    case (tech.PASSIVE_NFCF):
+    case (tech.PASSIVE_NFCV):
+    default:
+      return 0;
+      break;
+  }
+}
+
+const unsigned char* RemoteDevice::getSelRes() const {
+  switch (remoteDeviceStruct.modeTech) {
+    case (tech.PASSIVE_NFCA):
+      return this->remoteDeviceStruct.info.nfcAPP.selRes;
+      break;
+
+    case (tech.PASSIVE_NFCB):
+    case (tech.PASSIVE_NFCF):
+    case (tech.PASSIVE_NFCV):
+    default:
+      return NULL;
+      break;
+  }
+}
+
+unsigned char RemoteDevice::getSelResLen() const {
+  switch (remoteDeviceStruct.modeTech) {
+    case (tech.PASSIVE_NFCA):
+      return this->remoteDeviceStruct.info.nfcAPP.selResLen;
+      break;
+
+    case (tech.PASSIVE_NFCB):
+    case (tech.PASSIVE_NFCF):
+    case (tech.PASSIVE_NFCV):
+    default:
+      return 0;
+      break;
+  }
+}
+
+const unsigned char* RemoteDevice::getRats() const {
+  switch (remoteDeviceStruct.modeTech) {
+    case (tech.PASSIVE_NFCA):
+      return this->remoteDeviceStruct.info.nfcAPP.rats;
+      break;
+
+    case (tech.PASSIVE_NFCB):
+    case (tech.PASSIVE_NFCF):
+    case (tech.PASSIVE_NFCV):
+    default:
+      return NULL;
+      break;
+  }
+}
+
+unsigned char RemoteDevice::getRatsLen() const {
+  switch (remoteDeviceStruct.modeTech) {
+    case (tech.PASSIVE_NFCA):
+      return this->remoteDeviceStruct.info.nfcAPP.ratsLen;
+      break;
+
+    case (tech.PASSIVE_NFCB):
+    case (tech.PASSIVE_NFCF):
+    case (tech.PASSIVE_NFCV):
+    default:
+      return 0;
+      break;
+  }
+}
+
+const unsigned char* RemoteDevice::getAttribRes() const {
+  switch (remoteDeviceStruct.modeTech) {
+    case (tech.PASSIVE_NFCB):
+      return this->remoteDeviceStruct.info.nfcBPP.attribRes;
+      break;
+
+    case (tech.PASSIVE_NFCA):
+    case (tech.PASSIVE_NFCF):
+    case (tech.PASSIVE_NFCV):
+    default:
+      return NULL;
+      break;
+  }
+}
+
+unsigned char RemoteDevice::getAttribResLen() const {
+  switch (remoteDeviceStruct.modeTech) {
+    case (tech.PASSIVE_NFCB):
+      return this->remoteDeviceStruct.info.nfcBPP.attribResLen;
+      break;
+
+    case (tech.PASSIVE_NFCA):
+    case (tech.PASSIVE_NFCF):
+    case (tech.PASSIVE_NFCV):
+    default:
+      return 0;
+      break;
+  }
+}
+
+unsigned char RemoteDevice::getBitRate() const {
+  switch (remoteDeviceStruct.modeTech) {
+    case (tech.PASSIVE_NFCF):
+      return this->remoteDeviceStruct.info.nfcFPP.bitRate;
+      break;
+
+    case (tech.PASSIVE_NFCA):
+    case (tech.PASSIVE_NFCB):
+    case (tech.PASSIVE_NFCV):
+    default:
+      return NULL;
+      break;
+  }
+}
+
+unsigned char RemoteDevice::getAFI() const {
+  switch (remoteDeviceStruct.modeTech) {
+    case (tech.PASSIVE_NFCV):
+      return this->remoteDeviceStruct.info.nfcVPP.afi;
+      break;
+
+    case (tech.PASSIVE_NFCA):
+    case (tech.PASSIVE_NFCB):
+    case (tech.PASSIVE_NFCF):
+    default:
+      return 0;
+      break;
+  }
+}
+
+unsigned char RemoteDevice::getDSFID() const {
+  switch (remoteDeviceStruct.modeTech) {
+    case (tech.PASSIVE_NFCV):
+      return this->remoteDeviceStruct.info.nfcVPP.dsfid;
+      break;
+
+    case (tech.PASSIVE_NFCA):
+    case (tech.PASSIVE_NFCB):
+    case (tech.PASSIVE_NFCF):
+    default:
+      return 0;
+      break;
+  }
+}
+
+const unsigned char* RemoteDevice::getID() const {
+  switch (remoteDeviceStruct.modeTech) {
+    case (tech.PASSIVE_NFCV):
+      return this->remoteDeviceStruct.info.nfcVPP.id;
+      break;
+
+    case (tech.PASSIVE_NFCA):
+    case (tech.PASSIVE_NFCB):
+    case (tech.PASSIVE_NFCF):
+    default:
+      return NULL;
       break;
   }
 }
@@ -117,7 +263,7 @@ void RemoteDevice::setInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) {
 	uint8_t i, temp;
 
   switch (remoteDeviceStruct.modeTech) {
-    case (MODE_POLL | TECH_PASSIVE_NFCA):
+    case (tech.PASSIVE_NFCA):
       memcpy(pRfIntf->Info.NFC_APP.SensRes, &pBuf[0], 2);
 			memcpy(remoteDeviceStruct.info.nfcAPP.sensRes, &pBuf[0], 2);
       remoteDeviceStruct.info.nfcAPP.sensResLen = 2;
@@ -150,7 +296,7 @@ void RemoteDevice::setInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) {
       }
       break;
 
-    case (MODE_POLL | TECH_PASSIVE_NFCB):
+    case (tech.PASSIVE_NFCB):
       pRfIntf->Info.NFC_BPP.SensResLen = pBuf[0];
 			remoteDeviceStruct.info.nfcBPP.sensResLen = pBuf[0];
       memcpy(pRfIntf->Info.NFC_BPP.SensRes, &pBuf[1], pRfIntf->Info.NFC_BPP.SensResLen);
@@ -168,7 +314,7 @@ void RemoteDevice::setInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) {
       }
       break;
 
-    case (MODE_POLL | TECH_PASSIVE_NFCF):
+    case (tech.PASSIVE_NFCF):
       pRfIntf->Info.NFC_FPP.BitRate = pBuf[0];
 			remoteDeviceStruct.info.nfcFPP.bitRate = pBuf[0];
       pRfIntf->Info.NFC_FPP.SensResLen = pBuf[1];
@@ -177,7 +323,7 @@ void RemoteDevice::setInfo(RfIntf_t *pRfIntf, uint8_t *pBuf) {
 			memcpy(remoteDeviceStruct.info.nfcFPP.sensRes, &pBuf[2], remoteDeviceStruct.info.nfcFPP.sensResLen);
       break;
 
-    case (MODE_POLL | TECH_PASSIVE_15693):
+    case (tech.PASSIVE_NFCV):
       pRfIntf->Info.NFC_VPP.AFI = pBuf[0];
 			remoteDeviceStruct.info.nfcVPP.afi = pBuf[0];
       pRfIntf->Info.NFC_VPP.DSFID = pBuf[1];

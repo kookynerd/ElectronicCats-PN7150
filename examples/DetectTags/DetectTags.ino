@@ -37,6 +37,11 @@ void PrintBuf(const byte* data, const uint32_t numBytes) {  // Print hex data bu
 
 String getHexRepresentation(const byte* data, const uint32_t numBytes) {
   String hexString;
+
+  if (numBytes == 0) {
+    hexString = "null";
+  }
+
   for (uint32_t szPos = 0; szPos < numBytes; szPos++) {
     hexString += "0x";
     if (data[szPos] <= 0xF)
@@ -51,12 +56,8 @@ String getHexRepresentation(const byte* data, const uint32_t numBytes) {
 
 void displayCardInfo(RfIntf_t RfIntf) {  // Funtion in charge to show the card/s in te field
   char tmp[16];
-  int index = 0;
-  static String sensRes;
-  static String sensResLen;
-  static String nfcID;
 
-  while (1) {
+  while (true) {
     switch (nfc.remoteDevice.getProtocol()) {  // Indetify card protocol
       case nfc.protocol.T1T:
       case nfc.protocol.T2T:
@@ -77,56 +78,64 @@ void displayCardInfo(RfIntf_t RfIntf) {  // Funtion in charge to show the card/s
     }
 
     switch (nfc.remoteDevice.getModeTech()) {  // Indetify card technology
-      case (nfc.modeTech.POLL | nfc.tech.PASSIVE_NFCA):
-        Serial.print("\tSENS_RES = ");
+      case (nfc.tech.PASSIVE_NFCA):
+        Serial.println("Technology: NFC-A");
+        Serial.print("\tSENS RES = ");
         Serial.println(getHexRepresentation(nfc.remoteDevice.getSensRes(), nfc.remoteDevice.getSensResLen()));
 
-        Serial.print("\tNFCID = ");
-        nfcID = getHexRepresentation(nfc.remoteDevice.getAPPID(), nfc.remoteDevice.getAPPIDLen());
-        Serial.println(nfcID);
+        Serial.print("\tNFC ID = ");
+        Serial.println(getHexRepresentation(nfc.remoteDevice.getNFCID(), nfc.remoteDevice.getNFCIDLen()));
 
-        // if (RfIntf.Info.NFC_APP.SelResLen != 0) {
-        if (nfc.remoteDevice.getAPPSelResLen() != 0) {
-          Serial.print("\tSEL_RES = ");
-          Serial.println(getHexRepresentation(nfc.remoteDevice.getAPPSelRes(), nfc.remoteDevice.getAPPSelResLen()));
-        }
+        Serial.print("\tSEL RES = ");
+        Serial.println(getHexRepresentation(nfc.remoteDevice.getSelRes(), nfc.remoteDevice.getSelResLen()));
+
         break;
 
-      case (MODE_POLL | TECH_PASSIVE_NFCB):
-        if (RfIntf.Info.NFC_BPP.SensResLen != 0) {
-          Serial.print("\tSENS_RES = ");
-          PrintBuf(RfIntf.Info.NFC_BPP.SensRes, RfIntf.Info.NFC_BPP.SensResLen);
-        }
+      case (nfc.tech.PASSIVE_NFCB):
+        Serial.println("Technology: NFC-B");
+        Serial.print("\tSENS RES = ");
+        Serial.println(getHexRepresentation(nfc.remoteDevice.getSensRes(), nfc.remoteDevice.getSensResLen()));
+
+        Serial.println("\tAttrib RES = ");
+        Serial.println(getHexRepresentation(nfc.remoteDevice.getAttribRes(), nfc.remoteDevice.getAttribResLen()));
+
         break;
 
-      case (MODE_POLL | TECH_PASSIVE_NFCF):
+      case (nfc.tech.PASSIVE_NFCF):
+        Serial.println("Technology: NFC-F");
+        Serial.print("\tSENS RES = ");
+        Serial.println(getHexRepresentation(nfc.remoteDevice.getSensRes(), nfc.remoteDevice.getSensResLen()));
+
         Serial.print("\tBitrate = ");
-        Serial.println((RfIntf.Info.NFC_FPP.BitRate == 1) ? "212" : "424");
+        Serial.println((nfc.remoteDevice.getBitRate() == 1) ? "212" : "424");
 
-        if (RfIntf.Info.NFC_FPP.SensResLen != 0) {
-          Serial.print("\tSENS_RES = ");
-          PrintBuf(RfIntf.Info.NFC_FPP.SensRes, RfIntf.Info.NFC_FPP.SensResLen);
-        }
         break;
 
-      case (MODE_POLL | TECH_PASSIVE_15693):
+      case (nfc.tech.PASSIVE_NFCV):
+        Serial.println("Technology: NFC-V");
         Serial.print("\tID = ");
-        PrintBuf(RfIntf.Info.NFC_VPP.ID, sizeof(RfIntf.Info.NFC_VPP.ID));
+        Serial.println(getHexRepresentation(nfc.remoteDevice.getID(), sizeof(nfc.remoteDevice.getID())));
 
         Serial.print("\ntAFI = ");
-        Serial.println(RfIntf.Info.NFC_VPP.AFI);
+        Serial.println(nfc.remoteDevice.getAFI());
 
-        Serial.print("\tDSFID = ");
-        Serial.println(RfIntf.Info.NFC_VPP.DSFID, HEX);
+        Serial.print("\tDSF ID = ");
+        Serial.println(nfc.remoteDevice.getDSFID(), HEX);
         break;
 
       default:
         break;
     }
-    if (RfIntf.MoreTags) {  // It will try to identify more NFC cards if they are the same technology
-      if (nfc.readerActivateNext(&RfIntf) == NFC_ERROR) break;
-    } else
+
+    // It can detect multiple cards at the same time if they are the same technology
+    if (nfc.remoteDevice.hasMoreTags()) {
+      Serial.println("Multiple cards are detected!");
+      if (!nfc.activateNextTagDiscovery()) {
+        break;  // Can't activate next tag
+      }
+    } else {
       break;
+    }
   }
 }
 

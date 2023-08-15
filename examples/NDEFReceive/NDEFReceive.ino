@@ -78,7 +78,7 @@ void loop() {
         break;
     }
 
-    // It can detect multiple cards at the same time if they use the same protocol
+    // It can detect multiple cards at the same time if they are the same technology
     if (nfc.remoteDevice.hasMoreTags()) {
       nfc.activateNextTagDiscovery();
       Serial.println("Multiple cards are detected!");

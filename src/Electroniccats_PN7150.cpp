@@ -1392,7 +1392,7 @@ void Electroniccats_PN7150::presenceCheck(RfIntf_t RfIntf) {
       do {
         delay(500);
         for (i = 0; i < 8; i++) {
-          NCIPresCheckIso15693[i + 6] = remoteDevice.getVPPID()[7 - i];
+          NCIPresCheckIso15693[i + 6] = remoteDevice.getID()[7 - i];
         }
         (void)writeData(NCIPresCheckIso15693, sizeof(NCIPresCheckIso15693));
         getMessage();
@@ -1550,7 +1550,7 @@ bool Electroniccats_PN7150::readerActivateNext(RfIntf_t *pRfIntf) {
 }
 
 bool Electroniccats_PN7150::activateNextTagDiscovery() {
-  return Electroniccats_PN7150::readerActivateNext(&this->dummyRfInterface);
+  return !Electroniccats_PN7150::readerActivateNext(&this->dummyRfInterface);
 }
 
 // Deprecated, use readerActivateNext() instead

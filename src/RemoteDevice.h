@@ -119,23 +119,27 @@ class RemoteDevice {
   ModeTech modeTech;
 
  public:
+  // Getters for device properties
   unsigned char getInterface() const;
   unsigned char getProtocol() const;
   unsigned char getModeTech() const;
   bool hasMoreTags() const;
-  const unsigned char* getAPPSensRes() const;
-  unsigned char getAPPSensResLen() const;
-  const unsigned char* getAPPID() const;
-  unsigned char getAPPIDLen() const;
-  const unsigned char* getAPPSelRes() const;
-  unsigned char getAPPSelResLen() const;
-  const unsigned char* getAPPRats() const;
-  unsigned char getAPPRatsLen() const;
-  const unsigned char* getVPPID() const;
-  /**************************************/
-  // TODO: add generic getters
+  // Getters for device information properties
   const unsigned char* getSensRes() const;
   unsigned char getSensResLen() const;
+  const unsigned char* getNFCID() const;
+  unsigned char getNFCIDLen() const;
+  const unsigned char* getSelRes() const;
+  unsigned char getSelResLen() const;
+  const unsigned char* getRats() const;
+  unsigned char getRatsLen() const;
+  const unsigned char* getAttribRes() const;
+  unsigned char getAttribResLen() const;
+  unsigned char getBitRate() const;
+  unsigned char getAFI() const;
+  unsigned char getDSFID() const;
+  const unsigned char* getID() const;
+  // Setters
   void setInterface(unsigned char interface);
   void setProtocol(unsigned char protocol);
   void setModeTech(unsigned char modeTech);
