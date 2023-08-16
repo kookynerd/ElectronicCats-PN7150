@@ -6,6 +6,7 @@
 // Function prototypes
 void displayDeviceInfo();
 void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize);
+void customNdefCallback();
 
 // Create a global NFC device interface object, attached to pins 11 (IRQ) and 13 (VEN) and using the default I2C address 0x28
 Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);
@@ -17,7 +18,8 @@ void setup() {
   Serial.println("Detect NFC tags with PN7150");
 
   // Register a callback function to be called when an NDEF message is received
-  nfc.setSendMsgCallback(ndefCallback);
+  // RW_NDEF_RegisterPullCallback((void *)*ndefCallback);
+  nfc.setSendMsgCallback(customNdefCallback);
 
   Serial.println("Initializing...");
   if (nfc.connectNCI()) {  // Wake up the board
@@ -260,4 +262,8 @@ void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
   }
 
   Serial.println("");
+}
+
+void customNdefCallback() {
+  Serial.println("Processing Callback...");
 }

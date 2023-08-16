@@ -158,8 +158,13 @@ void RW_NDEF_MIFARE_Read_Next(unsigned char *pRsp, unsigned short Rsp_size, unsi
                 memcpy(RW_NDEF_MIFARE_Ndef.pMessage, &pRsp[Tmp + 2], RW_NDEF_MIFARE_Ndef.MessageSize);
 
                 /* Notify application of the NDEF reception */
-                if (pRW_NDEF_PullCb != NULL)
+                if (pRW_NDEF_PullCb != NULL) {
                     pRW_NDEF_PullCb(RW_NDEF_MIFARE_Ndef.pMessage, RW_NDEF_MIFARE_Ndef.MessageSize);
+                }
+
+                if (ndefReceivedCallback != NULL) {
+                    ndefReceivedCallback();  // Run custom callback
+                }
             }
             else
             {
