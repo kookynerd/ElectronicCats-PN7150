@@ -82,7 +82,7 @@ void loop() {
 }
 
 void checkReaders() {
-  // Serial.print(".");
+  Serial.print("");
   unsigned long startTime = millis();
   if (nfc.cardModeReceive(Cmd, &CmdSize) == 0) {  // Data in buffer?
     if ((CmdSize >= 2) && (Cmd[0] == 0x00)) {     // Expect at least two bytes

@@ -3,31 +3,12 @@
 #define PN7150_VEN (13)
 #define PN7150_ADDR (0x28)
 
+// Function prototypes
+void displayDeviceInfo();
+void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize);
+
 // Create a global NFC device interface object, attached to pins 11 (IRQ) and 13 (VEN) and using the default I2C address 0x28
 Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);
-
-const char ndefMessage[] = {0xD1,                      // MB/ME/CF/1/IL/TNF
-                            0x01,                      // Type length (1 byte)
-                            0x08,                      // Payload length
-                            'T',                       // Type -> 'T' for text, 'U' for URI
-                            0x02,                      // Status
-                            'e', 'n',                  // Language
-                            'H', 'e', 'l', 'l', 'o'};  // Message Payload
-
-void PrintBuf(const byte *data, const uint32_t numBytes) {  // Print hex data buffer in format
-  uint32_t szPos;
-  for (szPos = 0; szPos < numBytes; szPos++) {
-    Serial.print(F("0x"));
-    // Append leading 0 for small values
-    if (data[szPos] <= 0xF)
-      Serial.print(F("0"));
-    Serial.print(data[szPos] & 0xff, HEX);
-    if ((numBytes > 1) && (szPos != numBytes - 1)) {
-      Serial.print(F(" "));
-    }
-  }
-  Serial.println();
-}
 
 void setup() {
   Serial.begin(9600);
@@ -35,7 +16,8 @@ void setup() {
     ;
   Serial.println("Detect NFC tags with PN7150");
 
-  RW_NDEF_RegisterPullCallback((void *)*ndefPull_Cb);
+  // Register a callback function to be called when an NDEF message is received
+  nfc.setSendMsgCallback(ndefCallback);
 
   Serial.println("Initializing...");
   if (nfc.connectNCI()) {  // Wake up the board
@@ -166,7 +148,7 @@ void displayDeviceInfo() {
   }
 }
 
-void ndefPull_Cb(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
+void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
   unsigned char *pNdefRecord = pNdefMessage;
   NdefRecord_t NdefRecord;
   unsigned char save;

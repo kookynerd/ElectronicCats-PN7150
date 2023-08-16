@@ -1731,3 +1731,7 @@ bool Electroniccats_PN7150::setP2PMode() {
   }
   return true;
 }
+
+void Electroniccats_PN7150::setSendMsgCallback(RW_NDEF_Callback_t function) {
+  RW_NDEF_RegisterPullCallback((void *)*function);
+}

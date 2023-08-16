@@ -179,6 +179,7 @@ class Electroniccats_PN7150 : public Mode {
   bool setReaderWriterMode();
   bool setEmulationMode();
   bool setP2PMode();
+  void setSendMsgCallback(RW_NDEF_Callback_t function);
 };
 
 #endif
