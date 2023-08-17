@@ -3,10 +3,21 @@
 #define PN7150_VEN (13)
 #define PN7150_ADDR (0x28)
 
+#define PRINTF Serial.print
+
+void print_buf(const char *prefix, const uint8_t *data, size_t size) {
+  PRINTF(prefix);
+  for (size_t loop = 0; loop < size; loop++) {
+    PRINTF(data[loop], HEX);
+    PRINTF(" ");
+  }
+  PRINTF("\n");
+}
+
 // Function prototypes
 void displayDeviceInfo();
-void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize);
 void customNdefCallback();
+void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize);
 
 // Create a global NFC device interface object, attached to pins 11 (IRQ) and 13 (VEN) and using the default I2C address 0x28
 Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);
@@ -18,7 +29,7 @@ void setup() {
   Serial.println("Detect NFC tags with PN7150");
 
   // Register a callback function to be called when an NDEF message is received
-  // RW_NDEF_RegisterPullCallback((void *)*ndefCallback);
+  RW_NDEF_RegisterPullCallback((void *)*ndefCallback);
   nfc.setSendMsgCallback(customNdefCallback);
 
   Serial.println("Initializing...");
@@ -150,6 +161,10 @@ void displayDeviceInfo() {
   }
 }
 
+void customNdefCallback() {
+  Serial.println("Processing Callback...");
+}
+
 void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
   unsigned char *pNdefRecord = pNdefMessage;
   NdefRecord_t NdefRecord;
@@ -172,7 +187,7 @@ void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
         save = NdefRecord.recordPayload[NdefRecord.recordPayloadSize];
         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = '\0';
         Serial.print("vCard:");
-        // Serial.println(NdefRecord.recordPayload);
+        Serial.println(reinterpret_cast<const char *>(NdefRecord.recordPayload));
         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = save;
       } break;
 
@@ -180,7 +195,6 @@ void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
         save = NdefRecord.recordPayload[NdefRecord.recordPayloadSize];
         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = '\0';
         Serial.print("Text record: ");
-        // Serial.println(&NdefRecord.recordPayload[NdefRecord.recordPayload[0]+1]);
         Serial.println(reinterpret_cast<const char *>(&NdefRecord.recordPayload[NdefRecord.recordPayload[0] + 1]));
         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = save;
       } break;
@@ -189,7 +203,6 @@ void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
         save = NdefRecord.recordPayload[NdefRecord.recordPayloadSize];
         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = '\0';
         Serial.print("URI record: ");
-        // Serial.println(ndef_helper_UriHead(NdefRecord.recordPayload[0]), &NdefRecord.recordPayload[1]);
         Serial.println(reinterpret_cast<const char *>(ndef_helper_UriHead(NdefRecord.recordPayload[0]), &NdefRecord.recordPayload[1]));
         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = save;
       } break;
@@ -204,9 +217,11 @@ void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
           if (NdefRecord.recordPayload[index] == 0x10) {
             if (NdefRecord.recordPayload[index + 1] == 0x45) {
               Serial.print("- SSID = ");
-              for (i = 0; i < NdefRecord.recordPayload[index + 3]; i++)
-                Serial.print(NdefRecord.recordPayload[index + 4 + i]);
-              Serial.println("");
+              Serial.println(reinterpret_cast<const char *>(&NdefRecord.recordPayload[index + 4 + 0]));
+              // for (i = 0; i < NdefRecord.recordPayload[index + 3]; i++) {
+              //   // Serial.print(NdefRecord.recordPayload[index + 4 + i]);
+              //   Serial.println(reinterpret_cast<const char *>(&NdefRecord.recordPayload[index + 4 + i]));
+              // }
             } else if (NdefRecord.recordPayload[index + 1] == 0x03) {
               Serial.print("- Authenticate Type = ");
               Serial.println(ndef_helper_WifiAuth(NdefRecord.recordPayload[index + 5]));
@@ -215,9 +230,11 @@ void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
               Serial.println(ndef_helper_WifiEnc(NdefRecord.recordPayload[index + 5]));
             } else if (NdefRecord.recordPayload[index + 1] == 0x27) {
               Serial.print("- Network key = ");
-              for (i = 0; i < NdefRecord.recordPayload[index + 3]; i++)
-                Serial.print("#");
-              Serial.println("");
+              Serial.println(reinterpret_cast<const char *>(&NdefRecord.recordPayload[index + 4]));
+              // for (i = 0; i < NdefRecord.recordPayload[index + 3]; i++) {
+              //   Serial.print(reinterpret_cast<const char *>(&NdefRecord.recordPayload[index + 4 + i]));
+              // }
+              // Serial.println("");
             }
             index += 4 + NdefRecord.recordPayload[index + 3];
           } else
@@ -241,6 +258,13 @@ void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
         Serial.print("BT Handover payload = ");
         // Serial.print(NdefRecord.recordPayload);
         // Serial.println(NdefRecord.recordPayloadSize);
+        print_buf("", NdefRecord.recordPayload, NdefRecord.recordPayloadSize);
+        // Serial.print(reinterpret_cast<const char *>(&NdefRecord.recordPayload[0]));
+        unsigned char i;
+        for (i = 0; i < NdefRecord.recordPayloadSize; i++) {
+          Serial.print(reinterpret_cast<const char *>(&NdefRecord.recordPayload[i]));
+        }
+        Serial.println("");
         break;
 
       case MEDIA_HANDOVER_BLE:
@@ -262,8 +286,4 @@ void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
   }
 
   Serial.println("");
-}
-
-void customNdefCallback() {
-  Serial.println("Processing Callback...");
 }
