@@ -50,6 +50,8 @@ Electroniccats_PN7150::Electroniccats_PN7150(uint8_t IRQpin, uint8_t VENpin,
   pinMode(_IRQpin, INPUT);
   if (_VENpin != 255)
     pinMode(_VENpin, OUTPUT);
+
+  this->_hasBeenInitialized = false;
 }
 
 uint8_t Electroniccats_PN7150::begin() {
@@ -62,6 +64,25 @@ uint8_t Electroniccats_PN7150::begin() {
     digitalWrite(_VENpin, HIGH);
     delay(3);
   }
+
+  if (connectNCI()) {
+    return ERROR;
+  }
+
+  if (configureSettings()) {
+    return ERROR;
+  }
+
+  if (configMode()) {
+    return ERROR;
+  }
+
+  if (startDiscovery()) {
+    return ERROR;
+  }
+
+  this->_hasBeenInitialized = true;
+
   return SUCCESS;
 }
 
@@ -1048,8 +1069,22 @@ uint8_t Electroniccats_PN7150::connectNCI() {
   uint8_t i = 2;
   uint8_t NCICoreInit[] = {0x20, 0x01, 0x00};
 
+  // Check if begin function has been called
+  if (this->_hasBeenInitialized) {
+    return SUCCESS;
+  }
+
   // Open connection to NXPNCI
-  begin();
+  _wire->begin();
+  if (_VENpin != 255) {
+    digitalWrite(_VENpin, HIGH);
+    delay(1);
+    digitalWrite(_VENpin, LOW);
+    delay(1);
+    digitalWrite(_VENpin, HIGH);
+    delay(3);
+  }
+
   // Loop until NXPNCI answers
   while (wakeupNCI() != SUCCESS) {
     if (i-- == 0)
@@ -1683,6 +1718,10 @@ bool Electroniccats_PN7150::NxpNci_FactoryTest_RfOn() {
 
 bool Electroniccats_PN7150::reset() {
   if (Electroniccats_PN7150::stopDiscovery()) {
+    return false;
+  }
+
+  if (configureSettings()) {
     return false;
   }
 

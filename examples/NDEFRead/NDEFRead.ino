@@ -22,26 +22,15 @@ void setup() {
   nfc.setSendMsgCallback(customNdefCallback);
 
   Serial.println("Initializing...");
-  if (nfc.connectNCI()) {  // Wake up the board
-    Serial.println("Error while setting up the mode, check connections!");
-    while (true)
-      ;
-  }
-
-  if (nfc.configureSettings()) {
-    Serial.println("The Configure Settings is failed!");
-    while (true)
+  
+  if (nfc.begin()) {
+    Serial.println("Error initializing PN7150");
+    while (1)
       ;
   }
 
   nfc.setReaderWriterMode();
 
-  if (nfc.configMode()) {  // Set up the configuration mode
-    Serial.println("The Configure Mode is failed!!");
-    while (true)
-      ;
-  }
-  nfc.startDiscovery();  // NCI Discovery mode
   Serial.println("Waiting for a Card...");
 }
 
@@ -158,10 +147,8 @@ String getHexRepresentation(const byte *data, const uint32_t numBytes) {
   }
 
   for (uint32_t szPos = 0; szPos < numBytes; szPos++) {
-    // hexString += "0x";
     if (data[szPos] <= 0xF)
       hexString += "0";
-    // hexString += String(data[szPos] & 0xFF, HEX);
     String hexValue = String(data[szPos] & 0xFF, HEX);
     hexValue.toUpperCase(); // Convierte a mayúsculas
     hexString += hexValue;

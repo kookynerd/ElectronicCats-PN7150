@@ -102,6 +102,7 @@ typedef enum {
 
 class Electroniccats_PN7150 : public Mode {
  private:
+  bool _hasBeenInitialized;
   uint8_t _IRQpin, _VENpin, _I2Caddress;
   TwoWire *_wire;
   RfIntf_t dummyRfInterface;

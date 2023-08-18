@@ -51,28 +51,8 @@ void setup() {
       ;
   }
 
-  if (nfc.connectNCI()) {  // Wake up the board
-    Serial.println("Error while setting up the mode, check connections!");
-    while (1)
-      ;
-  }
-
-  if (nfc.configureSettings()) {
-    Serial.println("The Configure Settings failed!");
-    while (1)
-      ;
-  }
-
   // Needed to detect readers
   nfc.setEmulationMode();
-
-  if (nfc.configMode()) {
-    Serial.println("The Configure Mode failed!");
-    while (1)
-      ;
-  }
-
-  nfc.startDiscovery();
 
   Serial.print("Waiting for an NDEF device");
 }
