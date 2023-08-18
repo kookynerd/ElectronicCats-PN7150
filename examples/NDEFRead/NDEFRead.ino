@@ -180,11 +180,9 @@ void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
   unsigned char *pNdefRecord = pNdefMessage;
   NdefRecord_t NdefRecord;
   unsigned char save;
-  String decodedURL;
   String SSID;
   String bluetoothName;
   String bluetoothAddress;
-  String reversedBluetoothAddress;
 
   Serial.println("Processing Callback");
 
@@ -233,15 +231,8 @@ void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
           if (NdefRecord.recordPayload[index] == 0x10) {
             if (NdefRecord.recordPayload[index + 1] == 0x45) {
               Serial.print("- SSID = ");
-              // SSID = decodeURL((char *)&NdefRecord.recordPayload[index + 4]);
               Serial.println(reinterpret_cast<const char *>(&NdefRecord.recordPayload[index + 4 + 0]));
               Serial.println(SSID);
-              Serial.print("- SSID = ");
-              Serial.println(getHexRepresentation(&NdefRecord.recordPayload[index + 4 + 0], NdefRecord.recordPayload[index + 3]));
-              // for (i = 0; i < NdefRecord.recordPayload[index + 3]; i++) {
-              //   // Serial.print(NdefRecord.recordPayload[index + 4 + i]);
-              //   Serial.println(reinterpret_cast<const char *>(&NdefRecord.recordPayload[index + 4 + i]));
-              // }
             } else if (NdefRecord.recordPayload[index + 1] == 0x03) {
               Serial.print("- Authenticate Type = ");
               Serial.println(ndef_helper_WifiAuth(NdefRecord.recordPayload[index + 5]));
@@ -253,10 +244,6 @@ void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
               Serial.println(reinterpret_cast<const char *>(&NdefRecord.recordPayload[index + 4]));
               Serial.print("- Network key = ");
               Serial.println(getHexRepresentation(&NdefRecord.recordPayload[index + 4], NdefRecord.recordPayload[index + 3]));
-              // for (i = 0; i < NdefRecord.recordPayload[index + 3]; i++) {
-              //   Serial.print(reinterpret_cast<const char *>(&NdefRecord.recordPayload[index + 4 + i]));
-              // }
-              // Serial.println("");
             }
             index += 4 + NdefRecord.recordPayload[index + 3];
           } else
@@ -277,24 +264,21 @@ void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
         break;
 
       case MEDIA_HANDOVER_BT:
-        Serial.print("Payload size: ");
+        Serial.print("- Payload size: ");
         Serial.println(NdefRecord.recordPayloadSize);
-        Serial.print("Bluetooth Handover payload = ");
+        Serial.print("- Bluetooth Handover payload = ");
         Serial.println(getHexRepresentation(NdefRecord.recordPayload, NdefRecord.recordPayloadSize));
-        Serial.print("Bluetooth name: '");
+        Serial.print("- Bluetooth name: '");
         bluetoothName = "";
         for (unsigned int i = 10; i < NdefRecord.recordPayloadSize; i++) {
           if (NdefRecord.recordPayload[i] == 0x04) {
             break;
           }
-
-          // Serial.write(NdefRecord.recordPayload[i]);
-          // Serial.println(" = " + getHexRepresentation(&NdefRecord.recordPayload[i], 1));
           bluetoothName += (char)NdefRecord.recordPayload[i];
         }
         Serial.println(bluetoothName + "'");
 
-        Serial.print("Bluetooth address: '");
+        Serial.print("- Bluetooth address: '");
         bluetoothAddress = "";
         for (unsigned int i = 7; i >= 2; i--) {
           bluetoothAddress += getHexRepresentation(&NdefRecord.recordPayload[i], 1);
@@ -306,12 +290,12 @@ void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
         break;
 
       case MEDIA_HANDOVER_BLE:
-        Serial.print("BLE Handover payload = ");
+        Serial.print("- BLE Handover payload = ");
         Serial.println(getHexRepresentation(NdefRecord.recordPayload, NdefRecord.recordPayloadSize));
         break;
 
       case MEDIA_HANDOVER_BLE_SECURE:
-        Serial.print("BLE secure Handover payload = ");
+        Serial.print("- BLE secure Handover payload = ");
         Serial.println(getHexRepresentation(NdefRecord.recordPayload, NdefRecord.recordPayloadSize));
         break;
 

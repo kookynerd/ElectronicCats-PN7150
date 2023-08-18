@@ -16,10 +16,6 @@
  *
  */
 #include "Electroniccats_PN7150.h"
-// #include "P2P_NDEF.h"
-// #include "ndef_helper.h"
-// #include "RW_NDEF.h"
-// #include "T4T_NDEF_emu.h"
 
 uint8_t gNextTag_Protocol = PROT_UNDETERMINED;
 
@@ -1174,9 +1170,7 @@ void Electroniccats_PN7150::processCardMode(RfIntf_t RfIntf) {
   /* Reset Card emulation state */
   T4T_NDEF_EMU_Reset();
 
-  // (void)writeData(NCIStartDiscovery, NCIStartDiscovery_length);
   getMessage(2000);
-  // NxpNci_WaitForReception(Answer, sizeof(Answer), &AnswerSize, TIMEOUT_2S) == NXPNCI_SUCCESS
 
   while (rxMessageLength > 0) {
     getMessage(2000);
@@ -1184,22 +1178,17 @@ void Electroniccats_PN7150::processCardMode(RfIntf_t RfIntf) {
     if ((rxBuffer[0] == 0x61) && (rxBuffer[1] == 0x06)) {
       if (FirstCmd) {
         /* Restart the discovery loop */
-        // NxpNci_HostTransceive(NCIStopDiscovery, sizeof(NCIStopDiscovery), Answer, sizeof(Answer), &AnswerSize);
         (void)writeData(NCIStopDiscovery, sizeof(NCIStopDiscovery));
         getMessage();
         do {
           if ((rxBuffer[0] == 0x41) && (rxBuffer[1] == 0x06))
             break;
-          // NxpNci_WaitForReception(Answer, sizeof(Answer), &AnswerSize, TIMEOUT_100MS);
-          //(void)writeData(rxBuffer, rxMessageLength);
           getMessage(100);
         } while (rxMessageLength != 0);
-        // NxpNci_HostTransceive(NCIStartDiscovery, NCIStartDiscovery_length, Answer, sizeof(Answer), &AnswerSize);
         (void)writeData(NCIStartDiscovery, NCIStartDiscovery_length);
         getMessage();
       }
       /* Come back to discovery state */
-      // break;
     }
     /* is DATA_PACKET ? */
     else if ((rxBuffer[0] == 0x00) && (rxBuffer[1] == 0x00)) {
@@ -1213,7 +1202,6 @@ void Electroniccats_PN7150::processCardMode(RfIntf_t RfIntf) {
       Cmd[1] = (CmdSize & 0xFF00) >> 8;
       Cmd[2] = CmdSize & 0x00FF;
 
-      // NxpNci_HostTransceive(Cmd, CmdSize+3, Answer, sizeof(Answer), &AnswerSize);
       (void)writeData(Cmd, CmdSize + 3);
       getMessage();
     }
@@ -1523,7 +1511,7 @@ bool Electroniccats_PN7150::readerActivateNext(RfIntf_t *pRfIntf) {
   else if (gNextTag_Protocol == PROT_ISODEP)
     NCIRfDiscoverSelect[5] = INTF_NFCDEP;
   else if (gNextTag_Protocol == PROT_MIFARE)
-    NCIRfDiscoverSelect[5] = INTF_TAGCMD;  // TODO: check this
+    NCIRfDiscoverSelect[5] = INTF_TAGCMD;
   else
     NCIRfDiscoverSelect[5] = INTF_FRAME;
 
@@ -1539,8 +1527,6 @@ bool Electroniccats_PN7150::readerActivateNext(RfIntf_t *pRfIntf) {
       remoteDevice.setProtocol(rxBuffer[5]);
       pRfIntf->ModeTech = rxBuffer[6];
       remoteDevice.setModeTech(rxBuffer[6]);
-      // fillInterfaceInfo(pRfIntf, &rxBuffer[10]);
-      // fillInterfaceInfo(&rxBuffer[10]);
       remoteDevice.setInfo(pRfIntf, &rxBuffer[10]);
       status = SUCCESS;
     }
@@ -1680,7 +1666,6 @@ bool Electroniccats_PN7150::nciFactoryTestRfOn() {
 
   (void)writeData(NCIRfOn, sizeof(NCIRfOn));
   getMessage();
-  // NxpNci_HostTransceive(NCIRfOn, sizeof(NCIRfOn), Answer, sizeof(Answer), &AnswerSize);
   if ((rxBuffer[0] != 0x4F) || (rxBuffer[1] != 0x3D) || (rxBuffer[3] != 0x00))
     return ERROR;
 
@@ -1733,6 +1718,5 @@ bool Electroniccats_PN7150::setP2PMode() {
 }
 
 void Electroniccats_PN7150::setSendMsgCallback(CustomCallback_t function) {
-  // RW_NDEF_RegisterPullCallback((void *)*function);
   registerNdefReceivedCallback(function);
 }
