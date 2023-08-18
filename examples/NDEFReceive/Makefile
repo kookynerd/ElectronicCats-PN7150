@@ -16,4 +16,4 @@ clean:
 wait:
 	sleep 2
 
-all: compile upload wait monitor
+all: compile upload
