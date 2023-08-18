@@ -74,19 +74,17 @@ void setup() {
 
   nfc.startDiscovery();
 
-  Serial.println("Waiting for an NDEF device...");
+  Serial.print("Waiting for an NDEF device");
 }
 
 void loop() {
-  unsigned long startTime = millis();
+  Serial.print(".");
 
   if (nfc.isReaderDetected()) {
     Serial.println("\nReader detected!");
     nfc.sendMessage();
-    nfc.closeCommunication();
+    Serial.print("\nWaiting for an NDEF device");
   }
-
-  Serial.println("Elapsed time: " + String(millis() - startTime) + "ms");
 }
 
 void sendMessageCallback(unsigned char *pNdefRecord, unsigned short NdefRecordSize) {

@@ -1748,4 +1748,5 @@ void Electroniccats_PN7150::closeCommunication() {
 
 void Electroniccats_PN7150::sendMessage() {
   Electroniccats_PN7150::processCardMode();
+  Electroniccats_PN7150::closeCommunication();
 }
