@@ -15,21 +15,21 @@ unsigned char STATUSOK[] = {0x90, 0x00}, Cmd[256], CmdSize;
 
 const char uri[] = "google.com";
 
-// const char ndefMessage[] = {0xD1,                      // MB/ME/CF/1/IL/TNF
-//                              0x01,                      // Type length (1 byte)
-//                              0x08,                      // Payload length
-//                              'U',                       // Type -> 'T' for text, 'U' for URI
-//                              0x02,                      // Status
-//                              'e', 'n',                  // Language
-//                              'H', 'e', 'l', 'l', 'o'};  // Message Payload
+const char ndefMessage[] = {0xD1,                      // MB/ME/CF/1/IL/TNF
+                             0x01,                      // Type length (1 byte)
+                             0x08,                      // Payload length
+                             'T',                       // Type -> 'T' for text, 'U' for URI
+                             0x02,                      // Status
+                             'e', 'n',                  // Language
+                             'H', 'e', 'l', 'l', 'o'};  // Message Payload
 
-const char ndefMessage[] = {0xD1,
-                            0x01,
-                            sizeof(uri) + 1,
-                            'U',
-                            0x02,
-                            // 'g', 'o', 'o', 'g', 'l', 'e', '.', 'c', 'o', 'm'};
-                            uri[0], uri[1], uri[2], uri[3], uri[4], uri[5], uri[6], uri[7], uri[8], uri[9], uri[10]};
+// const char ndefMessage[] = {0xD1,
+//                             0x01,
+//                             sizeof(uri) + 1,
+//                             'U',
+//                             0x02,
+//                             'g', 'o', 'o', 'g', 'l', 'e', '.', 'c', 'o', 'm'};
+//                             uri[0], uri[1], uri[2], uri[3], uri[4], uri[5], uri[6], uri[7], uri[8], uri[9], uri[10]};
 
 void setup() {
   Serial.begin(9600);
@@ -74,36 +74,19 @@ void setup() {
 
   nfc.startDiscovery();
 
-  Serial.println("Waiting for an NDEF device");
+  Serial.println("Waiting for an NDEF device...");
 }
 
 void loop() {
-  // checkReaders();
-  checkReadersv2();
-}
-
-void checkReaders() {
-  Serial.print("");
   unsigned long startTime = millis();
-  if (nfc.cardModeReceive(Cmd, &CmdSize) == 0) {  // Data in buffer?
-    if ((CmdSize >= 2) && (Cmd[0] == 0x00)) {     // Expect at least two bytes
-      if (Cmd[1] == 0xA4) {
-        Serial.println("\nReader detected!");
-        nfc.processCardMode(RfInterface);
-      }
-      nfc.cardModeSend(STATUSOK, sizeof(STATUSOK));
-      Serial.print("Waiting for an NDEF device");
-    }
-  }
-  Serial.println("Elapsed time: " + String(millis() - startTime) + "ms");
-}
-
-void checkReadersv2() {
-  Serial.print(".");
 
   if (nfc.isReaderDetected()) {
     Serial.println("\nReader detected!");
+    nfc.sendMessage();
+    nfc.closeCommunication();
   }
+
+  Serial.println("Elapsed time: " + String(millis() - startTime) + "ms");
 }
 
 void sendMessageCallback(unsigned char *pNdefRecord, unsigned short NdefRecordSize) {

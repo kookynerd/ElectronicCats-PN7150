@@ -150,7 +150,8 @@ class Electroniccats_PN7150 : public Mode {
   bool cardModeReceive(unsigned char *pData, unsigned char *pDataSize);
   bool CardModeReceive(unsigned char *pData, unsigned char *pDataSize);  // Deprecated, use cardModeReceive() instead
   void processCardMode(RfIntf_t RfIntf);
-  void ProcessCardMode(RfIntf_t RfIntf);  // Deprecated, use processCardMode() instead
+  void processCardMode(void);
+  void ProcessCardMode(RfIntf_t RfIntf);  // Deprecated, use processCardMode(void) instead
   void processReaderMode(RfIntf_t RfIntf, RW_Operation_t Operation);
   void ProcessReaderMode(RfIntf_t RfIntf, RW_Operation_t Operation);  // Deprecated, use processReaderMode() instead
   void processP2pMode(RfIntf_t RfIntf);
@@ -181,6 +182,8 @@ class Electroniccats_PN7150 : public Mode {
   bool setP2PMode();
   void setSendMsgCallback(CustomCallback_t function);
   bool isReaderDetected();
+  void closeCommunication();
+  void sendMessage();
 };
 
 #endif

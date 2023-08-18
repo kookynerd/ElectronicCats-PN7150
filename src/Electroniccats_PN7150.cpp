@@ -1209,7 +1209,11 @@ void Electroniccats_PN7150::processCardMode(RfIntf_t RfIntf) {
   }
 }
 
-// Deprecated, use processCardMode() instead
+void Electroniccats_PN7150::processCardMode(void) {
+  Electroniccats_PN7150::processCardMode(this->dummyRfInterface);
+}
+
+// Deprecated, use processCardMode(void) instead
 void Electroniccats_PN7150::ProcessCardMode(RfIntf_t RfIntf) {
   Electroniccats_PN7150::processCardMode(RfIntf);
 }
@@ -1722,16 +1726,26 @@ void Electroniccats_PN7150::setSendMsgCallback(CustomCallback_t function) {
 }
 
 bool Electroniccats_PN7150::isReaderDetected() {
-  unsigned char STATUSOK[] = {0x90, 0x00}, Cmd[256], CmdSize;
+  static unsigned char STATUSOK[] = {0x90, 0x00}, Cmd[256], CmdSize;
+  bool status = false;
 
-  if (cardModeReceive(Cmd, &CmdSize) == 0) {  // Data in buffer?
-    if ((CmdSize >= 2) && (Cmd[0] == 0x00)) {     // Expect at least two bytes
+  if (cardModeReceive(Cmd, &CmdSize) == 0) {   // Data in buffer?
+    if ((CmdSize >= 2) && (Cmd[0] == 0x00)) {  // Expect at least two bytes
       if (Cmd[1] == 0xA4) {
-        return true;
+        status = true;
       }
-      cardModeSend(STATUSOK, sizeof(STATUSOK));
+      Electroniccats_PN7150::closeCommunication();
     }
   }
 
-  return false;
+  return status;
+}
+
+void Electroniccats_PN7150::closeCommunication() {
+  unsigned char STATUSOK[] = {0x90, 0x00};
+  Electroniccats_PN7150::cardModeSend(STATUSOK, sizeof(STATUSOK));
+}
+
+void Electroniccats_PN7150::sendMessage() {
+  Electroniccats_PN7150::processCardMode();
 }
