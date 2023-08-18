@@ -430,7 +430,7 @@ bool Electroniccats_PN7150::configureSettings(void) {
     getMessage();
     if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x02) || (rxBuffer[3] != 0x00) || (rxBuffer[4] != 0x00)) {
 #ifdef SerialUSB
-      Serial.println("NxpNci_CORE_CONF");
+      Serial.println("NxpNci_CORE_CONF :D");
 #endif
       return ERROR;
     }
@@ -1060,7 +1060,11 @@ bool Electroniccats_PN7150::waitForDiscoveryNotification(uint8_t tout) {
   return Electroniccats_PN7150::waitForDiscoveryNotification(&this->dummyRfInterface, tout);
 }
 
-// Deprecated, use waitForDiscoveryNotification() instead
+bool Electroniccats_PN7150::isTagDetected() {
+  return !Electroniccats_PN7150::waitForDiscoveryNotification(500);
+}
+
+// Deprecated, use isTagDetected() instead
 bool Electroniccats_PN7150::WaitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout) {
   return Electroniccats_PN7150::waitForDiscoveryNotification(pRfIntf, tout);
 }
@@ -1721,7 +1725,7 @@ bool Electroniccats_PN7150::reset() {
     return false;
   }
 
-  if (configureSettings()) {
+  if (Electroniccats_PN7150::configureSettings()) {
     return false;
   }
 

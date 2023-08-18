@@ -143,7 +143,8 @@ class Electroniccats_PN7150 : public Mode {
   bool StopDiscovery();  // Deprecated, use stopDiscovery() instead
   bool waitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout = 0);
   bool waitForDiscoveryNotification(uint8_t tout = 0);
-  bool WaitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout = 0);  // Deprecated, use waitForDiscoveryNotification() instead
+  bool isTagDetected();
+  bool WaitForDiscoveryNotification(RfIntf_t *pRfIntf, uint8_t tout = 0);  // Deprecated, use isTagDetected() instead
   uint8_t connectNCI();
   uint8_t wakeupNCI();
   bool cardModeSend(unsigned char *pData, unsigned char DataSize);

@@ -35,7 +35,7 @@ void setup() {
 }
 
 void loop() {
-  if (!nfc.waitForDiscoveryNotification()) {  // Wait for a card
+  if (nfc.isTagDetected()) {  // Wait for a card
     displayDeviceInfo();
     switch (nfc.remoteDevice.getProtocol()) {
       // Read NDEF message from NFC Forum Type 1, 2, 3, 4, 5 tags
@@ -59,10 +59,10 @@ void loop() {
     Serial.println("Remove the Card");
     nfc.waitForTagRemoval();
     Serial.println("Card removed!");
+    Serial.println("Restarting...");
+    nfc.reset();  // TODO: type 4 tags cause discovery failed after reset
   }
 
-  Serial.println("Restarting...");
-  nfc.reset();
   Serial.println("Waiting for a Card...");
   delay(500);
 }
