@@ -78,7 +78,8 @@ void setup() {
 }
 
 void loop() {
-  checkReaders();
+  // checkReaders();
+  checkReadersv2();
 }
 
 void checkReaders() {
@@ -95,6 +96,14 @@ void checkReaders() {
     }
   }
   Serial.println("Elapsed time: " + String(millis() - startTime) + "ms");
+}
+
+void checkReadersv2() {
+  Serial.print(".");
+
+  if (nfc.isReaderDetected()) {
+    Serial.println("\nReader detected!");
+  }
 }
 
 void sendMessageCallback(unsigned char *pNdefRecord, unsigned short NdefRecordSize) {

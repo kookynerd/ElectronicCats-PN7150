@@ -1720,3 +1720,18 @@ bool Electroniccats_PN7150::setP2PMode() {
 void Electroniccats_PN7150::setSendMsgCallback(CustomCallback_t function) {
   registerNdefReceivedCallback(function);
 }
+
+bool Electroniccats_PN7150::isReaderDetected() {
+  unsigned char STATUSOK[] = {0x90, 0x00}, Cmd[256], CmdSize;
+
+  if (cardModeReceive(Cmd, &CmdSize) == 0) {  // Data in buffer?
+    if ((CmdSize >= 2) && (Cmd[0] == 0x00)) {     // Expect at least two bytes
+      if (Cmd[1] == 0xA4) {
+        return true;
+      }
+      cardModeSend(STATUSOK, sizeof(STATUSOK));
+    }
+  }
+
+  return false;
+}
