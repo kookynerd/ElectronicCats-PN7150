@@ -1725,8 +1725,11 @@ bool Electroniccats_PN7150::reset() {
     return false;
   }
 
-  if (Electroniccats_PN7150::configureSettings()) {
-    return false;
+  // Configure settings only if we have not detected a tag yet
+  if (remoteDevice.getProtocol() == protocol.UNDETERMINED) {
+    if (Electroniccats_PN7150::configureSettings()) {
+      return false;
+    }
   }
 
   if (Electroniccats_PN7150::configMode()) {

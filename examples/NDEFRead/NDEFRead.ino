@@ -22,7 +22,7 @@ void setup() {
   nfc.setSendMsgCallback(customNdefCallback);
 
   Serial.println("Initializing...");
-  
+
   if (nfc.begin()) {
     Serial.println("Error initializing PN7150");
     while (1)
@@ -31,7 +31,9 @@ void setup() {
 
   nfc.setReaderWriterMode();
 
-  Serial.println("Waiting for a Card...");
+  Serial.println(nfc.remoteDevice.getProtocol());
+
+  Serial.print("Waiting for a Card...");
 }
 
 void loop() {
@@ -60,10 +62,11 @@ void loop() {
     nfc.waitForTagRemoval();
     Serial.println("Card removed!");
     Serial.println("Restarting...");
-    nfc.reset();  // TODO: type 4 tags cause discovery failed after reset
+    nfc.reset();
+    Serial.print("Waiting for a Card");
   }
 
-  Serial.println("Waiting for a Card...");
+  Serial.print(".");
   delay(500);
 }
 
@@ -150,7 +153,7 @@ String getHexRepresentation(const byte *data, const uint32_t numBytes) {
     if (data[szPos] <= 0xF)
       hexString += "0";
     String hexValue = String(data[szPos] & 0xFF, HEX);
-    hexValue.toUpperCase(); // Convierte a mayúsculas
+    hexValue.toUpperCase();  // Convierte a mayúsculas
     hexString += hexValue;
     if ((numBytes > 1) && (szPos != numBytes - 1)) {
       hexString += ":";
