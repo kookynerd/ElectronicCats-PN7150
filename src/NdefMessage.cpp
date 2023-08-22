@@ -31,6 +31,24 @@ unsigned short NdefMessage::getContentSize() {
 }
 
 void NdefMessage::setContent(unsigned char *content, unsigned short contentSize) {
-  content = content;
-  contentSize = contentSize;
+  NdefMessage::content = content;
+  NdefMessage::contentSize = contentSize;
+}
+
+NdefRecord_t NdefMessage::getRecord() {
+  NdefRecord_t ndefRecord = DetectNdefRecordType(content);
+  NdefMessage::getNextRecord();
+  return ndefRecord;
+}
+
+void NdefMessage::getNextRecord() {
+  content = GetNextRecord(content);
+}
+
+bool NdefMessage::isEmpty() {
+  return NdefMessage::getContent() == NULL;
+}
+
+bool NdefMessage::isNotEmpty() {
+  return NdefMessage::getContent() != NULL;
 }

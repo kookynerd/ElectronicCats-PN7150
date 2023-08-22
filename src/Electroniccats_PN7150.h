@@ -25,7 +25,7 @@
 #include "RW_NDEF.h"
 #include "RemoteDevice.h"
 #include "T4T_NDEF_emu.h"
-#include "ndef_helper.h"
+// #include "ndef_helper.h"
 #include "NdefMessage.h"
 
 // #define DEBGU2
