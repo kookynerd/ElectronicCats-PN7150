@@ -18,7 +18,7 @@ void setup() {
   Serial.println("Detect NFC tags with PN7150");
 
   // Register a callback function to be called when an NDEF message is received
-  RW_NDEF_RegisterPullCallback((void *)*ndefCallback);
+  // RW_NDEF_RegisterPullCallback((void *)*ndefCallback);
   nfc.setSendMsgCallback(customNdefCallback);
 
   Serial.println("Initializing...");
@@ -30,8 +30,6 @@ void setup() {
   }
 
   nfc.setReaderWriterMode();
-
-  Serial.println(nfc.remoteDevice.getProtocol());
 
   Serial.print("Waiting for a Card...");
 }
@@ -153,7 +151,7 @@ String getHexRepresentation(const byte *data, const uint32_t numBytes) {
     if (data[szPos] <= 0xF)
       hexString += "0";
     String hexValue = String(data[szPos] & 0xFF, HEX);
-    hexValue.toUpperCase();  // Convierte a mayúsculas
+    hexValue.toUpperCase();
     hexString += hexValue;
     if ((numBytes > 1) && (szPos != numBytes - 1)) {
       hexString += ":";

@@ -134,8 +134,13 @@ void RW_NDEF_MIFARE_Read_Next(unsigned char *pRsp, unsigned short Rsp_size, unsi
           if (pRW_NDEF_PullCb != NULL)
             pRW_NDEF_PullCb(NULL, 0);
 
+          // Run custom callbacks
+          if (updateNdefMessageCallback != NULL) {
+            updateNdefMessageCallback(NULL, 0);
+          }
+
           if (ndefReceivedCallback != NULL) {
-            ndefReceivedCallback();  // Run custom callback
+            ndefReceivedCallback();
           }
 
           break;
@@ -150,8 +155,13 @@ void RW_NDEF_MIFARE_Read_Next(unsigned char *pRsp, unsigned short Rsp_size, unsi
             pRW_NDEF_PullCb(RW_NDEF_MIFARE_Ndef.pMessage, RW_NDEF_MIFARE_Ndef.MessageSize);
           }
 
+          // Run custom callbacks
+          if (updateNdefMessageCallback != NULL) {
+            updateNdefMessageCallback(RW_NDEF_MIFARE_Ndef.pMessage, RW_NDEF_MIFARE_Ndef.MessageSize);
+          }
+
           if (ndefReceivedCallback != NULL) {
-            ndefReceivedCallback();  // Run custom callback
+            ndefReceivedCallback();
           }
         } else {
           RW_NDEF_MIFARE_Ndef.MessagePtr = (Rsp_size - 1) - Tmp - 2;
@@ -179,8 +189,13 @@ void RW_NDEF_MIFARE_Read_Next(unsigned char *pRsp, unsigned short Rsp_size, unsi
             pRW_NDEF_PullCb(RW_NDEF_MIFARE_Ndef.pMessage, RW_NDEF_MIFARE_Ndef.MessageSize);
           }
 
+          // Run custom callbacks
+          if (updateNdefMessageCallback != NULL) {
+            updateNdefMessageCallback(RW_NDEF_MIFARE_Ndef.pMessage, RW_NDEF_MIFARE_Ndef.MessageSize);
+          }
+
           if (ndefReceivedCallback != NULL) {
-            ndefReceivedCallback();  // Run custom callback
+            ndefReceivedCallback();
           }
         } else {
           memcpy(&RW_NDEF_MIFARE_Ndef.pMessage[RW_NDEF_MIFARE_Ndef.MessagePtr], pRsp + 1, 16);

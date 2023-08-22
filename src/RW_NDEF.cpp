@@ -30,6 +30,7 @@ unsigned short RW_NdefMessage_size;
 
 RW_NDEF_Callback_t *pRW_NDEF_PullCb;
 RW_NDEF_Callback_t *pRW_NDEF_PushCb;
+RW_NDEF_Callback_t *updateNdefMessageCallback;
 CustomCallback_t *ndefReceivedCallback;
 
 static RW_NDEF_Fct_t *pReadFct = NULL;
@@ -50,6 +51,10 @@ bool RW_NDEF_SetMessage(unsigned char *pMessage, unsigned short Message_size, vo
 
 void RW_NDEF_RegisterPullCallback(void *pCb) {
   pRW_NDEF_PullCb = (RW_NDEF_Callback_t *)pCb;
+}
+
+void registerUpdateNdefMessageCallback(RW_NDEF_Callback_t function) {
+  updateNdefMessageCallback = function;
 }
 
 void registerNdefReceivedCallback(CustomCallback_t function) {

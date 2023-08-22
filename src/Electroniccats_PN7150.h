@@ -107,6 +107,7 @@ class Electroniccats_PN7150 : public Mode {
   TwoWire *_wire;
   RfIntf_t dummyRfInterface;
   uint8_t rxBuffer[MaxPayloadSize + MsgHeaderSize];  // buffer where we store bytes received until they form a complete message
+  static void updateNdefMessage(unsigned char *message, unsigned short messageSize);
   void setTimeOut(unsigned long);                    // set a timeOut for an expected next event, eg reception of Response after sending a Command
   bool isTimeOut() const;
   bool getMessage(uint16_t timeout = 5);  // 5 miliseconds as default to wait for interrupt responses
