@@ -26,6 +26,7 @@
 #include "RemoteDevice.h"
 #include "T4T_NDEF_emu.h"
 #include "ndef_helper.h"
+#include "NdefMessage.h"
 
 // #define DEBGU2
 // #define DEBUG3
@@ -107,15 +108,15 @@ class Electroniccats_PN7150 : public Mode {
   TwoWire *_wire;
   RfIntf_t dummyRfInterface;
   uint8_t rxBuffer[MaxPayloadSize + MsgHeaderSize];  // buffer where we store bytes received until they form a complete message
-  static void updateNdefMessage(unsigned char *message, unsigned short messageSize);
-  void setTimeOut(unsigned long);                    // set a timeOut for an expected next event, eg reception of Response after sending a Command
-  bool isTimeOut() const;
-  bool getMessage(uint16_t timeout = 5);  // 5 miliseconds as default to wait for interrupt responses
   unsigned long timeOut;
   unsigned long timeOutStartTime;
   uint32_t rxMessageLength;  // length of the last message received. As these are not 0x00 terminated, we need to remember the length
   uint8_t gNfcController_generation = 0;
   uint8_t gNfcController_fw_version[3] = {0};
+  static void updateNdefMessage(unsigned char *message, unsigned short messageSize);
+  void setTimeOut(unsigned long);                    // set a timeOut for an expected next event, eg reception of Response after sending a Command
+  bool isTimeOut() const;
+  bool getMessage(uint16_t timeout = 5);  // 5 miliseconds as default to wait for interrupt responses
 
  public:
   Electroniccats_PN7150(uint8_t IRQpin, uint8_t VENpin, uint8_t I2Caddress, TwoWire *wire = &Wire);

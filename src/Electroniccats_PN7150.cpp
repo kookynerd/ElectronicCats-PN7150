@@ -56,7 +56,7 @@ Electroniccats_PN7150::Electroniccats_PN7150(uint8_t IRQpin, uint8_t VENpin,
 
 uint8_t Electroniccats_PN7150::begin() {
   // Register callbacks
-  registerUpdateNdefMessageCallback(Electroniccats_PN7150::updateNdefMessage);
+  // registerUpdateNdefMessageCallback(Electroniccats_PN7150::updateNdefMessage);
 
   _wire->begin();
   if (_VENpin != 255) {
@@ -91,7 +91,7 @@ uint8_t Electroniccats_PN7150::begin() {
 
 void Electroniccats_PN7150::updateNdefMessage(unsigned char *message, unsigned short messageSize) {
   Serial.println("here :D");
-  unsigned char *pNdefRecord = message;
+  unsigned char *pNdefMessage = message;
   NdefRecord_t NdefRecord;
   unsigned char save;
   String SSID;
@@ -103,10 +103,10 @@ void Electroniccats_PN7150::updateNdefMessage(unsigned char *message, unsigned s
     return;
   }
 
-  while (pNdefRecord != NULL) {
+  while (pNdefMessage != NULL) {
     Serial.println("--- NDEF record received:");
 
-    NdefRecord = DetectNdefRecordType(pNdefRecord);
+    NdefRecord = DetectNdefRecordType(pNdefMessage);
 
     switch (NdefRecord.recordType) {
       case MEDIA_VCARD: {
@@ -215,7 +215,7 @@ void Electroniccats_PN7150::updateNdefMessage(unsigned char *message, unsigned s
         Serial.println("Unsupported NDEF record, cannot parse");
         break;
     }
-    pNdefRecord = GetNextRecord(pNdefRecord);
+    pNdefMessage = GetNextRecord(pNdefMessage);
   }
 
   Serial.println("");
