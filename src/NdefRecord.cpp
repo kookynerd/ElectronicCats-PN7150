@@ -12,6 +12,26 @@ void NdefRecord::create(NdefRecord_t record) {
   this->payloadSize = record.recordPayloadSize;
 }
 
+String NdefRecord::getHexRepresentation(const byte *data, const uint32_t dataSize) {
+	String hexString;
+
+  if (dataSize == 0) {
+    hexString = "null";
+  }
+
+  for (uint32_t index = 0; index < dataSize; index++) {
+    if (data[index] <= 0xF)
+      hexString += "0";
+    String hexValue = String(data[index] & 0xFF, HEX);
+    hexValue.toUpperCase();
+    hexString += hexValue;
+    if ((dataSize > 1) && (index != dataSize - 1)) {
+      hexString += ":";
+    }
+  }
+  return hexString;
+}
+
 bool NdefRecord::isEmpty() {
   return this->payload == NULL;
 }
@@ -48,7 +68,7 @@ String NdefRecord::getText() {
 
 String NdefRecord::getBluetoothName() {
   String bluetoothName = "";
-  
+
   for (unsigned int i = 10; i < payloadSize; i++) {
     if (payload[i] == 0x04) {
       break;
@@ -57,4 +77,17 @@ String NdefRecord::getBluetoothName() {
   }
 
   return bluetoothName;
+}
+
+String NdefRecord::getBluetoothAddress() {
+  String bluetoothAddress = "";
+
+  for (unsigned int i = 7; i >= 2; i--) {
+    bluetoothAddress += getHexRepresentation(&payload[i], 1);
+    if (i > 2) {
+      bluetoothAddress += ":";
+    }
+  }
+
+  return bluetoothAddress;
 }

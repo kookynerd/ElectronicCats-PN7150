@@ -168,7 +168,6 @@ void displayRecordInfo(NdefRecord record) {
 
   unsigned char save;
   String SSID;
-  String bluetoothName;
   String bluetoothAddress;
   Serial.println("--- NDEF record received:");
 
@@ -239,19 +238,10 @@ void displayRecordInfo(NdefRecord record) {
       case MEDIA_HANDOVER_BT:
         Serial.println("\tBluetooth handover");
         Serial.println("\t- Payload size: " + String(record.getPayloadSize()) + " bytes");
-        Serial.print("\t- Bluetooth Handover payload = ");
+        Serial.print("\t- Payload = ");
         Serial.println(getHexRepresentation(record.getPayload(), record.getPayloadSize()));
-        Serial.print("\t- Bluetooth name: '" + record.getBluetoothName() + "'");
-
-        // Serial.print("- Bluetooth address: '");
-        // bluetoothAddress = "";
-        // for (unsigned int i = 7; i >= 2; i--) {
-        //   bluetoothAddress += getHexRepresentation(&record.recordPayload[i], 1);
-        //   if (i > 2) {
-        //     bluetoothAddress += ":";
-        //   }
-        // }
-        // Serial.println(bluetoothAddress + "'");
+        Serial.println("\t- Bluetooth name: " + record.getBluetoothName());
+        Serial.println("\t- Bluetooth address: " + record.getBluetoothAddress());
         break;
 
       // case MEDIA_HANDOVER_BLE:

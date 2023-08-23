@@ -11,6 +11,7 @@ class NdefRecord {
   NdefRecordType_e type;
   unsigned char *payload;
   unsigned short payloadSize;
+  String getHexRepresentation(const byte *data, const uint32_t dataSize);
 
  public:
   NdefRecord();
@@ -22,6 +23,7 @@ class NdefRecord {
 	unsigned short getPayloadSize();
 	String getText();
 	String getBluetoothName();
+	String getBluetoothAddress();
 };
 
 #endif
