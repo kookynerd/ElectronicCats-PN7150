@@ -69,6 +69,10 @@ String NdefRecord::getText() {
 String NdefRecord::getBluetoothName() {
   String bluetoothName = "";
 
+	if (getType() != MEDIA_HANDOVER_BT) {
+		return bluetoothName;
+	}
+
   for (unsigned int i = 10; i < payloadSize; i++) {
     if (payload[i] == 0x04) {
       break;
@@ -81,6 +85,10 @@ String NdefRecord::getBluetoothName() {
 
 String NdefRecord::getBluetoothAddress() {
   String bluetoothAddress = "";
+
+	if (getType() != MEDIA_HANDOVER_BT) {
+		return bluetoothAddress;
+	}
 
   for (unsigned int i = 7; i >= 2; i--) {
     bluetoothAddress += getHexRepresentation(&payload[i], 1);

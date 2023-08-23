@@ -166,9 +166,6 @@ void displayRecordInfo(NdefRecord record) {
     return;
   }
 
-  unsigned char save;
-  String SSID;
-  String bluetoothAddress;
   Serial.println("--- NDEF record received:");
 
   switch (record.getType()) {
@@ -235,24 +232,25 @@ void displayRecordInfo(NdefRecord record) {
       //   Serial.println(record.recordPayload[0] & 0xF);
       //   break;
 
-      case MEDIA_HANDOVER_BT:
-        Serial.println("\tBluetooth handover");
-        Serial.println("\t- Payload size: " + String(record.getPayloadSize()) + " bytes");
-        Serial.print("\t- Payload = ");
-        Serial.println(getHexRepresentation(record.getPayload(), record.getPayloadSize()));
-        Serial.println("\t- Bluetooth name: " + record.getBluetoothName());
-        Serial.println("\t- Bluetooth address: " + record.getBluetoothAddress());
-        break;
+    case MEDIA_HANDOVER_BT:
+      Serial.println("\tBluetooth handover");
+      Serial.println("\t- Bluetooth name: " + record.getBluetoothName());
+      Serial.println("\t- Bluetooth address: " + record.getBluetoothAddress());
+      break;
 
-      // case MEDIA_HANDOVER_BLE:
-      //   Serial.print("- BLE Handover payload = ");
-      //   Serial.println(getHexRepresentation(record.recordPayload, record.recordPayloadSize));
-      //   break;
+    case MEDIA_HANDOVER_BLE:
+      Serial.print("\tBLE Handover");
+      Serial.println("\t- Payload size: " + String(record.getPayloadSize()) + " bytes");
+      Serial.print("\t- Payload = ");
+      Serial.println(getHexRepresentation(record.getPayload(), record.getPayloadSize()));
+      break;
 
-      // case MEDIA_HANDOVER_BLE_SECURE:
-      //   Serial.print("- BLE secure Handover payload = ");
-      //   Serial.println(getHexRepresentation(record.recordPayload, record.recordPayloadSize));
-      //   break;
+    case MEDIA_HANDOVER_BLE_SECURE:
+      Serial.print("\tBLE secure Handover");
+      Serial.println("\t- Payload size: " + String(record.getPayloadSize()) + " bytes");
+      Serial.print("\t- Payload = ");
+      Serial.println(getHexRepresentation(record.getPayload(), record.getPayloadSize()));
+      break;
 
     default:
       Serial.println("\tUnsupported NDEF record, cannot parse");
