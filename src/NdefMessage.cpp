@@ -13,7 +13,6 @@ void NdefMessage::begin() {
 }
 
 void NdefMessage::update(unsigned char *message, unsigned short messageSize) {
-  Serial.println("Updating message...");
   if (content != NULL) {
     free(content);
   }
@@ -51,4 +50,8 @@ bool NdefMessage::isEmpty() {
 
 bool NdefMessage::isNotEmpty() {
   return NdefMessage::getContent() != NULL;
+}
+
+bool NdefMessage::hasRecord() {
+  return NdefMessage::isNotEmpty();
 }

@@ -4,9 +4,10 @@
 #define PN7150_ADDR (0x28)
 
 // Function prototypes
+String getHexRepresentation(const byte *data, const uint32_t dataSize);
 void displayDeviceInfo();
-void customNdefCallback();
-void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize);
+void displayRecordInfo(NdefRecord_t record);
+void ndefCallback();
 
 // Create a global NFC device interface object, attached to pins 11 (IRQ) and 13 (VEN) and using the default I2C address 0x28
 Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);
@@ -19,14 +20,13 @@ void setup() {
   Serial.println("Detect NFC tags with PN7150");
 
   // Register a callback function to be called when an NDEF message is received
-  // RW_NDEF_RegisterPullCallback((void *)*ndefCallback);
-  nfc.setSendMsgCallback(customNdefCallback);
+  nfc.setSendMsgCallback(ndefCallback);
 
   Serial.println("Initializing...");
 
   if (nfc.begin()) {
     Serial.println("Error initializing PN7150");
-    while (1)
+    while (true)
       ;
   }
 
@@ -36,7 +36,7 @@ void setup() {
 }
 
 void loop() {
-  if (nfc.isTagDetected()) {  // Wait for a card
+  if (nfc.isTagDetected()) {
     displayDeviceInfo();
     switch (nfc.remoteDevice.getProtocol()) {
       // Read NDEF message from NFC Forum Type 1, 2, 3, 4, 5 tags
@@ -67,6 +67,26 @@ void loop() {
 
   Serial.print(".");
   delay(500);
+}
+
+String getHexRepresentation(const byte *data, const uint32_t dataSize) {
+  String hexString;
+
+  if (dataSize == 0) {
+    hexString = "null";
+  }
+
+  for (uint32_t index = 0; index < dataSize; index++) {
+    if (data[index] <= 0xF)
+      hexString += "0";
+    String hexValue = String(data[index] & 0xFF, HEX);
+    hexValue.toUpperCase();
+    hexString += hexValue;
+    if ((dataSize > 1) && (index != dataSize - 1)) {
+      hexString += ":";
+    }
+  }
+  return hexString;
 }
 
 void displayDeviceInfo() {
@@ -141,33 +161,126 @@ void displayDeviceInfo() {
   }
 }
 
-String getHexRepresentation(const byte *data, const uint32_t numBytes) {
-  String hexString;
-
-  if (numBytes == 0) {
-    hexString = "null";
-  }
-
-  for (uint32_t szPos = 0; szPos < numBytes; szPos++) {
-    if (data[szPos] <= 0xF)
-      hexString += "0";
-    String hexValue = String(data[szPos] & 0xFF, HEX);
-    hexValue.toUpperCase();
-    hexString += hexValue;
-    if ((numBytes > 1) && (szPos != numBytes - 1)) {
-      hexString += ":";
-    }
-  }
-  return hexString;
-}
-
-void customNdefCallback() {
-  NdefRecord_t record;
+void displayRecordInfo(NdefRecord_t record) {
   unsigned char save;
   String SSID;
   String bluetoothName;
   String bluetoothAddress;
+  Serial.println("--- NDEF record received:");
 
+  switch (record.recordType) {
+    case MEDIA_VCARD: {
+      save = record.recordPayload[record.recordPayloadSize];
+      record.recordPayload[record.recordPayloadSize] = '\0';
+      Serial.print("vCard:");
+      Serial.println(reinterpret_cast<const char *>(record.recordPayload));
+      record.recordPayload[record.recordPayloadSize] = save;
+    } break;
+
+    case WELL_KNOWN_SIMPLE_TEXT: {
+      save = record.recordPayload[record.recordPayloadSize];
+      record.recordPayload[record.recordPayloadSize] = '\0';
+      Serial.print("Text record: ");
+      Serial.println(reinterpret_cast<const char *>(&record.recordPayload[record.recordPayload[0] + 1]));
+      record.recordPayload[record.recordPayloadSize] = save;
+    } break;
+
+    case WELL_KNOWN_SIMPLE_URI: {
+      save = record.recordPayload[record.recordPayloadSize];
+      record.recordPayload[record.recordPayloadSize] = '\0';
+      Serial.print("URI record: ");
+      Serial.println(reinterpret_cast<const char *>(ndef_helper_UriHead(record.recordPayload[0]), &record.recordPayload[1]));
+      record.recordPayload[record.recordPayloadSize] = save;
+    } break;
+
+    case MEDIA_HANDOVER_WIFI: {
+      unsigned char index = 0, i;
+
+      Serial.println("--- Received WIFI credentials:");
+      if ((record.recordPayload[index] == 0x10) && (record.recordPayload[index + 1] == 0x0e))
+        index += 4;
+      while (index < record.recordPayloadSize) {
+        if (record.recordPayload[index] == 0x10) {
+          if (record.recordPayload[index + 1] == 0x45) {
+            Serial.print("- SSID = ");
+            Serial.println(reinterpret_cast<const char *>(&record.recordPayload[index + 4 + 0]));
+            Serial.println(SSID);
+          } else if (record.recordPayload[index + 1] == 0x03) {
+            Serial.print("- Authenticate Type = ");
+            Serial.println(ndef_helper_WifiAuth(record.recordPayload[index + 5]));
+          } else if (record.recordPayload[index + 1] == 0x0f) {
+            Serial.print("- Encryption Type = ");
+            Serial.println(ndef_helper_WifiEnc(record.recordPayload[index + 5]));
+          } else if (record.recordPayload[index + 1] == 0x27) {
+            Serial.print("- Network key = ");
+            Serial.println(reinterpret_cast<const char *>(&record.recordPayload[index + 4]));
+            Serial.print("- Network key = ");
+            Serial.println(getHexRepresentation(&record.recordPayload[index + 4], record.recordPayload[index + 3]));
+          }
+          index += 4 + record.recordPayload[index + 3];
+        } else
+          continue;
+      }
+    } break;
+
+    case WELL_KNOWN_HANDOVER_SELECT:
+      Serial.print("Handover select version ");
+      Serial.print(record.recordPayload[0] >> 4);
+      Serial.println(record.recordPayload[0] & 0xF);
+      break;
+
+    case WELL_KNOWN_HANDOVER_REQUEST:
+      Serial.print("Handover request version ");
+      Serial.print(record.recordPayload[0] >> 4);
+      Serial.println(record.recordPayload[0] & 0xF);
+      break;
+
+    case MEDIA_HANDOVER_BT:
+      Serial.print("- Payload size: ");
+      Serial.println(record.recordPayloadSize);
+      Serial.print("- Bluetooth Handover payload = ");
+      Serial.println(getHexRepresentation(record.recordPayload, record.recordPayloadSize));
+      Serial.print("- Bluetooth name: '");
+      bluetoothName = "";
+      for (unsigned int i = 10; i < record.recordPayloadSize; i++) {
+        if (record.recordPayload[i] == 0x04) {
+          break;
+        }
+        bluetoothName += (char)record.recordPayload[i];
+      }
+      Serial.println(bluetoothName + "'");
+
+      Serial.print("- Bluetooth address: '");
+      bluetoothAddress = "";
+      for (unsigned int i = 7; i >= 2; i--) {
+        bluetoothAddress += getHexRepresentation(&record.recordPayload[i], 1);
+        if (i > 2) {
+          bluetoothAddress += ":";
+        }
+      }
+      Serial.println(bluetoothAddress + "'");
+      break;
+
+    case MEDIA_HANDOVER_BLE:
+      Serial.print("- BLE Handover payload = ");
+      Serial.println(getHexRepresentation(record.recordPayload, record.recordPayloadSize));
+      break;
+
+    case MEDIA_HANDOVER_BLE_SECURE:
+      Serial.print("- BLE secure Handover payload = ");
+      Serial.println(getHexRepresentation(record.recordPayload, record.recordPayloadSize));
+      break;
+
+    default:
+      Serial.println("Unsupported NDEF record, cannot parse");
+      break;
+  }
+
+  Serial.println("");
+}
+
+void ndefCallback() {
+  NdefRecord_t record;
   Serial.println("Processing Callback...");
 
   if (message.isEmpty()) {
@@ -175,253 +288,10 @@ void customNdefCallback() {
     return;
   }
 
-  while (message.isNotEmpty()) {
-    Serial.println("--- NDEF record received:");
-
+  // TODO: replace with record.isNotEmpty() when implemented
+  while (message.hasRecord()) {
     // Get a new record every time we call getRecord()
     record = message.getRecord();
-
-    switch (record.recordType) {
-      case MEDIA_VCARD: {
-        save = record.recordPayload[record.recordPayloadSize];
-        record.recordPayload[record.recordPayloadSize] = '\0';
-        Serial.print("vCard:");
-        Serial.println(reinterpret_cast<const char *>(record.recordPayload));
-        record.recordPayload[record.recordPayloadSize] = save;
-      } break;
-
-      case WELL_KNOWN_SIMPLE_TEXT: {
-        save = record.recordPayload[record.recordPayloadSize];
-        record.recordPayload[record.recordPayloadSize] = '\0';
-        Serial.print("Text record: ");
-        Serial.println(reinterpret_cast<const char *>(&record.recordPayload[record.recordPayload[0] + 1]));
-        record.recordPayload[record.recordPayloadSize] = save;
-      } break;
-
-      case WELL_KNOWN_SIMPLE_URI: {
-        save = record.recordPayload[record.recordPayloadSize];
-        record.recordPayload[record.recordPayloadSize] = '\0';
-        Serial.print("URI record: ");
-        Serial.println(reinterpret_cast<const char *>(ndef_helper_UriHead(record.recordPayload[0]), &record.recordPayload[1]));
-        record.recordPayload[record.recordPayloadSize] = save;
-      } break;
-
-      case MEDIA_HANDOVER_WIFI: {
-        unsigned char index = 0, i;
-
-        Serial.println("--- Received WIFI credentials:");
-        if ((record.recordPayload[index] == 0x10) && (record.recordPayload[index + 1] == 0x0e))
-          index += 4;
-        while (index < record.recordPayloadSize) {
-          if (record.recordPayload[index] == 0x10) {
-            if (record.recordPayload[index + 1] == 0x45) {
-              Serial.print("- SSID = ");
-              Serial.println(reinterpret_cast<const char *>(&record.recordPayload[index + 4 + 0]));
-              Serial.println(SSID);
-            } else if (record.recordPayload[index + 1] == 0x03) {
-              Serial.print("- Authenticate Type = ");
-              Serial.println(ndef_helper_WifiAuth(record.recordPayload[index + 5]));
-            } else if (record.recordPayload[index + 1] == 0x0f) {
-              Serial.print("- Encryption Type = ");
-              Serial.println(ndef_helper_WifiEnc(record.recordPayload[index + 5]));
-            } else if (record.recordPayload[index + 1] == 0x27) {
-              Serial.print("- Network key = ");
-              Serial.println(reinterpret_cast<const char *>(&record.recordPayload[index + 4]));
-              Serial.print("- Network key = ");
-              Serial.println(getHexRepresentation(&record.recordPayload[index + 4], record.recordPayload[index + 3]));
-            }
-            index += 4 + record.recordPayload[index + 3];
-          } else
-            continue;
-        }
-      } break;
-
-      case WELL_KNOWN_HANDOVER_SELECT:
-        Serial.print("Handover select version ");
-        Serial.print(record.recordPayload[0] >> 4);
-        Serial.println(record.recordPayload[0] & 0xF);
-        break;
-
-      case WELL_KNOWN_HANDOVER_REQUEST:
-        Serial.print("Handover request version ");
-        Serial.print(record.recordPayload[0] >> 4);
-        Serial.println(record.recordPayload[0] & 0xF);
-        break;
-
-      case MEDIA_HANDOVER_BT:
-        Serial.print("- Payload size: ");
-        Serial.println(record.recordPayloadSize);
-        Serial.print("- Bluetooth Handover payload = ");
-        Serial.println(getHexRepresentation(record.recordPayload, record.recordPayloadSize));
-        Serial.print("- Bluetooth name: '");
-        bluetoothName = "";
-        for (unsigned int i = 10; i < record.recordPayloadSize; i++) {
-          if (record.recordPayload[i] == 0x04) {
-            break;
-          }
-          bluetoothName += (char)record.recordPayload[i];
-        }
-        Serial.println(bluetoothName + "'");
-
-        Serial.print("- Bluetooth address: '");
-        bluetoothAddress = "";
-        for (unsigned int i = 7; i >= 2; i--) {
-          bluetoothAddress += getHexRepresentation(&record.recordPayload[i], 1);
-          if (i > 2) {
-            bluetoothAddress += ":";
-          }
-        }
-        Serial.println(bluetoothAddress + "'");
-        break;
-
-      case MEDIA_HANDOVER_BLE:
-        Serial.print("- BLE Handover payload = ");
-        Serial.println(getHexRepresentation(record.recordPayload, record.recordPayloadSize));
-        break;
-
-      case MEDIA_HANDOVER_BLE_SECURE:
-        Serial.print("- BLE secure Handover payload = ");
-        Serial.println(getHexRepresentation(record.recordPayload, record.recordPayloadSize));
-        break;
-
-      default:
-        Serial.println("Unsupported NDEF record, cannot parse");
-        break;
-    }
+    displayRecordInfo(record);
   }
-
-  Serial.println("");
 }
-
-// void ndefCallback(unsigned char *pNdefMessage, unsigned short NdefMessageSize) {
-//   unsigned char *pNdefRecord = pNdefMessage;
-//   NdefRecord_t NdefRecord;
-//   unsigned char save;
-//   String SSID;
-//   String bluetoothName;
-//   String bluetoothAddress;
-
-//   Serial.println("Processing Callback");
-
-//   if (pNdefMessage == NULL) {
-//     Serial.println("--- Provisioned buffer size too small or NDEF message empty");
-//     return;
-//   }
-
-//   while (pNdefRecord != NULL) {
-//     Serial.println("--- NDEF record received:");
-
-//     NdefRecord = DetectNdefRecordType(pNdefRecord);
-
-//     switch (NdefRecord.recordType) {
-//       case MEDIA_VCARD: {
-//         save = NdefRecord.recordPayload[NdefRecord.recordPayloadSize];
-//         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = '\0';
-//         Serial.print("vCard:");
-//         Serial.println(reinterpret_cast<const char *>(NdefRecord.recordPayload));
-//         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = save;
-//       } break;
-
-//       case WELL_KNOWN_SIMPLE_TEXT: {
-//         save = NdefRecord.recordPayload[NdefRecord.recordPayloadSize];
-//         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = '\0';
-//         Serial.print("Text record: ");
-//         Serial.println(reinterpret_cast<const char *>(&NdefRecord.recordPayload[NdefRecord.recordPayload[0] + 1]));
-//         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = save;
-//       } break;
-
-//       case WELL_KNOWN_SIMPLE_URI: {
-//         save = NdefRecord.recordPayload[NdefRecord.recordPayloadSize];
-//         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = '\0';
-//         Serial.print("URI record: ");
-//         Serial.println(reinterpret_cast<const char *>(ndef_helper_UriHead(NdefRecord.recordPayload[0]), &NdefRecord.recordPayload[1]));
-//         NdefRecord.recordPayload[NdefRecord.recordPayloadSize] = save;
-//       } break;
-
-//       case MEDIA_HANDOVER_WIFI: {
-//         unsigned char index = 0, i;
-
-//         Serial.println("--- Received WIFI credentials:");
-//         if ((NdefRecord.recordPayload[index] == 0x10) && (NdefRecord.recordPayload[index + 1] == 0x0e))
-//           index += 4;
-//         while (index < NdefRecord.recordPayloadSize) {
-//           if (NdefRecord.recordPayload[index] == 0x10) {
-//             if (NdefRecord.recordPayload[index + 1] == 0x45) {
-//               Serial.print("- SSID = ");
-//               Serial.println(reinterpret_cast<const char *>(&NdefRecord.recordPayload[index + 4 + 0]));
-//               Serial.println(SSID);
-//             } else if (NdefRecord.recordPayload[index + 1] == 0x03) {
-//               Serial.print("- Authenticate Type = ");
-//               Serial.println(ndef_helper_WifiAuth(NdefRecord.recordPayload[index + 5]));
-//             } else if (NdefRecord.recordPayload[index + 1] == 0x0f) {
-//               Serial.print("- Encryption Type = ");
-//               Serial.println(ndef_helper_WifiEnc(NdefRecord.recordPayload[index + 5]));
-//             } else if (NdefRecord.recordPayload[index + 1] == 0x27) {
-//               Serial.print("- Network key = ");
-//               Serial.println(reinterpret_cast<const char *>(&NdefRecord.recordPayload[index + 4]));
-//               Serial.print("- Network key = ");
-//               Serial.println(getHexRepresentation(&NdefRecord.recordPayload[index + 4], NdefRecord.recordPayload[index + 3]));
-//             }
-//             index += 4 + NdefRecord.recordPayload[index + 3];
-//           } else
-//             continue;
-//         }
-//       } break;
-
-//       case WELL_KNOWN_HANDOVER_SELECT:
-//         Serial.print("Handover select version ");
-//         Serial.print(NdefRecord.recordPayload[0] >> 4);
-//         Serial.println(NdefRecord.recordPayload[0] & 0xF);
-//         break;
-
-//       case WELL_KNOWN_HANDOVER_REQUEST:
-//         Serial.print("Handover request version ");
-//         Serial.print(NdefRecord.recordPayload[0] >> 4);
-//         Serial.println(NdefRecord.recordPayload[0] & 0xF);
-//         break;
-
-//       case MEDIA_HANDOVER_BT:
-//         Serial.print("- Payload size: ");
-//         Serial.println(NdefRecord.recordPayloadSize);
-//         Serial.print("- Bluetooth Handover payload = ");
-//         Serial.println(getHexRepresentation(NdefRecord.recordPayload, NdefRecord.recordPayloadSize));
-//         Serial.print("- Bluetooth name: '");
-//         bluetoothName = "";
-//         for (unsigned int i = 10; i < NdefRecord.recordPayloadSize; i++) {
-//           if (NdefRecord.recordPayload[i] == 0x04) {
-//             break;
-//           }
-//           bluetoothName += (char)NdefRecord.recordPayload[i];
-//         }
-//         Serial.println(bluetoothName + "'");
-
-//         Serial.print("- Bluetooth address: '");
-//         bluetoothAddress = "";
-//         for (unsigned int i = 7; i >= 2; i--) {
-//           bluetoothAddress += getHexRepresentation(&NdefRecord.recordPayload[i], 1);
-//           if (i > 2) {
-//             bluetoothAddress += ":";
-//           }
-//         }
-//         Serial.println(bluetoothAddress + "'");
-//         break;
-
-//       case MEDIA_HANDOVER_BLE:
-//         Serial.print("- BLE Handover payload = ");
-//         Serial.println(getHexRepresentation(NdefRecord.recordPayload, NdefRecord.recordPayloadSize));
-//         break;
-
-//       case MEDIA_HANDOVER_BLE_SECURE:
-//         Serial.print("- BLE secure Handover payload = ");
-//         Serial.println(getHexRepresentation(NdefRecord.recordPayload, NdefRecord.recordPayloadSize));
-//         break;
-
-//       default:
-//         Serial.println("Unsupported NDEF record, cannot parse");
-//         break;
-//     }
-//     pNdefRecord = GetNextRecord(pNdefRecord);
-//   }
-
-//   Serial.println("");
-// }

@@ -22,6 +22,7 @@ class NdefMessage {
   NdefRecord_t getRecord();
   bool isEmpty();
   bool isNotEmpty();
+  bool hasRecord();
 };
 
 #endif
