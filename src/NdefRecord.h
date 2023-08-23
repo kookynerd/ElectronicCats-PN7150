@@ -7,6 +7,7 @@
 
 class NdefRecord {
  private:
+	NdefRecord_t content;
   NdefRecordType_e type;
   unsigned char *payload;
   unsigned short payloadSize;
@@ -14,6 +15,8 @@ class NdefRecord {
  public:
   NdefRecord();
 	void create(NdefRecord_t record);
+	bool isEmpty();
+	bool isNotEmpty();
 	NdefRecordType_e getType();
 	unsigned char getPayload();
 	unsigned short getPayloadSize();

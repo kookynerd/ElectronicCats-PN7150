@@ -78,6 +78,13 @@ const char *ndef_helper_UriHead(unsigned char head) {
 NdefRecord_t DetectNdefRecordType(unsigned char *pNdefRecord) {
   NdefRecord_t record;
 
+  if (pNdefRecord == NULL) {
+    record.recordType = UNSUPPORTED_NDEF_RECORD;
+    record.recordPayload = NULL;
+    record.recordPayloadSize = 0;
+    return record;
+  }
+
   uint8_t typeField;
 
   /* Short or normal record ?*/

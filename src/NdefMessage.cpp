@@ -36,6 +36,11 @@ void NdefMessage::setContent(unsigned char *content, unsigned short contentSize)
 
 NdefRecord_t NdefMessage::getRecord() {
   NdefRecord_t ndefRecord = DetectNdefRecordType(content);
+
+  if (NdefMessage::isEmpty()) {
+    return ndefRecord;
+  }
+
   NdefMessage::getNextRecord();
   return ndefRecord;
 }

@@ -12,6 +12,14 @@ void NdefRecord::create(NdefRecord_t record) {
 	this->payloadSize = record.recordPayloadSize;
 }
 
+bool NdefRecord::isEmpty() {
+	return this->payload == NULL;
+}
+
+bool NdefRecord::isNotEmpty() {
+	return this->payload != NULL;
+}
+
 NdefRecordType_e NdefRecord::getType() {
 	return this->type;
 }
