@@ -11,6 +11,8 @@
  * copyright or trademark. NXP must not be liable for any loss or damage
  *                          arising from its use.
  */
+#ifndef NdefHelper_H
+#define NdefHelper_H
 
 #define NDEF_EMPTY 0x00
 #define NDEF_WELL_KNOWN 0x01
@@ -57,3 +59,5 @@ const char *ndef_helper_WifiEnc(unsigned char enc);
 const char *ndef_helper_UriHead(unsigned char head);
 NdefRecord_t DetectNdefRecordType(unsigned char *pNdefRecord);
 unsigned char *GetNextRecord(unsigned char *pNdefRecord);
+
+#endif

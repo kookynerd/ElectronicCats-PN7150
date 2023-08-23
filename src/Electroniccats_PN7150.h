@@ -22,11 +22,10 @@
                       // The HW interface between The PN7150 and the DeviceHost is I2C, so we need the I2C library.library
 #include "Mode.h"
 #include "P2P_NDEF.h"
-#include "RW_NDEF.h"
 #include "RemoteDevice.h"
 #include "T4T_NDEF_emu.h"
-// #include "ndef_helper.h"
 #include "NdefMessage.h"
+#include "NdefRecord.h"
 
 // #define DEBGU2
 // #define DEBUG3
