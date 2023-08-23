@@ -25,6 +25,7 @@ class NdefRecord {
 	String getBluetoothName();
 	String getBluetoothAddress();
 	String getWiFiSSID();
+	String getWiFiAuthenticationType();  // TODO: not working properly
 };
 
 #endif

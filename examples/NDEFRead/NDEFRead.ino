@@ -193,6 +193,7 @@ void displayRecordInfo(NdefRecord record) {
       case MEDIA_HANDOVER_WIFI: {
         Serial.println("\tReceived WIFI credentials:");
         Serial.println("\t- SSID: " + record.getWiFiSSID());
+        Serial.println("\t- Authentication type: " + record.getWiFiAuthenticationType());
         // unsigned char index = 0, i;
 
         // if ((record.recordPayload[index] == 0x10) && (record.recordPayload[index + 1] == 0x0e))

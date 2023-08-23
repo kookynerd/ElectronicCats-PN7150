@@ -116,3 +116,20 @@ String NdefRecord::getWiFiSSID() {
 
   return ssid;
 }
+
+String NdefRecord::getWiFiAuthenticationType() {
+	String authenticationType = "";
+
+	if (getType() != MEDIA_HANDOVER_WIFI) {
+		return authenticationType;
+	}
+
+	for (unsigned int i = 0; i < payloadSize; i++) {
+		if (payload[i] == 0x03) {
+			authenticationType = ndef_helper_WifiAuth(payload[i + 2]);
+			break;
+		}
+	}
+
+	return authenticationType;
+}
