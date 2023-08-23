@@ -171,7 +171,6 @@ void displayRecordInfo(NdefRecord record) {
   String bluetoothName;
   String bluetoothAddress;
   Serial.println("--- NDEF record received:");
-  Serial.println("\tRecord size: " + String(record.getPayloadSize()) + " bytes");
 
   switch (record.getType()) {
       // case MEDIA_VCARD: {
@@ -183,12 +182,8 @@ void displayRecordInfo(NdefRecord record) {
       // } break;
 
     case WELL_KNOWN_SIMPLE_TEXT: {
-      // save = record.recordPayload[record.recordPayloadSize];
-      // record.recordPayload[record.recordPayloadSize] = '\0';
       Serial.println("\tWell known simple text");
-      Serial.println("\tText record: " + record.getText());
-      // Serial.println(reinterpret_cast<const char *>(&record.recordPayload[record.recordPayload[0] + 1]));
-      // record.recordPayload[record.recordPayloadSize] = save;
+      Serial.println("\t- Text record: " + record.getText());
     } break;
 
       // case WELL_KNOWN_SIMPLE_URI: {
@@ -241,31 +236,23 @@ void displayRecordInfo(NdefRecord record) {
       //   Serial.println(record.recordPayload[0] & 0xF);
       //   break;
 
-      // case MEDIA_HANDOVER_BT:
-      //   Serial.print("- Payload size: ");
-      //   Serial.println(record.recordPayloadSize);
-      //   Serial.print("- Bluetooth Handover payload = ");
-      //   Serial.println(getHexRepresentation(record.recordPayload, record.recordPayloadSize));
-      //   Serial.print("- Bluetooth name: '");
-      //   bluetoothName = "";
-      //   for (unsigned int i = 10; i < record.recordPayloadSize; i++) {
-      //     if (record.recordPayload[i] == 0x04) {
-      //       break;
-      //     }
-      //     bluetoothName += (char)record.recordPayload[i];
-      //   }
-      //   Serial.println(bluetoothName + "'");
+      case MEDIA_HANDOVER_BT:
+        Serial.println("\tBluetooth handover");
+        Serial.println("\t- Payload size: " + String(record.getPayloadSize()) + " bytes");
+        Serial.print("\t- Bluetooth Handover payload = ");
+        Serial.println(getHexRepresentation(record.getPayload(), record.getPayloadSize()));
+        Serial.print("\t- Bluetooth name: '" + record.getBluetoothName() + "'");
 
-      //   Serial.print("- Bluetooth address: '");
-      //   bluetoothAddress = "";
-      //   for (unsigned int i = 7; i >= 2; i--) {
-      //     bluetoothAddress += getHexRepresentation(&record.recordPayload[i], 1);
-      //     if (i > 2) {
-      //       bluetoothAddress += ":";
-      //     }
-      //   }
-      //   Serial.println(bluetoothAddress + "'");
-      //   break;
+        // Serial.print("- Bluetooth address: '");
+        // bluetoothAddress = "";
+        // for (unsigned int i = 7; i >= 2; i--) {
+        //   bluetoothAddress += getHexRepresentation(&record.recordPayload[i], 1);
+        //   if (i > 2) {
+        //     bluetoothAddress += ":";
+        //   }
+        // }
+        // Serial.println(bluetoothAddress + "'");
+        break;
 
       // case MEDIA_HANDOVER_BLE:
       //   Serial.print("- BLE Handover payload = ");

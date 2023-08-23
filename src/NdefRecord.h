@@ -18,9 +18,10 @@ class NdefRecord {
 	bool isEmpty();
 	bool isNotEmpty();
 	NdefRecordType_e getType();
-	unsigned char getPayload();
+	unsigned char *getPayload();
 	unsigned short getPayloadSize();
 	String getText();
+	String getBluetoothName();
 };
 
 #endif
