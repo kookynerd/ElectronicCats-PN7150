@@ -24,6 +24,7 @@ class NdefRecord {
 	String getText();
 	String getBluetoothName();
 	String getBluetoothAddress();
+	String getWiFiSSID();
 };
 
 #endif
