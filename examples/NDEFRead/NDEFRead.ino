@@ -163,6 +163,7 @@ void displayDeviceInfo() {
 
 void displayRecordInfo(NdefRecord record) {
   if (record.isEmpty()) {
+    Serial.println("No more records, exiting...");
     return;
   }
 
@@ -170,13 +171,12 @@ void displayRecordInfo(NdefRecord record) {
   Serial.println("--- NDEF record received:");
 
   switch (record.getType()) {
-      // case MEDIA_VCARD: {
-      //   save = record.recordPayload[record.recordPayloadSize];
-      //   record.recordPayload[record.recordPayloadSize] = '\0';
-      //   Serial.print("vCard:");
-      //   Serial.println(reinterpret_cast<const char *>(record.recordPayload));
-      //   record.recordPayload[record.recordPayloadSize] = save;
-      // } break;
+    case MEDIA_VCARD: {
+      unsigned char save = record.getPayload()[record.getPayloadSize()];
+      record.getPayload()[record.getPayloadSize()] = '\0';
+      Serial.println("vCard:");
+      Serial.println(record.getVCardContent());
+    } break;
 
     case WELL_KNOWN_SIMPLE_TEXT: {
       Serial.println("\tWell known simple text");

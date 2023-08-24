@@ -4,6 +4,7 @@ NdefRecord::NdefRecord() {
   type = UNSUPPORTED_NDEF_RECORD;
   payload = NULL;
   payloadSize = 0;
+  newString = "null";
 }
 
 void NdefRecord::create(NdefRecord_t record) {
@@ -53,25 +54,21 @@ unsigned short NdefRecord::getPayloadSize() {
 }
 
 String NdefRecord::getText() {
-  Serial.println("here1");
-  Serial.println(payloadSize);
-  Serial.println(sizeof(payload));
   unsigned char save = payload[payloadSize];
   payload[payloadSize] = '\0';
-  String text = "";
+  String text = newString;
 
   if (getType() == WELL_KNOWN_SIMPLE_TEXT) {
     text = reinterpret_cast<const char *>(&payload[payload[0] + 1]);
   }
 
   payload[payloadSize] = save;
-  Serial.println("here2");
 
   return text;
 }
 
 String NdefRecord::getBluetoothName() {
-  String bluetoothName = "";
+  String bluetoothName = newString;
 
   if (getType() != MEDIA_HANDOVER_BT) {
     return bluetoothName;
@@ -88,7 +85,7 @@ String NdefRecord::getBluetoothName() {
 }
 
 String NdefRecord::getBluetoothAddress() {
-  String bluetoothAddress = "";
+  String bluetoothAddress = newString;
 
   if (getType() != MEDIA_HANDOVER_BT) {
     return bluetoothAddress;
@@ -105,7 +102,7 @@ String NdefRecord::getBluetoothAddress() {
 }
 
 String NdefRecord::getWiFiSSID() {
-  String ssid = "";
+  String ssid = newString;
 
   if (getType() != MEDIA_HANDOVER_WIFI) {
     return ssid;
@@ -122,7 +119,7 @@ String NdefRecord::getWiFiSSID() {
 }
 
 String NdefRecord::getWiFiAuthenticationType() {
-  String authenticationType = "";
+  String authenticationType = newString;
   unsigned char index = 0, i;
 
   if (getType() != MEDIA_HANDOVER_WIFI) {
@@ -146,7 +143,7 @@ String NdefRecord::getWiFiAuthenticationType() {
 }
 
 String NdefRecord::getWiFiEncryptionType() {
-  String encryptionType = "";
+  String encryptionType = newString;
   unsigned char index = 0, i;
 
   if (getType() != MEDIA_HANDOVER_WIFI) {
@@ -170,7 +167,7 @@ String NdefRecord::getWiFiEncryptionType() {
 }
 
 String NdefRecord::getWiFiNetworkKey() {
-  String networkKey = "";
+  String networkKey = newString;
   unsigned char index = 0, i;
 
   if (getType() != MEDIA_HANDOVER_WIFI) {
@@ -191,4 +188,16 @@ String NdefRecord::getWiFiNetworkKey() {
   }
 
   return networkKey;
+}
+
+String NdefRecord::getVCardContent() {
+  String content = newString;
+
+  if (getType() != MEDIA_VCARD) {
+    return content;
+  }
+
+  content = reinterpret_cast<const char *>(getPayload());
+
+  return content;
 }

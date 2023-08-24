@@ -12,6 +12,7 @@ class NdefRecord {
   unsigned char *payload;
   unsigned short payloadSize;
   String getHexRepresentation(const byte *data, const uint32_t dataSize);
+  String newString;
 
  public:
   NdefRecord();
@@ -28,6 +29,7 @@ class NdefRecord {
 	String getWiFiAuthenticationType();
 	String getWiFiEncryptionType();
 	String getWiFiNetworkKey();
+	String getVCardContent();
 };
 
 #endif
