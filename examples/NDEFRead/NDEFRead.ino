@@ -196,46 +196,17 @@ void displayRecordInfo(NdefRecord record) {
       Serial.println("\t- Network key: " + record.getWiFiNetworkKey());
       Serial.println("\t- Authentication type: " + record.getWiFiAuthenticationType());
       Serial.println("\t- Encryption type: " + record.getWiFiEncryptionType());
-      // Serial.println("Old method:");
-      // unsigned char index = 0, i;
-
-      // if ((record.getPayload()[index] == 0x10) && (record.getPayload()[index + 1] == 0x0e))
-      //   index += 4;
-      // while (index < record.getPayloadSize()) {
-      //   if (record.getPayload()[index] == 0x10) {
-      //     if (record.getPayload()[index + 1] == 0x45) {
-      //       Serial.print("- SSID = ");
-      //       Serial.println(reinterpret_cast<const char *>(&record.getPayload()[index + 4 + 0]));
-      //       // Serial.println(SSID);
-      //     } else if (record.getPayload()[index + 1] == 0x03) {
-      //       Serial.print("- Authenticate Type = ");
-      //       Serial.println(ndef_helper_WifiAuth(record.getPayload()[index + 5]));
-      //     } else if (record.getPayload()[index + 1] == 0x0f) {
-      //       Serial.print("- Encryption Type = ");
-      //       Serial.println(ndef_helper_WifiEnc(record.getPayload()[index + 5]));
-      //     } else if (record.getPayload()[index + 1] == 0x27) {
-      //       Serial.print("- Network key = ");
-      //       Serial.println(reinterpret_cast<const char *>(&record.getPayload()[index + 4]));
-      //       Serial.print("- Network key = ");
-      //       Serial.println(getHexRepresentation(&record.getPayload()[index + 4], record.getPayload()[index + 3]));
-      //     }
-      //     index += 4 + record.getPayload()[index + 3];
-      //   } else
-      //     continue;
-      // }
     } break;
 
-      // case WELL_KNOWN_HANDOVER_SELECT:
-      //   Serial.print("Handover select version ");
-      //   Serial.print(record.recordPayload[0] >> 4);
-      //   Serial.println(record.recordPayload[0] & 0xF);
-      //   break;
+      case WELL_KNOWN_HANDOVER_SELECT:
+        Serial.print("\tHandover select version: ");
+        Serial.print(String(record.getPayload() >> 4) + "." + String(record.getPayload() & 0xF));
+        break;
 
-      // case WELL_KNOWN_HANDOVER_REQUEST:
-      //   Serial.print("Handover request version ");
-      //   Serial.print(record.recordPayload[0] >> 4);
-      //   Serial.println(record.recordPayload[0] & 0xF);
-      //   break;
+      case WELL_KNOWN_HANDOVER_REQUEST:
+        Serial.print("\tHandover request version: ");
+        Serial.print(String(record.getPayload() >> 4) + "." + String(record.getPayload() & 0xF));
+        break;
 
     case MEDIA_HANDOVER_BT:
       Serial.println("\tBluetooth handover");

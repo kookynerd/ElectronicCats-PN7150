@@ -56,7 +56,6 @@ String NdefRecord::getText() {
   unsigned char save = payload[payloadSize];
   payload[payloadSize] = '\0';
   String text = "";
-  Serial.println("here");
 
   if (getType() == WELL_KNOWN_SIMPLE_TEXT) {
     text = reinterpret_cast<const char *>(&payload[payload[0] + 1]);
