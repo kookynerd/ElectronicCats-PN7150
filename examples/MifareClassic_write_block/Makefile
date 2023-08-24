@@ -1,4 +1,5 @@
 BOARD_TAG = electroniccats:mbed_rp2040:bombercat
+# BOARD_TAG = arduino:mbed_rp2040:pico
 # BOARD_TAG = rp2040:rp2040:generic
 MONITOR_PORT = /dev/cu.usbmodem1101
 

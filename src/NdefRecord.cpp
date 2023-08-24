@@ -53,6 +53,9 @@ unsigned short NdefRecord::getPayloadSize() {
 }
 
 String NdefRecord::getText() {
+  Serial.println("here1");
+  Serial.println(payloadSize);
+  Serial.println(sizeof(payload));
   unsigned char save = payload[payloadSize];
   payload[payloadSize] = '\0';
   String text = "";
@@ -62,6 +65,7 @@ String NdefRecord::getText() {
   }
 
   payload[payloadSize] = save;
+  Serial.println("here2");
 
   return text;
 }
@@ -161,6 +165,8 @@ String NdefRecord::getWiFiEncryptionType() {
       index += 4 + getPayload()[index + 3];
     }
   }
+
+  return encryptionType;
 }
 
 String NdefRecord::getWiFiNetworkKey() {
@@ -183,4 +189,6 @@ String NdefRecord::getWiFiNetworkKey() {
       index += 4 + getPayload()[index + 3];
     }
   }
+
+  return networkKey;
 }

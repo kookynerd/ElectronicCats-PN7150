@@ -166,6 +166,7 @@ void displayRecordInfo(NdefRecord record) {
     return;
   }
 
+  uint8_t *payload = record.getPayload();
   Serial.println("--- NDEF record received:");
 
   switch (record.getType()) {
@@ -198,15 +199,19 @@ void displayRecordInfo(NdefRecord record) {
       Serial.println("\t- Encryption type: " + record.getWiFiEncryptionType());
     } break;
 
-      case WELL_KNOWN_HANDOVER_SELECT:
-        Serial.print("\tHandover select version: ");
-        Serial.print(String(record.getPayload() >> 4) + "." + String(record.getPayload() & 0xF));
-        break;
+    case WELL_KNOWN_HANDOVER_SELECT:
+      Serial.print("\tHandover select version: ");
+      Serial.print(*payload >> 4);
+      Serial.print(".");
+      Serial.println(*payload & 0xF);
+      break;
 
-      case WELL_KNOWN_HANDOVER_REQUEST:
-        Serial.print("\tHandover request version: ");
-        Serial.print(String(record.getPayload() >> 4) + "." + String(record.getPayload() & 0xF));
-        break;
+    case WELL_KNOWN_HANDOVER_REQUEST:
+      Serial.print("\tHandover request version: ");
+      Serial.print(*payload >> 4);
+      Serial.print(".");
+      Serial.println(*payload & 0xF);
+      break;
 
     case MEDIA_HANDOVER_BT:
       Serial.println("\tBluetooth handover");
