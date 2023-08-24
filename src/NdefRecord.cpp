@@ -56,6 +56,7 @@ String NdefRecord::getText() {
   unsigned char save = payload[payloadSize];
   payload[payloadSize] = '\0';
   String text = "";
+  Serial.println("here");
 
   if (getType() == WELL_KNOWN_SIMPLE_TEXT) {
     text = reinterpret_cast<const char *>(&payload[payload[0] + 1]);
@@ -118,18 +119,69 @@ String NdefRecord::getWiFiSSID() {
 }
 
 String NdefRecord::getWiFiAuthenticationType() {
-	String authenticationType = "";
+  String authenticationType = "";
+  unsigned char index = 0, i;
 
-	if (getType() != MEDIA_HANDOVER_WIFI) {
-		return authenticationType;
-	}
+  if (getType() != MEDIA_HANDOVER_WIFI) {
+    return authenticationType;
+  }
 
-	for (unsigned int i = 0; i < payloadSize; i++) {
-		if (payload[i] == 0x03) {
-			authenticationType = ndef_helper_WifiAuth(payload[i + 2]);
-			break;
-		}
-	}
+  if ((getPayload()[index] == 0x10) && (getPayload()[index + 1] == 0x0e)) {
+    index += 4;
+  }
 
-	return authenticationType;
+  while (index < getPayloadSize()) {
+    if (getPayload()[index] == 0x10) {
+      if (getPayload()[index + 1] == 0x03) {
+        authenticationType = ndef_helper_WifiAuth(getPayload()[index + 5]);
+      }
+      index += 4 + getPayload()[index + 3];
+    }
+  }
+
+  return authenticationType;
+}
+
+String NdefRecord::getWiFiEncryptionType() {
+  String encryptionType = "";
+  unsigned char index = 0, i;
+
+  if (getType() != MEDIA_HANDOVER_WIFI) {
+    return encryptionType;
+  }
+
+  if ((getPayload()[index] == 0x10) && (getPayload()[index + 1] == 0x0e)) {
+    index += 4;
+  }
+
+  while (index < getPayloadSize()) {
+    if (getPayload()[index] == 0x10) {
+      if (getPayload()[index + 1] == 0x0f) {
+        encryptionType = ndef_helper_WifiEnc(getPayload()[index + 5]);
+      }
+      index += 4 + getPayload()[index + 3];
+    }
+  }
+}
+
+String NdefRecord::getWiFiNetworkKey() {
+  String networkKey = "";
+  unsigned char index = 0, i;
+
+  if (getType() != MEDIA_HANDOVER_WIFI) {
+    return networkKey;
+  }
+
+  if ((getPayload()[index] == 0x10) && (getPayload()[index + 1] == 0x0e)) {
+    index += 4;
+  }
+
+  while (index < getPayloadSize()) {
+    if (getPayload()[index] == 0x10) {
+      if (getPayload()[index + 1] == 0x27) {
+        networkKey = reinterpret_cast<const char *>(&getPayload()[index + 4]);
+      }
+      index += 4 + getPayload()[index + 3];
+    }
+  }
 }

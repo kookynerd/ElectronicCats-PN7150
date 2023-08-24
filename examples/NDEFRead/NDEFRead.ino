@@ -190,37 +190,40 @@ void displayRecordInfo(NdefRecord record) {
       //   record.recordPayload[record.recordPayloadSize] = save;
       // } break;
 
-      case MEDIA_HANDOVER_WIFI: {
-        Serial.println("\tReceived WIFI credentials:");
-        Serial.println("\t- SSID: " + record.getWiFiSSID());
-        Serial.println("\t- Authentication type: " + record.getWiFiAuthenticationType());
-        // unsigned char index = 0, i;
+    case MEDIA_HANDOVER_WIFI: {
+      Serial.println("\tReceived WIFI credentials:");
+      Serial.println("\t- SSID: " + record.getWiFiSSID());
+      Serial.println("\t- Network key: " + record.getWiFiNetworkKey());
+      Serial.println("\t- Authentication type: " + record.getWiFiAuthenticationType());
+      Serial.println("\t- Encryption type: " + record.getWiFiEncryptionType());
+      // Serial.println("Old method:");
+      // unsigned char index = 0, i;
 
-        // if ((record.recordPayload[index] == 0x10) && (record.recordPayload[index + 1] == 0x0e))
-        //   index += 4;
-        // while (index < record.recordPayloadSize) {
-        //   if (record.recordPayload[index] == 0x10) {
-        //     if (record.recordPayload[index + 1] == 0x45) {
-        //       Serial.print("- SSID = ");
-        //       Serial.println(reinterpret_cast<const char *>(&record.recordPayload[index + 4 + 0]));
-        //       Serial.println(SSID);
-        //     } else if (record.recordPayload[index + 1] == 0x03) {
-        //       Serial.print("- Authenticate Type = ");
-        //       Serial.println(ndef_helper_WifiAuth(record.recordPayload[index + 5]));
-        //     } else if (record.recordPayload[index + 1] == 0x0f) {
-        //       Serial.print("- Encryption Type = ");
-        //       Serial.println(ndef_helper_WifiEnc(record.recordPayload[index + 5]));
-        //     } else if (record.recordPayload[index + 1] == 0x27) {
-        //       Serial.print("- Network key = ");
-        //       Serial.println(reinterpret_cast<const char *>(&record.recordPayload[index + 4]));
-        //       Serial.print("- Network key = ");
-        //       Serial.println(getHexRepresentation(&record.recordPayload[index + 4], record.recordPayload[index + 3]));
-        //     }
-        //     index += 4 + record.recordPayload[index + 3];
-        //   } else
-        //     continue;
-        // }
-      } break;
+      // if ((record.getPayload()[index] == 0x10) && (record.getPayload()[index + 1] == 0x0e))
+      //   index += 4;
+      // while (index < record.getPayloadSize()) {
+      //   if (record.getPayload()[index] == 0x10) {
+      //     if (record.getPayload()[index + 1] == 0x45) {
+      //       Serial.print("- SSID = ");
+      //       Serial.println(reinterpret_cast<const char *>(&record.getPayload()[index + 4 + 0]));
+      //       // Serial.println(SSID);
+      //     } else if (record.getPayload()[index + 1] == 0x03) {
+      //       Serial.print("- Authenticate Type = ");
+      //       Serial.println(ndef_helper_WifiAuth(record.getPayload()[index + 5]));
+      //     } else if (record.getPayload()[index + 1] == 0x0f) {
+      //       Serial.print("- Encryption Type = ");
+      //       Serial.println(ndef_helper_WifiEnc(record.getPayload()[index + 5]));
+      //     } else if (record.getPayload()[index + 1] == 0x27) {
+      //       Serial.print("- Network key = ");
+      //       Serial.println(reinterpret_cast<const char *>(&record.getPayload()[index + 4]));
+      //       Serial.print("- Network key = ");
+      //       Serial.println(getHexRepresentation(&record.getPayload()[index + 4], record.getPayload()[index + 3]));
+      //     }
+      //     index += 4 + record.getPayload()[index + 3];
+      //   } else
+      //     continue;
+      // }
+    } break;
 
       // case WELL_KNOWN_HANDOVER_SELECT:
       //   Serial.print("Handover select version ");
