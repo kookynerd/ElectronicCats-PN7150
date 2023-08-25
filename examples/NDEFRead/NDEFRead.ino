@@ -4,10 +4,10 @@
 #define PN7150_ADDR (0x28)
 
 // Function prototypes
+void ndefCallback();
 String getHexRepresentation(const byte *data, const uint32_t dataSize);
 void displayDeviceInfo();
-void displayRecordInfo(NdefRecord_t record);
-void ndefCallback();
+void displayRecordInfo(NdefRecord record);
 
 // Create a global NFC device interface object, attached to pins 11 (IRQ) and 13 (VEN) and using the default I2C address 0x28
 Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);
@@ -67,6 +67,25 @@ void loop() {
 
   Serial.print(".");
   delay(500);
+}
+
+/// @brief Callback function called when an NDEF message is received
+void ndefCallback() {
+  NdefRecord record;
+  Serial.println("Processing Callback...");
+
+  // message is automatically updated when a new NDEF message is received
+  // only if we call message.begin() in setup()
+  if (message.isEmpty()) {
+    Serial.println("--- Provisioned buffer size too small or NDEF message empty");
+    return;
+  }
+
+  // Show NDEF message details
+  do {
+    record.create(message.getRecord());  // Get a new record every time we call getRecord()
+    displayRecordInfo(record);
+  } while (record.isNotEmpty());
 }
 
 String getHexRepresentation(const byte *data, const uint32_t dataSize) {
@@ -171,33 +190,29 @@ void displayRecordInfo(NdefRecord record) {
   Serial.println("--- NDEF record received:");
 
   switch (record.getType()) {
-    case MEDIA_VCARD: {
-      unsigned char save = record.getPayload()[record.getPayloadSize()];
-      record.getPayload()[record.getPayloadSize()] = '\0';
+    case MEDIA_VCARD:
       Serial.println("vCard:");
       Serial.println(record.getVCardContent());
-    } break;
+      break;
 
-    case WELL_KNOWN_SIMPLE_TEXT: {
+    case WELL_KNOWN_SIMPLE_TEXT:
       Serial.println("\tWell known simple text");
       Serial.println("\t- Text record: " + record.getText());
-    } break;
+      break;
 
-      // case WELL_KNOWN_SIMPLE_URI: {
-      //   save = record.recordPayload[record.recordPayloadSize];
-      //   record.recordPayload[record.recordPayloadSize] = '\0';
-      //   Serial.print("URI record: ");
-      //   Serial.println(reinterpret_cast<const char *>(ndef_helper_UriHead(record.recordPayload[0]), &record.recordPayload[1]));
-      //   record.recordPayload[record.recordPayloadSize] = save;
-      // } break;
+    case WELL_KNOWN_SIMPLE_URI:
+      Serial.println("\tWell known simple URI");
+      Serial.print("\t- URI record: ");
+      Serial.println(record.getUri());
+      break;
 
-    case MEDIA_HANDOVER_WIFI: {
+    case MEDIA_HANDOVER_WIFI:
       Serial.println("\tReceived WIFI credentials:");
       Serial.println("\t- SSID: " + record.getWiFiSSID());
       Serial.println("\t- Network key: " + record.getWiFiNetworkKey());
       Serial.println("\t- Authentication type: " + record.getWiFiAuthenticationType());
       Serial.println("\t- Encryption type: " + record.getWiFiEncryptionType());
-    } break;
+      break;
 
     case WELL_KNOWN_HANDOVER_SELECT:
       Serial.print("\tHandover select version: ");
@@ -239,22 +254,4 @@ void displayRecordInfo(NdefRecord record) {
   }
 
   Serial.println("");
-}
-
-/// @brief Callback function called when an NDEF message is received
-void ndefCallback() {
-  NdefRecord record;
-  Serial.println("Processing Callback...");
-
-  // message is automatically updated when a new NDEF message is received
-  // only if we call message.begin() in setup()
-  if (message.isEmpty()) {
-    Serial.println("--- Provisioned buffer size too small or NDEF message empty");
-    return;
-  }
-
-  do {
-    record.create(message.getRecord());  // Get a new record every time we call getRecord()
-    displayRecordInfo(record);
-  } while (record.isNotEmpty());
 }

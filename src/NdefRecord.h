@@ -2,7 +2,6 @@
 #define NdefRecord_H
 
 #include <Arduino.h>
-
 #include "ndef_helper.h"
 
 class NdefRecord {
@@ -30,6 +29,7 @@ class NdefRecord {
 	String getWiFiEncryptionType();
 	String getWiFiNetworkKey();
 	String getVCardContent();
+	String getUri();
 };
 
 #endif

@@ -1,10 +1,10 @@
 #include "NdefRecord.h"
 
 NdefRecord::NdefRecord() {
-  type = UNSUPPORTED_NDEF_RECORD;
-  payload = NULL;
-  payloadSize = 0;
-  newString = "null";
+  this->type = UNSUPPORTED_NDEF_RECORD;
+  this->payload = NULL;
+  this->payloadSize = 0;
+  this->newString = "null";
 }
 
 void NdefRecord::create(NdefRecord_t record) {
@@ -17,7 +17,7 @@ String NdefRecord::getHexRepresentation(const byte *data, const uint32_t dataSiz
   String hexString;
 
   if (dataSize == 0) {
-    hexString = "null";
+    hexString = newString;
   }
 
   for (uint32_t index = 0; index < dataSize; index++) {
@@ -72,6 +72,8 @@ String NdefRecord::getBluetoothName() {
 
   if (getType() != MEDIA_HANDOVER_BT) {
     return bluetoothName;
+  } else {
+    bluetoothName = "";
   }
 
   for (unsigned int i = 10; i < payloadSize; i++) {
@@ -89,6 +91,8 @@ String NdefRecord::getBluetoothAddress() {
 
   if (getType() != MEDIA_HANDOVER_BT) {
     return bluetoothAddress;
+  } else {
+    bluetoothAddress = "";
   }
 
   for (unsigned int i = 7; i >= 2; i--) {
@@ -200,4 +204,19 @@ String NdefRecord::getVCardContent() {
   content = reinterpret_cast<const char *>(getPayload());
 
   return content;
+}
+
+String NdefRecord::getUri() {
+  String uri = newString;
+
+  if (getType() != WELL_KNOWN_SIMPLE_URI) {
+    return uri;
+  }
+
+  unsigned char save = payload[payloadSize];
+  payload[payloadSize] = '\0';
+  uri = reinterpret_cast<const char *>(ndef_helper_UriHead(payload[0]), &payload[1]);
+  payload[payloadSize] = save;
+
+  return uri;
 }
