@@ -154,7 +154,8 @@ class Electroniccats_PN7150 : public Mode {
   bool CardModeReceive(unsigned char *pData, unsigned char *pDataSize);  // Deprecated, use cardModeReceive() instead
   void processCardMode(RfIntf_t RfIntf);
   void processCardMode(void);
-  void ProcessCardMode(RfIntf_t RfIntf);  // Deprecated, use processCardMode(void) instead
+  void handleCardEmulation();
+  void ProcessCardMode(RfIntf_t RfIntf);  // Deprecated, use handleCardEmulation() instead
   void processReaderMode(RfIntf_t RfIntf, RW_Operation_t Operation);
   void ProcessReaderMode(RfIntf_t RfIntf, RW_Operation_t Operation);  // Deprecated, use processReaderMode() instead
   void processP2pMode(RfIntf_t RfIntf);

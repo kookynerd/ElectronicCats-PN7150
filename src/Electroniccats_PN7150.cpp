@@ -1387,7 +1387,11 @@ void Electroniccats_PN7150::processCardMode(void) {
   Electroniccats_PN7150::processCardMode(this->dummyRfInterface);
 }
 
-// Deprecated, use processCardMode(void) instead
+void Electroniccats_PN7150::handleCardEmulation() {
+  Electroniccats_PN7150::processCardMode();
+}
+
+// Deprecated, use handleCardEmulation() instead
 void Electroniccats_PN7150::ProcessCardMode(RfIntf_t RfIntf) {
   Electroniccats_PN7150::processCardMode(RfIntf);
 }
@@ -1928,6 +1932,6 @@ void Electroniccats_PN7150::closeCommunication() {
 }
 
 void Electroniccats_PN7150::sendMessage() {
-  Electroniccats_PN7150::processCardMode();
+  Electroniccats_PN7150::handleCardEmulation();
   Electroniccats_PN7150::closeCommunication();
 }

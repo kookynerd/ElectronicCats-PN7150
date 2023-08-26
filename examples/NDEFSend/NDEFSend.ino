@@ -22,7 +22,6 @@
 void sendMessageCallback(unsigned char *pNdefRecord, unsigned short NdefRecordSize);
 
 Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);  // Creates a global NFC device interface object, attached to pins 11 (IRQ) and 13 (VEN) and using the default I2C address 0x28
-RfIntf_t RfInterface;                                            // Interface to save data for multiple tags
 
 const char uri[] = "google.com";
 

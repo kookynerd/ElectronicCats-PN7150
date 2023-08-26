@@ -19,14 +19,12 @@
 #define PN7150_ADDR (0x28)
 
 Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);  // Creates a global NFC device interface object, attached to pins 11 (IRQ) and 13 (VEN) and using the default I2C address 0x28
-RfIntf_t RfInterface;                                            // Interface to save data for multiple tags
 
 void setup() {
   Serial.begin(9600);
   while (!Serial)
     ;
-  Serial.println("Send NDEF Message with PN7150");
-
+  Serial.println("Detect NFC readers with PN7150");
   Serial.println("Initializing...");
 
   if (nfc.begin()) {
@@ -44,8 +42,9 @@ void loop() {
   Serial.print(".");
 
   if (nfc.isReaderDetected()) {
-    nfc.sendMessage();
     Serial.println("\nReader detected!");
+    nfc.handleCardEmulation();
+    nfc.closeCommunication();
     Serial.print("\nWaiting for a reader");
   }
 }
