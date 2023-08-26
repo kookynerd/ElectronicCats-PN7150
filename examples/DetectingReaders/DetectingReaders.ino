@@ -12,59 +12,40 @@
  * Distributed as-is; no warranty is given.
  */
 
-#include "Electroniccats_PN7150.h"
-#define PN7150_IRQ   (15)
-#define PN7150_VEN   (14)
-#define PN7150_ADDR  (0x28)
+#include <Electroniccats_PN7150.h>
 
-Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR); // creates a global NFC device interface object, attached to pins 7 (IRQ) and 8 (VEN) and using the default I2C address 0x28
+#define PN7150_IRQ (11)
+#define PN7150_VEN (13)
+#define PN7150_ADDR (0x28)
 
-unsigned char STATUSOK[] = {0x90, 0x00}, Cmd[256], CmdSize;
+Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);  // Creates a global NFC device interface object, attached to pins 11 (IRQ) and 13 (VEN) and using the default I2C address 0x28
+RfIntf_t RfInterface;                                            // Interface to save data for multiple tags
 
-uint8_t mode = 2;                                                  // modes: 1 = Reader/ Writer, 2 = Emulation
-
-void setup(){
+void setup() {
   Serial.begin(9600);
-  while(!Serial);
-  Serial.println("Detect NFC readers with PN7150");
-  Serial.println("Initializing..."); 
+  while (!Serial)
+    ;
+  Serial.println("Send NDEF Message with PN7150");
 
-  if (nfc.connectNCI()) { //Wake up the board
-    Serial.println("Error while setting up the mode, check connections!");
-    while (1);
+  Serial.println("Initializing...");
+
+  if (nfc.begin()) {
+    Serial.println("Error initializing PN7150");
+    while (1)
+      ;
   }
-  
-  if (nfc.configureSettings()) {
-    Serial.println("The Configure Settings is failed!");
-    while (1);
-  }
-  
-  if(nfc.configMode(mode)){ //Set up the configuration mode
-    Serial.println("The Configure Mode is failed!!");
-    while (1);
-  }
-  nfc.startDiscovery(mode); //NCI Discovery mode
-  Serial.println("Waiting for an Reader Card ...");
+
+  // Needed to detect readers
+  nfc.setEmulationMode();
+  Serial.print("Waiting for a reader...");
 }
 
-void loop(){
-  if(nfc.cardModeReceive(Cmd, &CmdSize) == 0) { //Data in buffer?
-      if ((CmdSize >= 2) && (Cmd[0] == 0x00)) { //Expect at least two bytes
-          switch (Cmd[1]) {
-              case 0xA4: //Something tries to select a file, meaning that it is a reader
-                  Serial.println("Reader detected!");
-                  break;
-  
-              case 0xB0: //SFI
-                  break;
-  
-              case 0xD0: //...
-                  break;
-  
-              default:
-                  break;
-          }
-          nfc.cardModeSend(STATUSOK, sizeof(STATUSOK));
-      }
+void loop() {
+  Serial.print(".");
+
+  if (nfc.isReaderDetected()) {
+    nfc.sendMessage();
+    Serial.println("\nReader detected!");
+    Serial.print("\nWaiting for a reader");
   }
 }

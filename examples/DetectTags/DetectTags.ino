@@ -3,6 +3,8 @@
  * Authors:
  *        Salvador Mendoza - @Netxing - salmg.net
  *        For Electronic Cats - electroniccats.com
+ * 
+ * Updated by Francisco Torres - Electronic Cats - electroniccats.com
  *
  *  March 2020
  *

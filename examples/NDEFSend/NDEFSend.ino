@@ -1,3 +1,17 @@
+/**
+ * Example to send NDEF messages
+ * Authors: 
+ *        Salvador Mendoza - @Netxing - salmg.net
+ *        Francisco Torres - Electronic Cats - electroniccats.com
+ * 
+ *  August 2023
+ * 
+ * This code is beerware; if you see me (or any other collaborator 
+ * member) at the local, and you've found our code helpful, 
+ * please buy us a round!
+ * Distributed as-is; no warranty is given.
+ */
+
 #include <Electroniccats_PN7150.h>
 
 #define PN7150_IRQ (11)
@@ -5,13 +19,10 @@
 #define PN7150_ADDR (0x28)
 
 // Function prototypes
-void checkReaders();
 void sendMessageCallback(unsigned char *pNdefRecord, unsigned short NdefRecordSize);
 
 Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);  // Creates a global NFC device interface object, attached to pins 11 (IRQ) and 13 (VEN) and using the default I2C address 0x28
 RfIntf_t RfInterface;                                            // Interface to save data for multiple tags
-
-unsigned char STATUSOK[] = {0x90, 0x00}, Cmd[256], CmdSize;
 
 const char uri[] = "google.com";
 
@@ -53,7 +64,6 @@ void setup() {
 
   // Needed to detect readers
   nfc.setEmulationMode();
-
   Serial.print("Waiting for an NDEF device");
 }
 
