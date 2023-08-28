@@ -137,7 +137,7 @@ String NdefRecord::getWiFiSSID() {
 
 String NdefRecord::getWiFiAuthenticationType() {
   String authenticationType = newString;
-  unsigned char index = 0, i;
+  unsigned char index = 0;
 
   if (getType() != MEDIA_HANDOVER_WIFI) {
     return authenticationType;
@@ -161,7 +161,7 @@ String NdefRecord::getWiFiAuthenticationType() {
 
 String NdefRecord::getWiFiEncryptionType() {
   String encryptionType = newString;
-  unsigned char index = 0, i;
+  unsigned char index = 0;
 
   if (getType() != MEDIA_HANDOVER_WIFI) {
     return encryptionType;
@@ -185,7 +185,7 @@ String NdefRecord::getWiFiEncryptionType() {
 
 String NdefRecord::getWiFiNetworkKey() {
   String networkKey = newString;
-  unsigned char index = 0, i;
+  unsigned char index = 0;
 
   if (getType() != MEDIA_HANDOVER_WIFI) {
     return networkKey;

@@ -29,7 +29,7 @@ void setup() {
 
   if (nfc.begin()) {
     Serial.println("Error initializing PN7150");
-    while (1)
+    while (true)
       ;
   }
 

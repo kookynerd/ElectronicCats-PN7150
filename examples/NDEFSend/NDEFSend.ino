@@ -33,14 +33,6 @@ const char ndefMessage[] = {0xD1,                      // MB/ME/CF/1/IL/TNF
                              'e', 'n',                  // Language
                              'H', 'e', 'l', 'l', 'o'};  // Message Payload
 
-// const char ndefMessage[] = {0xD1,
-//                             0x01,
-//                             sizeof(uri) + 1,
-//                             'U',
-//                             0x02,
-//                             'g', 'o', 'o', 'g', 'l', 'e', '.', 'c', 'o', 'm'};
-//                             uri[0], uri[1], uri[2], uri[3], uri[4], uri[5], uri[6], uri[7], uri[8], uri[9], uri[10]};
-
 void setup() {
   Serial.begin(9600);
   while (!Serial)
@@ -57,7 +49,7 @@ void setup() {
 
   if (nfc.begin()) {
     Serial.println("Error initializing PN7150");
-    while (1)
+    while (true)
       ;
   }
 
@@ -71,6 +63,7 @@ void loop() {
 
   if (nfc.isReaderDetected()) {
     Serial.println("\nReader detected!");
+    Serial.println("Sending NDEF message...");
     nfc.sendMessage();
     Serial.print("\nWaiting for an NDEF device");
   }

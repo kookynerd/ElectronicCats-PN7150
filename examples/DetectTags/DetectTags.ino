@@ -55,8 +55,7 @@ void setup() {
 }
 
 void loop() {
-  // TODO: invert the logic to make it more readable
-  if (!nfc.waitForDiscoveryNotification()) {  // Waiting to detect cards
+  if (nfc.isTagDetected()) {
     displayCardInfo();
 
     // It can detect multiple cards at the same time if they use the same protocol
