@@ -112,7 +112,6 @@ class Electroniccats_PN7150 : public Mode {
   uint32_t rxMessageLength;  // length of the last message received. As these are not 0x00 terminated, we need to remember the length
   uint8_t gNfcController_generation = 0;
   uint8_t gNfcController_fw_version[3] = {0};
-  static void updateNdefMessage(unsigned char *message, unsigned short messageSize);
   void setTimeOut(unsigned long);                    // set a timeOut for an expected next event, eg reception of Response after sending a Command
   bool isTimeOut() const;
   bool getMessage(uint16_t timeout = 5);  // 5 miliseconds as default to wait for interrupt responses
@@ -161,15 +160,15 @@ class Electroniccats_PN7150 : public Mode {
   void processP2pMode(RfIntf_t RfIntf);
   void ProcessP2pMode(RfIntf_t RfIntf);  // Deprecated, use processP2pMode() instead
   void presenceCheck(RfIntf_t RfIntf);
-  void waitForTagRemoval();
   void PresenceCheck(RfIntf_t RfIntf);  // Deprecated, use waitForTagRemoval() instead
+  void waitForTagRemoval();
   bool readerTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize);
   bool ReaderTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize);  // Deprecated, use readerTagCmd() instead
   bool readerReActivate(RfIntf_t *pRfIntf);
   bool ReaderReActivate(RfIntf_t *pRfIntf);  // Deprecated, use readerReActivate() instead
   bool readerActivateNext(RfIntf_t *pRfIntf);
-  bool activateNextTagDiscovery();
   bool ReaderActivateNext(RfIntf_t *pRfIntf);  // Deprecated, use activateNextTagDiscovery() instead
+  bool activateNextTagDiscovery();
   void readNdef(RfIntf_t RfIntf);
   void readNdefMessage();
   void ReadNdef(RfIntf_t RfIntf);  // Deprecated, use readNdefMessage() instead

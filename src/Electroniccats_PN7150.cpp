@@ -2,7 +2,7 @@
  * NXP PN7150 Driver
  * Porting authors:
  *        Salvador Mendoza - @Netxing - salmg.net
- *        Andres Sabas - Electronic Cats - Electroniccats.com
+ *        Andres Sabas - Electronic Cats - electroniccats.com
  *
  *  August 2023
  *
