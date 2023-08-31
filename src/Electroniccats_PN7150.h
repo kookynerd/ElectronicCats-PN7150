@@ -165,7 +165,6 @@ class Electroniccats_PN7150 : public Mode {
   bool ReaderReActivate(RfIntf_t *pRfIntf);          // Deprecated, use readerReActivate() instead
   bool activateNextTagDiscovery();
   bool ReaderActivateNext(RfIntf_t *pRfIntf);        // Deprecated, use activateNextTagDiscovery() instead
-  // bool activateNextTagDiscovery();
   void readNdef(RfIntf_t RfIntf);  // TODO: remove it
   void readNdefMessage();
   void ReadNdef(RfIntf_t RfIntf);   // Deprecated, use readNdefMessage() instead

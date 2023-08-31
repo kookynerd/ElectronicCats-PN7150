@@ -13,22 +13,13 @@
  */
 
 #include "Electroniccats_PN7150.h"
-#define PN7150_IRQ (15)
-#define PN7150_VEN (14)
+#define PN7150_IRQ (11)
+#define PN7150_VEN (13)
 #define PN7150_ADDR (0x28)
 
 #define BLK_NB_ISO14443_3A (5)  // Block to be read it
 
 Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);  // creates a global NFC device interface object, attached to pins 7 (IRQ) and 8 (VEN) and using the default I2C address 0x28
-RfIntf_t RfInterface;                                            // Intarface to save data for multiple tags
-
-uint8_t mode = 1;  // modes: 1 = Reader/ Writer, 2 = Emulation
-
-void ResetMode() {  // Reset the configuration mode after each reading
-  Serial.println("Re-initializing...");
-  nfc.ConfigMode(mode);
-  nfc.StartDiscovery(mode);
-}
 
 void PrintBuf(const byte* data, const uint32_t numBytes) {  // Print hex data buffer in format
   uint32_t szPos;
@@ -84,37 +75,37 @@ void setup() {
       ;
   }
 
-  if (nfc.ConfigMode(mode)) {  // Set up the configuration mode
+  if (nfc.configMode()) {  // Set up the configuration mode
     Serial.println("The Configure Mode failed!!");
     while (1)
       ;
   }
-  nfc.StartDiscovery(mode);  // NCI Discovery mode
+  nfc.startDiscovery();  // NCI Discovery mode
   Serial.println("Waiting for an ISO14443-3A Card ...");
 }
 
 void loop() {
-  if (!nfc.WaitForDiscoveryNotification(&RfInterface)) {  // Waiting to detect cards
-    switch (RfInterface.Protocol) {
+  if (nfc.isTagDetected()) {
+    switch (nfc.remoteDevice.getProtocol()) {
       case PROT_T2T:
         Serial.println(" - Found ISO14443-3A(T2T) card");
-        switch (RfInterface.ModeTech) {  // Indetify card technology
+        switch (nfc.remoteDevice.getModeTech()) {  // Indetify card technology
           case (MODE_POLL | TECH_PASSIVE_NFCA):
             char tmp[16];
             Serial.print("\tSENS_RES = ");
-            sprintf(tmp, "0x%.2X", RfInterface.Info.NFC_APP.SensRes[0]);
+            sprintf(tmp, "0x%.2X", nfc.remoteDevice.getSensRes()[0]);
             Serial.print(tmp);
             Serial.print(" ");
-            sprintf(tmp, "0x%.2X", RfInterface.Info.NFC_APP.SensRes[1]);
+            sprintf(tmp, "0x%.2X", nfc.remoteDevice.getSensRes()[1]);
             Serial.print(tmp);
             Serial.println(" ");
 
             Serial.print("\tNFCID = ");
-            PrintBuf(RfInterface.Info.NFC_APP.NfcId, RfInterface.Info.NFC_APP.NfcIdLen);
+            PrintBuf(nfc.remoteDevice.getNFCID(), nfc.remoteDevice.getNFCIDLen());
 
-            if (RfInterface.Info.NFC_APP.SelResLen != 0) {
+            if (nfc.remoteDevice.getSelResLen() != 0) {
               Serial.print("\tSEL_RES = ");
-              sprintf(tmp, "0x%.2X", RfInterface.Info.NFC_APP.SelRes[0]);
+              sprintf(tmp, "0x%.2X", nfc.remoteDevice.getSelRes()[0]);
               Serial.print(tmp);
               Serial.println(" ");
             }
@@ -129,16 +120,17 @@ void loop() {
     }
 
     //* It can detect multiple cards at the same time if they use the same protocol
-    if (RfInterface.MoreTags) {
+    if (nfc.remoteDevice.hasMoreTags()) {
       nfc.activateNextTagDiscovery();
     }
-    //* Wait for card removal
-    nfc.processReaderMode(RfInterface, PRESENCE_CHECK);
-    Serial.println("CARD REMOVED!");
 
-    nfc.stopDiscovery();
-    nfc.StartDiscovery(mode);
+    Serial.println("Remove the Card");
+    nfc.waitForTagRemoval();
+    Serial.println("CARD REMOVED!");
   }
-  ResetMode();
+
+  Serial.println("Restarting...");
+  nfc.reset();
+  Serial.println("Waiting for a Card...");
   delay(500);
 }

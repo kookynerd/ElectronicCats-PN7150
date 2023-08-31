@@ -63,6 +63,7 @@ void loop() {
       nfc.activateNextTagDiscovery();
       Serial.println("Multiple cards are detected!");
     }
+    
     Serial.println("Remove the Card");
     nfc.waitForTagRemoval();
     Serial.println("Card removed!");

@@ -1558,11 +1558,6 @@ bool Electroniccats_PN7150::activateNextTagDiscovery() {
   return !Electroniccats_PN7150::ReaderActivateNext(&this->dummyRfInterface);
 }
 
-// Deprecated, use readerActivateNext() instead
-// bool Electroniccats_PN7150::ReaderActivateNext(RfIntf_t *pRfIntf) {
-//   return Electroniccats_PN7150::activateNextTagDiscovery(pRfIntf);
-// }
-
 void Electroniccats_PN7150::readNdef(RfIntf_t RfIntf) {
   uint8_t Cmd[MAX_NCI_FRAME_SIZE];
   uint16_t CmdSize = 0;
