@@ -1181,7 +1181,7 @@ bool Electroniccats_PN7150::CardModeReceive(unsigned char *pData, unsigned char 
   return Electroniccats_PN7150::cardModeReceive(pData, pDataSize);
 }
 
-void Electroniccats_PN7150::processCardMode(RfIntf_t RfIntf) {
+void Electroniccats_PN7150::ProcessCardMode(RfIntf_t RfIntf) {
   uint8_t Answer[MAX_NCI_FRAME_SIZE];
 
   uint8_t NCIStopDiscovery[] = {0x21, 0x06, 0x01, 0x00};
@@ -1229,17 +1229,8 @@ void Electroniccats_PN7150::processCardMode(RfIntf_t RfIntf) {
   }
 }
 
-void Electroniccats_PN7150::processCardMode(void) {
-  Electroniccats_PN7150::processCardMode(this->dummyRfInterface);
-}
-
 void Electroniccats_PN7150::handleCardEmulation() {
-  Electroniccats_PN7150::processCardMode();
-}
-
-// Deprecated, use handleCardEmulation() instead
-void Electroniccats_PN7150::ProcessCardMode(RfIntf_t RfIntf) {
-  Electroniccats_PN7150::processCardMode(RfIntf);
+  Electroniccats_PN7150::ProcessCardMode(this->dummyRfInterface);
 }
 
 void Electroniccats_PN7150::processReaderMode(RfIntf_t RfIntf, RW_Operation_t Operation) {
