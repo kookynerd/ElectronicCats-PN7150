@@ -81,7 +81,7 @@ void setup() {
       ;
   }
   nfc.startDiscovery();  // NCI Discovery mode
-  Serial.println("Waiting for an ISO14443-3A Card ...");
+  Serial.println("Waiting for an ISO14443-3A Card...");
 }
 
 void loop() {
@@ -131,6 +131,6 @@ void loop() {
 
   Serial.println("Restarting...");
   nfc.reset();
-  Serial.println("Waiting for an ISO14443-3A Card ...");
+  Serial.println("Waiting for an ISO14443-3A Card...");
   delay(500);
 }
