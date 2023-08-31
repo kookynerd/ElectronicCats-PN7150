@@ -151,7 +151,7 @@ class Electroniccats_PN7150 : public Mode {
   bool cardModeReceive(unsigned char *pData, unsigned char *pDataSize);
   bool CardModeReceive(unsigned char *pData, unsigned char *pDataSize);  // Deprecated, use cardModeReceive() instead
   void handleCardEmulation();
-  void ProcessCardMode(RfIntf_t RfIntf);  // Deprecated, use handleCardEmulation() instead
+  void ProcessCardMode(RfIntf_t RfIntf);                              // Deprecated, use handleCardEmulation() instead
   void processReaderMode(RfIntf_t RfIntf, RW_Operation_t Operation);  // Deprecated, use waitForTagRemoval(), readNdefMessage() or writeNdefMessage() and readNdefMessage() instead
   void ProcessReaderMode(RfIntf_t RfIntf, RW_Operation_t Operation);  // Deprecated, use processReaderMode() instead
   void processP2pMode(RfIntf_t RfIntf);                               // TODO: rename it
@@ -161,7 +161,7 @@ class Electroniccats_PN7150 : public Mode {
   void waitForTagRemoval();
   bool readerTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize);
   bool ReaderTagCmd(unsigned char *pCommand, unsigned char CommandSize, unsigned char *pAnswer, unsigned char *pAnswerSize);  // Deprecated, use readerTagCmd() instead
-  bool readerReActivate(RfIntf_t *pRfIntf);                                                                                   // TODO: remove the pointer
+  bool readerReActivate();
   bool ReaderReActivate(RfIntf_t *pRfIntf);                                                                                   // Deprecated, use readerReActivate() instead
   bool readerActivateNext(RfIntf_t *pRfIntf);                                                                                 // TODO: remove it
   bool ReaderActivateNext(RfIntf_t *pRfIntf);                                                                                 // Deprecated, use activateNextTagDiscovery() instead

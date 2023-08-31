@@ -1469,7 +1469,7 @@ bool Electroniccats_PN7150::ReaderTagCmd(unsigned char *pCommand, unsigned char 
   return Electroniccats_PN7150::readerTagCmd(pCommand, CommandSize, pAnswer, pAnswerSize);
 }
 
-bool Electroniccats_PN7150::readerReActivate(RfIntf_t *pRfIntf) {
+bool Electroniccats_PN7150::readerReActivate() {
   uint8_t NCIDeactivate[] = {0x21, 0x06, 0x01, 0x01};
   uint8_t NCIActivate[] = {0x21, 0x04, 0x03, 0x01, 0x00, 0x00};
 
@@ -1493,7 +1493,7 @@ bool Electroniccats_PN7150::readerReActivate(RfIntf_t *pRfIntf) {
 
 // Deprecated, use readerReActivate() instead
 bool Electroniccats_PN7150::ReaderReActivate(RfIntf_t *pRfIntf) {
-  return Electroniccats_PN7150::readerReActivate(pRfIntf);
+  return Electroniccats_PN7150::readerReActivate();
 }
 
 bool Electroniccats_PN7150::readerActivateNext(RfIntf_t *pRfIntf) {
