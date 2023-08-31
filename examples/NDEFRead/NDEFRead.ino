@@ -1,13 +1,13 @@
 /**
  * Example to read NDEF messages
- * Authors: 
+ * Authors:
  *        Salvador Mendoza - @Netxing - salmg.net
  *        Francisco Torres - Electronic Cats - electroniccats.com
- * 
+ *
  *  August 2023
- * 
- * This code is beerware; if you see me (or any other collaborator 
- * member) at the local, and you've found our code helpful, 
+ *
+ * This code is beerware; if you see me (or any other collaborator
+ * member) at the local, and you've found our code helpful,
  * please buy us a round!
  * Distributed as-is; no warranty is given.
  */
@@ -18,7 +18,7 @@
 #define PN7150_ADDR (0x28)
 
 // Function prototypes
-void ndefCallback();
+void messageReceived();
 String getHexRepresentation(const byte *data, const uint32_t dataSize);
 void displayDeviceInfo();
 void displayRecordInfo(NdefRecord record);
@@ -34,7 +34,7 @@ void setup() {
   Serial.println("Detect NFC tags with PN7150");
 
   // Register a callback function to be called when an NDEF message is received
-  nfc.setSendMsgCallback(ndefCallback);
+  nfc.setReadMsgCallback(messageReceived);
 
   Serial.println("Initializing...");
 
@@ -84,7 +84,7 @@ void loop() {
 }
 
 /// @brief Callback function called when an NDEF message is received
-void ndefCallback() {
+void messageReceived() {
   NdefRecord record;
   Serial.println("Processing Callback...");
 
@@ -223,7 +223,7 @@ void displayRecordInfo(NdefRecord record) {
     case MEDIA_HANDOVER_WIFI:
       Serial.println("\tReceived WIFI credentials:");
       Serial.println("\t- SSID: " + record.getWiFiSSID());
-      Serial.println("\t- Network key: " + record.getWiFiNetworkKey());
+      Serial.println("\t- Network key: " + record.getWiFiPassword());
       Serial.println("\t- Authentication type: " + record.getWiFiAuthenticationType());
       Serial.println("\t- Encryption type: " + record.getWiFiEncryptionType());
       break;

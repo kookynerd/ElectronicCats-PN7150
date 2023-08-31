@@ -155,7 +155,7 @@ void displayCardInfo() {  // Funtion in charge to show the card/s in te field
         Serial.print("\tID = ");
         Serial.println(getHexRepresentation(nfc.remoteDevice.getID(), sizeof(nfc.remoteDevice.getID())));
 
-        Serial.print("\ntAFI = ");
+        Serial.print("\tAFI = ");
         Serial.println(nfc.remoteDevice.getAFI());
 
         Serial.print("\tDSF ID = ");

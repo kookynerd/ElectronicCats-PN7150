@@ -47,8 +47,7 @@ typedef enum {
   UNSUPPORTED_NDEF_RECORD = 0xFF
 } NdefRecordType_e;
 
-typedef struct
-{
+typedef struct {
   NdefRecordType_e recordType;
   unsigned char *recordPayload;
   unsigned int recordPayloadSize;

@@ -95,6 +95,32 @@ void Electroniccats_PN7150::setTimeOut(unsigned long theTimeOut) {
   timeOut = theTimeOut;
 }
 
+uint8_t Electroniccats_PN7150::wakeupNCI() {  // the device has to wake up using a core reset
+  uint8_t NCICoreReset[] = {0x20, 0x00, 0x01, 0x01};
+  uint16_t NbBytes = 0;
+
+  // Reset RF settings restauration flag
+  (void)writeData(NCICoreReset, 4);
+  getMessage(15);
+  NbBytes = rxMessageLength;
+  if ((NbBytes == 0) || (rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x00)) {
+    return ERROR;
+  }
+  getMessage();
+  NbBytes = rxMessageLength;
+  if (NbBytes != 0) {
+    // NCI_PRINT_BUF("NCI << ", Answer, NbBytes);
+    //  Is CORE_GENERIC_ERROR_NTF ?
+    if ((rxBuffer[0] == 0x60) && (rxBuffer[1] == 0x07)) {
+      /* Is PN7150B0HN/C11004 Anti-tearing recovery procedure triggered ? */
+      // if ((rxBuffer[3] == 0xE6)) gRfSettingsRestored_flag = true;
+    } else {
+      return ERROR;
+    }
+  }
+  return SUCCESS;
+}
+
 bool Electroniccats_PN7150::getMessage(uint16_t timeout) {  // check for message using timeout, 5 milisec as default
   setTimeOut(timeout);
   rxMessageLength = 0;
@@ -177,6 +203,58 @@ int Electroniccats_PN7150::getFirmwareVersion() {
 // Deprecated, use getFirmwareVersion() instead
 int Electroniccats_PN7150::GetFwVersion() {
   return getFirmwareVersion();
+}
+
+uint8_t Electroniccats_PN7150::connectNCI() {
+  uint8_t i = 2;
+  uint8_t NCICoreInit[] = {0x20, 0x01, 0x00};
+
+  // Check if begin function has been called
+  if (this->_hasBeenInitialized) {
+    return SUCCESS;
+  }
+
+  // Open connection to NXPNCI
+  _wire->begin();
+  if (_VENpin != 255) {
+    digitalWrite(_VENpin, HIGH);
+    delay(1);
+    digitalWrite(_VENpin, LOW);
+    delay(1);
+    digitalWrite(_VENpin, HIGH);
+    delay(3);
+  }
+
+  // Loop until NXPNCI answers
+  while (wakeupNCI() != SUCCESS) {
+    if (i-- == 0)
+      return ERROR;
+    delay(500);
+  }
+
+  (void)writeData(NCICoreInit, sizeof(NCICoreInit));
+  getMessage();
+  if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x01) || (rxBuffer[3] != 0x00))
+    return ERROR;
+
+  // Retrieve NXP-NCI NFC Controller generation
+  if (rxBuffer[17 + rxBuffer[8]] == 0x08)
+    gNfcController_generation = 1;
+  else if (rxBuffer[17 + rxBuffer[8]] == 0x10)
+    gNfcController_generation = 2;
+
+  // Retrieve NXP-NCI NFC Controller FW version
+  gNfcController_fw_version[0] = rxBuffer[17 + rxBuffer[8]];  // 0xROM_CODE_V
+  gNfcController_fw_version[1] = rxBuffer[18 + rxBuffer[8]];  // 0xFW_MAJOR_NO
+  gNfcController_fw_version[2] = rxBuffer[19 + rxBuffer[8]];  // 0xFW_MINOR_NO
+#ifdef DEBUG
+  Serial.println("0xROM_CODE_V: " + String(gNfcController_fw_version[0], HEX));
+  Serial.println("FW_MAJOR_NO: " + String(gNfcController_fw_version[1], HEX));
+  Serial.println("0xFW_MINOR_NO: " + String(gNfcController_fw_version[2], HEX));
+  Serial.println("gNfcController_generation: " + String(gNfcController_generation, HEX));
+#endif
+
+  return SUCCESS;
 }
 
 /// @brief Update the internal mode, stop discovery, and build the command to configure the PN7150 chip based on the input mode
@@ -1060,91 +1138,13 @@ bool Electroniccats_PN7150::waitForDiscoveryNotification(uint16_t tout) {
   return Electroniccats_PN7150::waitForDiscoveryNotification(&this->dummyRfInterface, tout);
 }
 
-bool Electroniccats_PN7150::isTagDetected() {
-  return !Electroniccats_PN7150::waitForDiscoveryNotification(500);
+bool Electroniccats_PN7150::isTagDetected(uint16_t tout) {
+  return !Electroniccats_PN7150::waitForDiscoveryNotification(tout);
 }
 
 // Deprecated, use isTagDetected() instead
 bool Electroniccats_PN7150::WaitForDiscoveryNotification(RfIntf_t *pRfIntf, uint16_t tout) {
   return Electroniccats_PN7150::waitForDiscoveryNotification(pRfIntf, tout);
-}
-
-uint8_t Electroniccats_PN7150::connectNCI() {
-  uint8_t i = 2;
-  uint8_t NCICoreInit[] = {0x20, 0x01, 0x00};
-
-  // Check if begin function has been called
-  if (this->_hasBeenInitialized) {
-    return SUCCESS;
-  }
-
-  // Open connection to NXPNCI
-  _wire->begin();
-  if (_VENpin != 255) {
-    digitalWrite(_VENpin, HIGH);
-    delay(1);
-    digitalWrite(_VENpin, LOW);
-    delay(1);
-    digitalWrite(_VENpin, HIGH);
-    delay(3);
-  }
-
-  // Loop until NXPNCI answers
-  while (wakeupNCI() != SUCCESS) {
-    if (i-- == 0)
-      return ERROR;
-    delay(500);
-  }
-
-  (void)writeData(NCICoreInit, sizeof(NCICoreInit));
-  getMessage();
-  if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x01) || (rxBuffer[3] != 0x00))
-    return ERROR;
-
-  // Retrieve NXP-NCI NFC Controller generation
-  if (rxBuffer[17 + rxBuffer[8]] == 0x08)
-    gNfcController_generation = 1;
-  else if (rxBuffer[17 + rxBuffer[8]] == 0x10)
-    gNfcController_generation = 2;
-
-  // Retrieve NXP-NCI NFC Controller FW version
-  gNfcController_fw_version[0] = rxBuffer[17 + rxBuffer[8]];  // 0xROM_CODE_V
-  gNfcController_fw_version[1] = rxBuffer[18 + rxBuffer[8]];  // 0xFW_MAJOR_NO
-  gNfcController_fw_version[2] = rxBuffer[19 + rxBuffer[8]];  // 0xFW_MINOR_NO
-#ifdef DEBUG
-  Serial.println("0xROM_CODE_V: " + String(gNfcController_fw_version[0], HEX));
-  Serial.println("FW_MAJOR_NO: " + String(gNfcController_fw_version[1], HEX));
-  Serial.println("0xFW_MINOR_NO: " + String(gNfcController_fw_version[2], HEX));
-  Serial.println("gNfcController_generation: " + String(gNfcController_generation, HEX));
-#endif
-
-  return SUCCESS;
-}
-
-uint8_t Electroniccats_PN7150::wakeupNCI() {  // the device has to wake up using a core reset
-  uint8_t NCICoreReset[] = {0x20, 0x00, 0x01, 0x01};
-  uint16_t NbBytes = 0;
-
-  // Reset RF settings restauration flag
-  (void)writeData(NCICoreReset, 4);
-  getMessage(15);
-  NbBytes = rxMessageLength;
-  if ((NbBytes == 0) || (rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x00)) {
-    return ERROR;
-  }
-  getMessage();
-  NbBytes = rxMessageLength;
-  if (NbBytes != 0) {
-    // NCI_PRINT_BUF("NCI << ", Answer, NbBytes);
-    //  Is CORE_GENERIC_ERROR_NTF ?
-    if ((rxBuffer[0] == 0x60) && (rxBuffer[1] == 0x07)) {
-      /* Is PN7150B0HN/C11004 Anti-tearing recovery procedure triggered ? */
-      // if ((rxBuffer[3] == 0xE6)) gRfSettingsRestored_flag = true;
-    } else {
-      return ERROR;
-    }
-  }
-  return SUCCESS;
 }
 
 bool Electroniccats_PN7150::cardModeSend(unsigned char *pData, unsigned char DataSize) {
@@ -1771,7 +1771,7 @@ bool Electroniccats_PN7150::setP2PMode() {
   return true;
 }
 
-void Electroniccats_PN7150::setSendMsgCallback(CustomCallback_t function) {
+void Electroniccats_PN7150::setReadMsgCallback(CustomCallback_t function) {
   registerNdefReceivedCallback(function);
 }
 

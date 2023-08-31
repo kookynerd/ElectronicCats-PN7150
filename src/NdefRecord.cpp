@@ -2,11 +2,11 @@
  * Library to manage the NDEF record
  * Authors:
  *        Francisco Torres - Electronic Cats - electroniccats.com
- * 
+ *
  *  August 2023
- * 
- * This code is beerware; if you see me (or any other collaborator 
- * member) at the local, and you've found our code helpful, 
+ *
+ * This code is beerware; if you see me (or any other collaborator
+ * member) at the local, and you've found our code helpful,
  * please buy us a round!
  * Distributed as-is; no warranty is given.
  */
@@ -183,7 +183,7 @@ String NdefRecord::getWiFiEncryptionType() {
   return encryptionType;
 }
 
-String NdefRecord::getWiFiNetworkKey() {
+String NdefRecord::getWiFiPassword() {
   String networkKey = newString;
   unsigned char index = 0;
 

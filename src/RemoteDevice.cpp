@@ -46,9 +46,6 @@ const unsigned char* RemoteDevice::getSensRes() const {
       break;
 
     case (tech.PASSIVE_NFCV):
-      return this->remoteDeviceStruct.info.nfcVPP.id;
-      break;
-
     default:
       return NULL;
       break;
