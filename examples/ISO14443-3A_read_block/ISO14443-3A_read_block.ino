@@ -131,6 +131,6 @@ void loop() {
 
   Serial.println("Restarting...");
   nfc.reset();
-  Serial.println("Waiting for a Card...");
+  Serial.println("Waiting for an ISO14443-3A Card ...");
   delay(500);
 }
