@@ -13,14 +13,14 @@
  */
  
 #include "Electroniccats_PN7150.h"          
-#define PN7150_IRQ   (15)
-#define PN7150_VEN   (14)
+#define PN7150_IRQ   (11)
+#define PN7150_VEN   (13)
 #define PN7150_ADDR  (0x28)
 
 #define BLK_NB_MFC      4                                          // Block tat wants to be read
 #define KEY_MFC         0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF         // Default Mifare Classic key
 
-Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);    // creates a global NFC device interface object, attached to pins 7 (IRQ) and 8 (VEN) and using the default I2C address 0x28
+Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);    // creates a global NFC device interface object, attached to pins 11 (IRQ) and 13 (VEN) and using the default I2C address 0x28
 RfIntf_t RfInterface;                                              //Intarface to save data for multiple tags
 
 uint8_t mode = 1; 
@@ -28,7 +28,7 @@ uint8_t mode = 1;
 void ResetMode(){                                      //Reset the configuration mode after each reading
   Serial.println("Re-initializing...");
   nfc.configMode(mode);                               
-  nfc.startDiscovery(mode);
+  nfc.StartDiscovery(mode);
 }
 
 void PrintBuf(const byte * data, const uint32_t numBytes){ //Print hex data buffer in format
@@ -95,7 +95,7 @@ void setup(){
     Serial.println("The Configure Mode is failed!!");
     while (1);
   }
-  nfc.startDiscovery(mode); //NCI Discovery mode
+  nfc.StartDiscovery(mode); //NCI Discovery mode
   Serial.println("Waiting for an Mifare Classic Card ...");
 }
 
@@ -140,7 +140,7 @@ void loop(){
     Serial.println("CARD REMOVED!");
     
     nfc.stopDiscovery();
-    nfc.startDiscovery(mode);
+    nfc.StartDiscovery(mode);
   }
   ResetMode();
   delay(500);

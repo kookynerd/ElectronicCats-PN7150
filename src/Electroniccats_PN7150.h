@@ -141,9 +141,8 @@ class Electroniccats_PN7150 : public Mode {
   bool ConfigureSettings(void);  // Deprecated, use configureSettings(void) instead
   bool configureSettings(uint8_t *nfcuid, uint8_t uidlen);
   bool ConfigureSettings(uint8_t *nfcuid, uint8_t uidlen);  // Deprecated, use configureSettings() instead
-  uint8_t startDiscovery(uint8_t modeSE);
-  uint8_t startDiscovery(void);
-  uint8_t StartDiscovery(uint8_t modeSE);  // Deprecated, use startDiscovery(void) instead
+  uint8_t startDiscovery();
+  uint8_t StartDiscovery(uint8_t modeSE);  // Deprecated, use startDiscovery() instead
   bool stopDiscovery();
   bool StopDiscovery();                                                     // Deprecated, use stopDiscovery() instead
   bool waitForDiscoveryNotification(RfIntf_t *pRfIntf, uint16_t tout = 0);  // Deprecated, use isTagDetected() instead

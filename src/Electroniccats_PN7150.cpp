@@ -928,7 +928,7 @@ bool Electroniccats_PN7150::ConfigureSettings(uint8_t *uidcf, uint8_t uidlen) {
   return Electroniccats_PN7150::configureSettings(uidcf, uidlen);
 }
 
-uint8_t Electroniccats_PN7150::startDiscovery(uint8_t modeSE) {
+uint8_t Electroniccats_PN7150::StartDiscovery(uint8_t modeSE) {
   int mode = Electroniccats_PN7150::getMode();
   if (mode != modeSE) {
     Electroniccats_PN7150::setMode(modeSE);
@@ -962,12 +962,7 @@ uint8_t Electroniccats_PN7150::startDiscovery(uint8_t modeSE) {
 
 uint8_t Electroniccats_PN7150::startDiscovery() {
   int mode = Electroniccats_PN7150::getMode();
-  return Electroniccats_PN7150::startDiscovery(mode);
-}
-
-// Deprecated, use startDiscovery(void) instead
-uint8_t Electroniccats_PN7150::StartDiscovery(uint8_t modeSE) {
-  return Electroniccats_PN7150::startDiscovery(modeSE);
+  return Electroniccats_PN7150::StartDiscovery(mode);
 }
 
 bool Electroniccats_PN7150::stopDiscovery() {
@@ -1507,8 +1502,8 @@ bool Electroniccats_PN7150::readerReActivate(RfIntf_t *pRfIntf) {
   getMessage(100);
 
   /* Then re-activate the target */
-  NCIActivate[4] = pRfIntf->Protocol;
-  NCIActivate[5] = pRfIntf->Interface;
+  NCIActivate[4] = remoteDevice.getProtocol();
+  NCIActivate[5] = remoteDevice.getInterface();
 
   (void)writeData(NCIDeactivate, sizeof(NCIDeactivate));
   getMessage();

@@ -28,7 +28,7 @@ uint8_t mode = 1;                                                  // modes: 1 =
 void ResetMode(){                                      //Reset the configuration mode after each reading
   Serial.println("Re-initializing...");
   nfc.configMode(mode);                               
-  nfc.startDiscovery(mode);
+  nfc.StartDiscovery(mode);
 }
 
 void PrintBuf(const byte * data, const uint32_t numBytes){ //Print hex data buffer in format
@@ -87,7 +87,7 @@ void setup(){
     Serial.println("The Configure Mode is failed!!");
     while (1);
   }
-  nfc.startDiscovery(mode); //NCI Discovery mode
+  nfc.StartDiscovery(mode); //NCI Discovery mode
   Serial.println("Waiting for an ISO15693 Card ...");
 }
 
@@ -128,7 +128,7 @@ void loop(){
     Serial.println("CARD REMOVED!");
     
     nfc.stopDiscovery();
-    nfc.startDiscovery(mode);
+    nfc.StartDiscovery(mode);
   }
   ResetMode();
   delay(500);
