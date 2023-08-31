@@ -1496,7 +1496,7 @@ bool Electroniccats_PN7150::ReaderReActivate(RfIntf_t *pRfIntf) {
   return Electroniccats_PN7150::readerReActivate();
 }
 
-bool Electroniccats_PN7150::readerActivateNext(RfIntf_t *pRfIntf) {
+bool Electroniccats_PN7150::ReaderActivateNext(RfIntf_t *pRfIntf) {
   uint8_t NCIStopDiscovery[] = {0x21, 0x06, 0x01, 0x01};
   uint8_t NCIRfDiscoverSelect[] = {0x21, 0x04, 0x03, 0x02, PROT_ISODEP, INTF_ISODEP};
 
@@ -1555,13 +1555,13 @@ bool Electroniccats_PN7150::readerActivateNext(RfIntf_t *pRfIntf) {
 }
 
 bool Electroniccats_PN7150::activateNextTagDiscovery() {
-  return !Electroniccats_PN7150::readerActivateNext(&this->dummyRfInterface);
+  return !Electroniccats_PN7150::ReaderActivateNext(&this->dummyRfInterface);
 }
 
 // Deprecated, use readerActivateNext() instead
-bool Electroniccats_PN7150::ReaderActivateNext(RfIntf_t *pRfIntf) {
-  return Electroniccats_PN7150::readerActivateNext(pRfIntf);
-}
+// bool Electroniccats_PN7150::ReaderActivateNext(RfIntf_t *pRfIntf) {
+//   return Electroniccats_PN7150::activateNextTagDiscovery(pRfIntf);
+// }
 
 void Electroniccats_PN7150::readNdef(RfIntf_t RfIntf) {
   uint8_t Cmd[MAX_NCI_FRAME_SIZE];

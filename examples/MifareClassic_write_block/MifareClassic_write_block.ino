@@ -170,7 +170,7 @@ void loop(){
     
     //* It can detect multiple cards at the same time if they use the same protocol 
     if(RfInterface.MoreTags) {
-        nfc.readerActivateNext(&RfInterface);
+        nfc.activateNextTagDiscovery();
     }
     //* Wait for card removal 
     nfc.processReaderMode(RfInterface, PRESENCE_CHECK);
