@@ -1125,7 +1125,7 @@ wait:
 }
 
 bool Electroniccats_PN7150::isTagDetected(uint16_t tout) {
-  return Electroniccats_PN7150::WaitForDiscoveryNotification(&this->dummyRfInterface, tout);
+  return !Electroniccats_PN7150::WaitForDiscoveryNotification(&this->dummyRfInterface, tout);
 }
 
 bool Electroniccats_PN7150::cardModeSend(unsigned char *pData, unsigned char DataSize) {
