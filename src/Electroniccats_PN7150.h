@@ -131,9 +131,8 @@ class Electroniccats_PN7150 : public Mode {
   int getFirmwareVersion();
   int GetFwVersion();  // Deprecated, use getFirmwareVersion() instead
   uint8_t connectNCI();
-  uint8_t configMode(uint8_t modeSE);  // Deprecated, use configMode(void) instead
-  uint8_t configMode(void);
   uint8_t ConfigMode(uint8_t modeSE);  // Deprecated, use configMode(void) instead
+  uint8_t configMode(void);
   bool setReaderWriterMode();
   bool setEmulationMode();
   bool setP2PMode();
@@ -145,10 +144,8 @@ class Electroniccats_PN7150 : public Mode {
   uint8_t StartDiscovery(uint8_t modeSE);  // Deprecated, use startDiscovery() instead
   bool stopDiscovery();
   bool StopDiscovery();                                                     // Deprecated, use stopDiscovery() instead
-  bool waitForDiscoveryNotification(RfIntf_t *pRfIntf, uint16_t tout = 0);  // Deprecated, use isTagDetected() instead
-  bool waitForDiscoveryNotification(uint16_t tout = 0);                     // Deprecated, use isTagDetected() instead
-  bool isTagDetected(uint16_t tout = 500);
   bool WaitForDiscoveryNotification(RfIntf_t *pRfIntf, uint16_t tout = 0);  // Deprecated, use isTagDetected() instead
+  bool isTagDetected(uint16_t tout = 500);
   bool cardModeSend(unsigned char *pData, unsigned char DataSize);
   bool CardModeSend(unsigned char *pData, unsigned char DataSize);  // Deprecated, use cardModeSend() instead
   bool cardModeReceive(unsigned char *pData, unsigned char *pDataSize);

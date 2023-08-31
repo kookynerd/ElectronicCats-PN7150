@@ -30,7 +30,7 @@ uint8_t mode = 1;                                                  // modes: 1 =
 
 void ResetMode(){                                      //Reset the configuration mode after each reading
   Serial.println("Re-initializing...");
-  nfc.configMode(mode);                               
+  nfc.ConfigMode(mode);                               
   nfc.StartDiscovery(mode);
 }
 
@@ -128,7 +128,7 @@ void setup(){
     while (1);
   }
   
-  if(nfc.configMode(mode)){ //Set up the configuration mode
+  if(nfc.ConfigMode(mode)){ //Set up the configuration mode
     Serial.println("The Configure Mode is failed!!");
     while (1);
   }
@@ -137,7 +137,7 @@ void setup(){
 }
 
 void loop(){
-  if(!nfc.waitForDiscoveryNotification(&RfInterface)){ // Waiting to detect cards
+  if(!nfc.WaitForDiscoveryNotification(&RfInterface)){ // Waiting to detect cards
     switch(RfInterface.Protocol) {
       case PROT_MIFARE:
         Serial.println(" - Found MIFARE card");

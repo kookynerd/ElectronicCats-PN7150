@@ -24,7 +24,7 @@ uint8_t mode = 3;                                                  // modes: 1 =
 
 void ResetMode(){                                  //Reset the configuration mode after each reading
   Serial.println("Re-initializing...");
-  nfc.configMode(mode);                               
+  nfc.ConfigMode(mode);                               
   nfc.StartDiscovery(mode);
 }
 
@@ -45,7 +45,7 @@ void setup(){
     while (1);
   }
   
-  if(nfc.configMode(mode)){ //Set up the configuration mode
+  if(nfc.ConfigMode(mode)){ //Set up the configuration mode
     Serial.println("The Configure Mode failed!!");
     while (1);
   }
@@ -54,7 +54,7 @@ void setup(){
 }
 
 void loop(){
-  if(!nfc.waitForDiscoveryNotification(&RfInterface)){ // Waiting to detect 
+  if(!nfc.WaitForDiscoveryNotification(&RfInterface)){ // Waiting to detect 
     if (RfInterface.Interface == INTF_NFCDEP) {
       if ((RfInterface.ModeTech & MODE_LISTEN) == MODE_LISTEN) 
         Serial.println(" - P2P TARGET MODE: Activated from remote Initiator");

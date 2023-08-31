@@ -260,7 +260,7 @@ uint8_t Electroniccats_PN7150::connectNCI() {
 /// @brief Update the internal mode, stop discovery, and build the command to configure the PN7150 chip based on the input mode
 /// @param modeSE
 /// @return SUCCESS or ERROR
-uint8_t Electroniccats_PN7150::configMode(uint8_t modeSE) {
+uint8_t Electroniccats_PN7150::ConfigMode(uint8_t modeSE) {
   unsigned mode = (modeSE == 1 ? MODE_RW : modeSE == 2 ? MODE_CARDEMU
                                                        : MODE_P2P);
 
@@ -369,12 +369,7 @@ uint8_t Electroniccats_PN7150::configMode(uint8_t modeSE) {
 
 uint8_t Electroniccats_PN7150::configMode() {
   int mode = Electroniccats_PN7150::getMode();
-  return Electroniccats_PN7150::configMode(mode);
-}
-
-// Deprecated, use configMode(void) instead
-uint8_t Electroniccats_PN7150::ConfigMode(uint8_t modeSE) {
-  return Electroniccats_PN7150::configMode(modeSE);
+  return Electroniccats_PN7150::ConfigMode(mode);
 }
 
 bool Electroniccats_PN7150::configureSettings(void) {
@@ -980,7 +975,7 @@ bool Electroniccats_PN7150::StopDiscovery() {
   return Electroniccats_PN7150::stopDiscovery();
 }
 
-bool Electroniccats_PN7150::waitForDiscoveryNotification(RfIntf_t *pRfIntf, uint16_t tout) {
+bool Electroniccats_PN7150::WaitForDiscoveryNotification(RfIntf_t *pRfIntf, uint16_t tout) {
   uint8_t NCIRfDiscoverSelect[] = {0x21, 0x04, 0x03, 0x01, protocol.ISODEP, interface.ISODEP};
 
   // P2P Support
@@ -1129,17 +1124,8 @@ wait:
   return SUCCESS;
 }
 
-bool Electroniccats_PN7150::waitForDiscoveryNotification(uint16_t tout) {
-  return Electroniccats_PN7150::waitForDiscoveryNotification(&this->dummyRfInterface, tout);
-}
-
 bool Electroniccats_PN7150::isTagDetected(uint16_t tout) {
-  return !Electroniccats_PN7150::waitForDiscoveryNotification(tout);
-}
-
-// Deprecated, use isTagDetected() instead
-bool Electroniccats_PN7150::WaitForDiscoveryNotification(RfIntf_t *pRfIntf, uint16_t tout) {
-  return Electroniccats_PN7150::waitForDiscoveryNotification(pRfIntf, tout);
+  return Electroniccats_PN7150::WaitForDiscoveryNotification(&this->dummyRfInterface, tout);
 }
 
 bool Electroniccats_PN7150::cardModeSend(unsigned char *pData, unsigned char DataSize) {
