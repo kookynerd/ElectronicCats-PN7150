@@ -1,10 +1,9 @@
-#ifndef Electroniccats_PN7150_H
-#define Electroniccats_PN7150_H
 /**
  * NXP PN7150 Driver
  * Porting authors:
  *        Salvador Mendoza - @Netxing - salmg.net
  *        Andres Sabas - Electronic Cats - electroniccats.com
+ *        Francisco Torres - Electronic Cats - electroniccats.com
  *
  *  August 2023
  *
@@ -13,10 +12,11 @@
  * please buy us a round!
  * Distributed as-is; no warranty is given.
  *
- * A few methods and ideas were extract from
- * https://github.com/Strooom/PN7150
- *
+ * Some methods and ideas were extracted from https://github.com/Strooom/PN7150
  */
+
+#ifndef Electroniccats_PN7150_H
+#define Electroniccats_PN7150_H
 
 #include <Arduino.h>  // Gives us access to all typical Arduino types and functions
                       // The HW interface between The PN7150 and the DeviceHost is I2C, so we need the I2C library.library

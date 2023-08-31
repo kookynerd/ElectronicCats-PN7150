@@ -3,6 +3,7 @@
  * Porting authors:
  *        Salvador Mendoza - @Netxing - salmg.net
  *        Andres Sabas - Electronic Cats - electroniccats.com
+ *        Francisco Torres - Electronic Cats - electroniccats.com
  *
  *  August 2023
  *
@@ -11,10 +12,9 @@
  * please buy us a round!
  * Distributed as-is; no warranty is given.
  *
- * Some methods and ideas were extract from https://github.com/Strooom/PN7150
- *
- *
+ * Some methods and ideas were extracted from https://github.com/Strooom/PN7150
  */
+
 #include "Electroniccats_PN7150.h"
 
 uint8_t gNextTag_Protocol = PROT_UNDETERMINED;
