@@ -7,6 +7,10 @@ Optimized for fast design-in, NXP's PN7150 NFC solutions fully comply with the N
 
 PN7150 is the high-performance version of PN7120, the plug'n-play NFC solution for easy integration into any OS environment, reducing Bill of Material (BOM) size and cost. PN71xx controllers are ideal for home automation applications such as gateways and work seamlessly with NFC-connected tags.
 
+## API Documentation
+
+Check the [API Documentation](/API.md) for more information about the methods available in the library.
+
 ### Compatibility
 
 * Arduino MKR Family
