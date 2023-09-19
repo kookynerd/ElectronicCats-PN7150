@@ -27,7 +27,10 @@
 #include "RemoteDevice.h"
 #include "T4T_NDEF_emu.h"
 
-// #define DEBGU2
+/*
+*Active DEBUG Serial
+*/
+// #define DEBUG2
 // #define DEBUG3
 
 #if defined(TEENSYDUINO) && defined(KINETISK)  // Teensy 3.0, 3.1, 3.2, 3.5, 3.6 :  Special, more optimized I2C library for Teensy boards
