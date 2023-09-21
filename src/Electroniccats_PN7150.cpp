@@ -1149,9 +1149,6 @@ bool Electroniccats_PN7150::cardModeReceive(unsigned char *pData, unsigned char 
 #ifdef DEBUG2
   Serial.println("[DEBUG] cardModeReceive exec");
 #endif
-#ifdef DEBUG3
-  Serial.println("[DEBUG] cardModeReceive exec");
-#endif
 
   delay(1);
 
