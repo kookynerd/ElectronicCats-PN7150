@@ -299,7 +299,7 @@ uint8_t Electroniccats_PN7150::ConfigMode(uint8_t modeSE) {
   if (modeSE == 1) {
     if (mode == MODE_RW) {
       (void)writeData(NCIPropAct, sizeof(NCIPropAct));
-      getMessage();
+      getMessage(10);
 
       if ((rxBuffer[0] != 0x4F) || (rxBuffer[1] != 0x02) || (rxBuffer[3] != 0x00))
         return ERROR;
@@ -340,7 +340,7 @@ uint8_t Electroniccats_PN7150::ConfigMode(uint8_t modeSE) {
       Command[2] = 2 + (Item * 5);
       Command[4] = Item;
       (void)writeData(Command, 3 + Command[2]);
-      getMessage();
+      getMessage(10);
       if ((rxBuffer[0] != 0x41) || (rxBuffer[1] != 0x01) || (rxBuffer[3] != 0x00))
         return ERROR;
     }
@@ -348,7 +348,7 @@ uint8_t Electroniccats_PN7150::ConfigMode(uint8_t modeSE) {
 
     if (NCISetConfig_NFCA_SELRSP[6] != 0x00) {
       (void)writeData(NCISetConfig_NFCA_SELRSP, sizeof(NCISetConfig_NFCA_SELRSP));
-      getMessage();
+      getMessage(10);
 
       if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x02) || (rxBuffer[3] != 0x00))
         return ERROR;
@@ -358,7 +358,7 @@ uint8_t Electroniccats_PN7150::ConfigMode(uint8_t modeSE) {
 
     if (mode & MODE_P2P and modeSE == 3) {
       (void)writeData(NCISetConfig_NFC, sizeof(NCISetConfig_NFC));
-      getMessage();
+      getMessage(10);
 
       if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x02) || (rxBuffer[3] != 0x00))
         return ERROR;
@@ -500,10 +500,10 @@ bool Electroniccats_PN7150::configureSettings(void) {
   if (sizeof(NxpNci_CORE_CONF) != 0) {
     isResetRequired = true;
     (void)writeData(NxpNci_CORE_CONF, sizeof(NxpNci_CORE_CONF));
-    getMessage();
+    getMessage(10);
     if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x02) || (rxBuffer[3] != 0x00) || (rxBuffer[4] != 0x00)) {
-#ifdef SerialUSB
-      Serial.println("NxpNci_CORE_CONF :D");
+#ifdef DEBUG
+      Serial.println("NxpNci_CORE_CONF");
 #endif
       return ERROR;
     }
@@ -513,9 +513,9 @@ bool Electroniccats_PN7150::configureSettings(void) {
 #if NXP_CORE_STANDBY
   if (sizeof(NxpNci_CORE_STANDBY) != 0) {
     (void)(writeData(NxpNci_CORE_STANDBY, sizeof(NxpNci_CORE_STANDBY)));
-    getMessage();
+    getMessage(10);
     if ((rxBuffer[0] != 0x4F) || (rxBuffer[1] != 0x00) || (rxBuffer[3] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
       Serial.println("NxpNci_CORE_STANDBY");
 #endif
       return ERROR;
@@ -530,9 +530,9 @@ bool Electroniccats_PN7150::configureSettings(void) {
   if (gNfcController_generation == 1)
     NCIReadTS[5] = 0x0F;
   (void)writeData(NCIReadTS, sizeof(NCIReadTS));
-  getMessage();
+  getMessage(10);
   if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x03) || (rxBuffer[3] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
     Serial.println("read timestamp ");
 #endif
     return ERROR;
@@ -549,9 +549,9 @@ bool Electroniccats_PN7150::configureSettings(void) {
 #if NXP_CORE_CONF_EXTN
   if (sizeof(NxpNci_CORE_CONF_EXTN) != 0) {
     (void)writeData(NxpNci_CORE_CONF_EXTN, sizeof(NxpNci_CORE_CONF_EXTN));
-    getMessage();
+    getMessage(10);
     if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x02) || (rxBuffer[3] != 0x00) || (rxBuffer[4] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
       Serial.println("NxpNci_CORE_CONF_EXTN");
 #endif
       return ERROR;
@@ -564,10 +564,10 @@ bool Electroniccats_PN7150::configureSettings(void) {
     isResetRequired = true;
 
     (void)writeData(NxpNci_CLK_CONF, sizeof(NxpNci_CLK_CONF));
-    getMessage();
+    getMessage(10);
     // NxpNci_HostTransceive(NxpNci_CLK_CONF, sizeof(NxpNci_CLK_CONF), Answer, sizeof(Answer), &AnswerSize);
     if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x02) || (rxBuffer[3] != 0x00) || (rxBuffer[4] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
       Serial.println("NxpNci_CLK_CONF");
 #endif
       return ERROR;
@@ -578,9 +578,9 @@ bool Electroniccats_PN7150::configureSettings(void) {
 #if NXP_TVDD_CONF
   if (NxpNci_CONF_size != 0) {
     (void)writeData(NxpNci_TVDD_CONF_2ndGen, sizeof(NxpNci_TVDD_CONF_2ndGen));
-    getMessage();
+    getMessage(10);
     if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x02) || (rxBuffer[3] != 0x00) || (rxBuffer[4] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
       Serial.println("NxpNci_CONF_size");
 #endif
       return ERROR;
@@ -591,9 +591,9 @@ bool Electroniccats_PN7150::configureSettings(void) {
 #if NXP_RF_CONF
   if (NxpNci_CONF_size != 0) {
     (void)writeData(NxpNci_RF_CONF_2ndGen, sizeof(NxpNci_RF_CONF_2ndGen));
-    getMessage();
+    getMessage(10);
     if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x02) || (rxBuffer[3] != 0x00) || (rxBuffer[4] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
       Serial.println("NxpNci_CONF_size");
 #endif
       return ERROR;
@@ -605,9 +605,9 @@ bool Electroniccats_PN7150::configureSettings(void) {
     NCIWriteTS[5] = 0x0F;
   memcpy(&NCIWriteTS[7], currentTS, sizeof(currentTS));
   (void)writeData(NCIWriteTS, sizeof(NCIWriteTS));
-  getMessage();
+  getMessage(10);
   if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x02) || (rxBuffer[3] != 0x00) || (rxBuffer[4] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
     Serial.println("NFC Controller memory");
 #endif
     return ERROR;
@@ -620,7 +620,7 @@ bool Electroniccats_PN7150::configureSettings(void) {
     (void)writeData(NCICoreReset, sizeof(NCICoreReset));
     getMessage();
     if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x00) || (rxBuffer[3] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
       Serial.println("insure new settings apply");
 #endif
       return ERROR;
@@ -629,7 +629,7 @@ bool Electroniccats_PN7150::configureSettings(void) {
     (void)writeData(NCICoreInit, sizeof(NCICoreInit));
     getMessage();
     if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x01) || (rxBuffer[3] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
       Serial.println("insure new settings apply 2");
 #endif
       return ERROR;
@@ -782,7 +782,7 @@ bool Electroniccats_PN7150::configureSettings(uint8_t *uidcf, uint8_t uidlen) {
     (void)writeData(NxpNci_CORE_CONF, uidlen);  // sizeof(NxpNci_CORE_CONF));
     getMessage(100);
     if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x02) || (rxBuffer[3] != 0x00) || (rxBuffer[4] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
       Serial.println("NxpNci_CORE_CONF");
 #endif
       return ERROR;
@@ -795,7 +795,7 @@ bool Electroniccats_PN7150::configureSettings(uint8_t *uidcf, uint8_t uidlen) {
     (void)(writeData(NxpNci_CORE_STANDBY, sizeof(NxpNci_CORE_STANDBY)));
     getMessage();
     if ((rxBuffer[0] != 0x4F) || (rxBuffer[1] != 0x00) || (rxBuffer[3] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
       Serial.println("NxpNci_CORE_STANDBY");
 #endif
       return ERROR;
@@ -812,7 +812,7 @@ bool Electroniccats_PN7150::configureSettings(uint8_t *uidcf, uint8_t uidlen) {
   (void)writeData(NCIReadTS, sizeof(NCIReadTS));
   getMessage();
   if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x03) || (rxBuffer[3] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
     Serial.println("read timestamp ");
 #endif
     return ERROR;
@@ -831,7 +831,7 @@ bool Electroniccats_PN7150::configureSettings(uint8_t *uidcf, uint8_t uidlen) {
     (void)writeData(NxpNci_CORE_CONF_EXTN, sizeof(NxpNci_CORE_CONF_EXTN));
     getMessage();
     if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x02) || (rxBuffer[3] != 0x00) || (rxBuffer[4] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
       Serial.println("NxpNci_CORE_CONF_EXTN");
 #endif
       return ERROR;
@@ -847,7 +847,7 @@ bool Electroniccats_PN7150::configureSettings(uint8_t *uidcf, uint8_t uidlen) {
     getMessage();
     // NxpNci_HostTransceive(NxpNci_CLK_CONF, sizeof(NxpNci_CLK_CONF), Answer, sizeof(Answer), &AnswerSize);
     if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x02) || (rxBuffer[3] != 0x00) || (rxBuffer[4] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
       Serial.println("NxpNci_CLK_CONF");
 #endif
       return ERROR;
@@ -860,7 +860,7 @@ bool Electroniccats_PN7150::configureSettings(uint8_t *uidcf, uint8_t uidlen) {
     (void)writeData(NxpNci_TVDD_CONF_2ndGen, sizeof(NxpNci_TVDD_CONF_2ndGen));
     getMessage();
     if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x02) || (rxBuffer[3] != 0x00) || (rxBuffer[4] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
       Serial.println("NxpNci_CONF_size");
 #endif
       return ERROR;
@@ -873,7 +873,7 @@ bool Electroniccats_PN7150::configureSettings(uint8_t *uidcf, uint8_t uidlen) {
     (void)writeData(NxpNci_RF_CONF_2ndGen, sizeof(NxpNci_RF_CONF_2ndGen));
     getMessage();
     if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x02) || (rxBuffer[3] != 0x00) || (rxBuffer[4] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
       Serial.println("NxpNci_CONF_size");
 #endif
       return ERROR;
@@ -887,7 +887,7 @@ bool Electroniccats_PN7150::configureSettings(uint8_t *uidcf, uint8_t uidlen) {
   (void)writeData(NCIWriteTS, sizeof(NCIWriteTS));
   getMessage();
   if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x02) || (rxBuffer[3] != 0x00) || (rxBuffer[4] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
     Serial.println("NFC Controller memory");
 #endif
     return ERROR;
@@ -900,7 +900,7 @@ bool Electroniccats_PN7150::configureSettings(uint8_t *uidcf, uint8_t uidlen) {
     (void)writeData(NCICoreReset, sizeof(NCICoreReset));
     getMessage();
     if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x00) || (rxBuffer[3] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
       Serial.println("insure new settings apply");
 #endif
       return ERROR;
@@ -909,7 +909,7 @@ bool Electroniccats_PN7150::configureSettings(uint8_t *uidcf, uint8_t uidlen) {
     (void)writeData(NCICoreInit, sizeof(NCICoreInit));
     getMessage();
     if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x01) || (rxBuffer[3] != 0x00)) {
-#ifdef SerialUSB
+#ifdef DEBUG
       Serial.println("insure new settings apply 2");
 #endif
       return ERROR;
@@ -964,8 +964,7 @@ bool Electroniccats_PN7150::stopDiscovery() {
   uint8_t NCIStopDiscovery[] = {0x21, 0x06, 0x01, 0x00};
 
   (void)writeData(NCIStopDiscovery, sizeof(NCIStopDiscovery));
-  getMessage();
-  getMessage(1000);
+  getMessage(10);
 
   return SUCCESS;
 }
@@ -1148,9 +1147,6 @@ bool Electroniccats_PN7150::CardModeSend(unsigned char *pData, unsigned char Dat
 
 bool Electroniccats_PN7150::cardModeReceive(unsigned char *pData, unsigned char *pDataSize) {
 #ifdef DEBUG2
-  Serial.println("[DEBUG] cardModeReceive exec");
-#endif
-#ifdef DEBUG3
   Serial.println("[DEBUG] cardModeReceive exec");
 #endif
 
