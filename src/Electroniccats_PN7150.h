@@ -26,7 +26,9 @@
 #include "P2P_NDEF.h"
 #include "RemoteDevice.h"
 #include "T4T_NDEF_emu.h"
-
+/*
+*Active DEBUG Serial
+*/
 //#define DEBUG
 //#define DEBUG2
 //#define DEBUG3
