@@ -40,7 +40,7 @@ void setup(){
     while (1);
   }
   
-  if (nfc.ConfigureSettings()) {
+  if (nfc.configureSettings()) {
     Serial.println("The Configure Settings failed!");
     while (1);
   }
@@ -62,7 +62,7 @@ void loop(){
         Serial.println(" - P2P INITIATOR MODE: Remote Target activated");
   
       /* Process with SNEP for NDEF exchange */
-      nfc.ProcessP2pMode(RfInterface);
+      nfc.processP2pMode(RfInterface);
       Serial.println("Peer lost!");
     }
     ResetMode();
