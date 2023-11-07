@@ -68,3 +68,4 @@ jobs:
         with:
           arduino-board-fqbn: ${{ matrix.arduino-boards-fqbn }}
           platform-url: ${{ matrix.platform-url }}
+          extra-arduino-cli-args: ${{ matrix.extra-arduino-cli-args }}
