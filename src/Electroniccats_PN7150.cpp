@@ -395,11 +395,11 @@ bool Electroniccats_PN7150::configureSettings(void) {
   };
 #endif
 
-#if NXP_CORE_STANDBY
+#if NXP_CORE_STANDBY_OFF
   /* NXP-NCI standby enable setting
    * Refer to NFC controller User Manual for more details
    */
-  uint8_t NxpNci_CORE_STANDBY[] = {0x2F, 0x00, 0x01, 0x01}; /* last byte indicates enable/disable */
+  uint8_t NxpNci_CORE_STANDBY[] = {0x2F, 0x00, 0x01, 0x00}; /* last byte indicates enable/disable */
 #endif
 
 #if NXP_TVDD_CONF
@@ -510,7 +510,7 @@ bool Electroniccats_PN7150::configureSettings(void) {
   }
 #endif
 
-#if NXP_CORE_STANDBY
+#if NXP_CORE_STANDBY_OFF
   if (sizeof(NxpNci_CORE_STANDBY) != 0) {
     (void)(writeData(NxpNci_CORE_STANDBY, sizeof(NxpNci_CORE_STANDBY)));
     getMessage(10);
@@ -674,7 +674,7 @@ bool Electroniccats_PN7150::configureSettings(uint8_t *uidcf, uint8_t uidlen) {
   };
 #endif
 
-#if NXP_CORE_STANDBY
+#if NXP_CORE_STANDBY_OFF
   /* NXP-NCI standby enable setting
    * Refer to NFC controller User Manual for more details
    */
@@ -790,7 +790,7 @@ bool Electroniccats_PN7150::configureSettings(uint8_t *uidcf, uint8_t uidlen) {
   }
 #endif
 
-#if NXP_CORE_STANDBY
+#if NXP_CORE_STANDBY_OFF
   if (sizeof(NxpNci_CORE_STANDBY) != 0) {
     (void)(writeData(NxpNci_CORE_STANDBY, sizeof(NxpNci_CORE_STANDBY)));
     getMessage();

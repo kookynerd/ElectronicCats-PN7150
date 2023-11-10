@@ -44,7 +44,7 @@
  * API is called from the application
  */
 #define NXP_CORE_CONF 1
-#define NXP_CORE_STANDBY 1
+#define NXP_CORE_STANDBY_OFF 1
 #define NXP_CORE_CONF_EXTN 1
 #define NXP_CLK_CONF 1   // 1=Xtal, 2=PLL
 #define NXP_TVDD_CONF 2  // 1=CFG1, 2=CFG2
