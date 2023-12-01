@@ -21,7 +21,7 @@
 class NdefRecord {
  private:
   NdefRecord_t content;
-  NdefRecordType_e type;
+  NdefRecordType_e _type;
   unsigned char *payload;
   unsigned short payloadSize;
   String getHexRepresentation(const byte *data, const uint32_t dataSize);
@@ -29,6 +29,7 @@ class NdefRecord {
 
  public:
   NdefRecord();
+  RecordType type;
   void create(NdefRecord_t record);
   bool isEmpty();
   bool isNotEmpty();

@@ -14,14 +14,14 @@
 #include "NdefRecord.h"
 
 NdefRecord::NdefRecord() {
-  this->type = UNSUPPORTED_NDEF_RECORD;
+  this->_type = UNSUPPORTED_NDEF_RECORD;
   this->payload = NULL;
   this->payloadSize = 0;
   this->newString = "null";
 }
 
 void NdefRecord::create(NdefRecord_t record) {
-  this->type = record.recordType;
+  this->_type = record.recordType;
   this->payload = record.recordPayload;
   this->payloadSize = record.recordPayloadSize;
 }
@@ -55,7 +55,7 @@ bool NdefRecord::isNotEmpty() {
 }
 
 NdefRecordType_e NdefRecord::getType() {
-  return this->type;
+  return this->_type;
 }
 
 unsigned char *NdefRecord::getPayload() {
