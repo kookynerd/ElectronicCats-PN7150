@@ -1,13 +1,13 @@
 /**
  * Example to send NDEF messages
- * Authors: 
+ * Authors:
  *        Salvador Mendoza - @Netxing - salmg.net
  *        Francisco Torres - Electronic Cats - electroniccats.com
- * 
+ *
  *  August 2023
- * 
- * This code is beerware; if you see me (or any other collaborator 
- * member) at the local, and you've found our code helpful, 
+ *
+ * This code is beerware; if you see me (or any other collaborator
+ * member) at the local, and you've found our code helpful,
  * please buy us a round!
  * Distributed as-is; no warranty is given.
  */
@@ -23,13 +23,32 @@ void sendMessageCallback(unsigned char *pNdefRecord, unsigned short NdefRecordSi
 
 Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);  // Creates a global NFC device interface object, attached to pins 11 (IRQ) and 13 (VEN) and using the default I2C address 0x28
 
-const char ndefMessage[] = {0xD1,                      // MB/ME/CF/1/IL/TNF
-                             0x01,                      // Type length (1 byte)
-                             0x08,                      // Payload length
-                             'T',                       // Type -> 'T' for text, 'U' for URI
-                             0x02,                      // Status
-                             'e', 'n',                  // Language
-                             'H', 'e', 'l', 'l', 'o'};  // Message Payload
+// One record, "Hello"
+// D1 01 08 54 02 65 6E 48 65 6C 6C 6F
+// const char ndefMessage[] = {0xD1,                      // MB/ME/CF/1/IL/TNF
+//                             0x01,                      // Type length (1 byte)
+//                             0x08,                      // Payload length
+//                             'T',                       // Type -> 'T' for text, 'U' for URI
+//                             0x02,                      // Status
+//                             'e', 'n',                  // Language
+//                             'H', 'e', 'l', 'l', 'o'};  // Message Payload
+
+// Two records, "Hello" and "world"
+// 91 01 08 54 02 65 6E 48 65 6C 6C 6F 51 01 08 54 02 65 6E 77 6F 72 6C 64
+const char ndefMessage[] = {0x91,                      // MB/ME/CF/1/IL/TNF
+                            0x01,                      // Type length (1 byte)
+                            0x08,                      // Payload length
+                            'T',                       // Type -> 'T' for text, 'U' for URI
+                            0x02,                      // Status
+                            'e', 'n',                  // Language
+                            'H', 'e', 'l', 'l', 'o',   // Message Payload
+                            0x51,                      // MB/ME/CF/1/IL/TNF
+                            0x01,                      // Type length (1 byte)
+                            0x08,                      // Payload length
+                            'T',                       // Type -> 'T' for text, 'U' for URI
+                            0x02,                      // Status
+                            'e', 'n',                  // Language
+                            'w', 'o', 'r', 'l', 'd'};  // Message Payload
 
 void setup() {
   Serial.begin(9600);
