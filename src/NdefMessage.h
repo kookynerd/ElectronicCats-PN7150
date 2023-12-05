@@ -18,9 +18,15 @@
 
 #include "RW_NDEF.h"
 #include "ndef_helper.h"
+#include "NdefRecord.h"
+#include "T4T_NDEF_emu.h"
+
+#define MAX_NDEF_RECORDS 4
 
 class NdefMessage {
  private:
+  NdefRecord records[MAX_NDEF_RECORDS];
+  static uint8_t recordCounter;
   static unsigned char *content;
   static unsigned short contentSize;
   static void update(unsigned char *message, unsigned short messageSize);
@@ -31,7 +37,7 @@ class NdefMessage {
   void begin();
   static unsigned char *getContent();
   static unsigned short getContentSize();
-  static void setContent(unsigned char *content, unsigned short contentSize);
+  static void setContent(const char *content, unsigned short contentSize);
   NdefRecord_t getRecord();
   bool isEmpty();
   bool isNotEmpty();

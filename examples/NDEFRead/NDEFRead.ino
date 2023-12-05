@@ -18,7 +18,7 @@
 #define PN7150_ADDR (0x28)
 
 // Function prototypes
-void messageReceived();
+void messageReceivedCallback();
 String getHexRepresentation(const byte *data, const uint32_t dataSize);
 void displayDeviceInfo();
 void displayRecordInfo(NdefRecord record);
@@ -34,7 +34,7 @@ void setup() {
   Serial.println("Detect NFC tags with PN7150");
 
   // Register a callback function to be called when an NDEF message is received
-  nfc.setReadMsgCallback(messageReceived);
+  nfc.setReadMsgCallback(messageReceivedCallback);
 
   Serial.println("Initializing...");
 
@@ -84,7 +84,7 @@ void loop() {
 }
 
 /// @brief Callback function called when an NDEF message is received
-void messageReceived() {
+void messageReceivedCallback() {
   NdefRecord record;
   Serial.println("Processing Callback...");
 
