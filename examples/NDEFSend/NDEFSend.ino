@@ -35,6 +35,23 @@ Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);  // Creates a gl
 
 // Two records, "Hello" and "world"
 // 91 01 08 54 02 65 6E 48 65 6C 6C 6F 51 01 08 54 02 65 6E 77 6F 72 6C 64
+// const char ndefMessage[] = {0x91,                      // MB/ME/CF/1/IL/TNF
+//                             0x01,                      // Type length (1 byte)
+//                             0x08,                      // Payload length
+//                             'T',                       // Type -> 'T' for text, 'U' for URI
+//                             0x02,                      // Status
+//                             'e', 'n',                  // Language
+//                             'H', 'e', 'l', 'l', 'o',   // Message Payload
+//                             0x51,                      // MB/ME/CF/1/IL/TNF
+//                             0x01,                      // Type length (1 byte)
+//                             0x08,                      // Payload length
+//                             'T',                       // Type -> 'T' for text, 'U' for URI
+//                             0x02,                      // Status
+//                             'e', 'n',                  // Language
+//                             'w', 'o', 'r', 'l', 'd'};  // Message Payload
+
+// Three records, "Hello", "world" and Uri "https://www.electroniccats.com"
+// 91 01 08 54 02 65 6E 48 65 6C 6C 6F 11 01 08 54 02 65 6E 77 6F 72 6C 64 51 01 13 55 02 65 6C 65 63 74 72 6F 6E 69 63 63 61 74 73 2E 63 6F 72
 const char ndefMessage[] = {0x91,                      // MB/ME/CF/1/IL/TNF
                             0x01,                      // Type length (1 byte)
                             0x08,                      // Payload length
@@ -42,13 +59,19 @@ const char ndefMessage[] = {0x91,                      // MB/ME/CF/1/IL/TNF
                             0x02,                      // Status
                             'e', 'n',                  // Language
                             'H', 'e', 'l', 'l', 'o',   // Message Payload
-                            0x51,                      // MB/ME/CF/1/IL/TNF
+                            0x11,                      // MB/ME/CF/1/IL/TNF
                             0x01,                      // Type length (1 byte)
                             0x08,                      // Payload length
                             'T',                       // Type -> 'T' for text, 'U' for URI
                             0x02,                      // Status
                             'e', 'n',                  // Language
-                            'w', 'o', 'r', 'l', 'd'};  // Message Payload
+                            'w', 'o', 'r', 'l', 'd',   // Message Payload
+                            0x51,                      // MB/ME/CF/1/IL/TNF
+                            0x01,                      // Type length (1 byte)
+                            0x13,                      // Payload length
+                            'U',                       // Type -> 'T' for text, 'U' for URI
+                            0x02,                      // Status
+                            'e', 'l', 'e', 'c', 't', 'r', 'o', 'n', 'i', 'c', 'c', 'a', 't', 's', '.', 'c', 'o', 'm'};  // Message Payload
 
 void setup() {
   Serial.begin(9600);

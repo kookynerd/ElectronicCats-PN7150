@@ -66,6 +66,13 @@ static void T4T_NDEF_EMU_FillRsp(unsigned char *pRsp, unsigned short offset, uns
     if (pT4T_NDEF_EMU_PushCb != NULL)
       pT4T_NDEF_EMU_PushCb(pT4T_NdefMessage, T4T_NdefMessage_size);
   }
+
+  Serial.println("pRsp:");
+  for (int i = 0; i < length; i++) {
+    Serial.print(pRsp[i], HEX);
+    Serial.print(" ");
+  }
+  Serial.println();
 }
 
 bool T4T_NDEF_EMU_SetMessage(unsigned char *pMessage, unsigned short Message_size, void *pCb) {
