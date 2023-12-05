@@ -45,6 +45,7 @@ typedef void T4T_NDEF_EMU_Callback_t(unsigned char *, unsigned short);
 static T4T_NDEF_EMU_state_t eT4T_NDEF_EMU_State = Ready;
 
 static T4T_NDEF_EMU_Callback_t *pT4T_NDEF_EMU_PushCb = NULL;
+CustomCallback_t *ndefSendCallback;
 
 static void T4T_NDEF_EMU_FillRsp(unsigned char *pRsp, unsigned short offset, unsigned char length) {
   if (offset == 0) {
@@ -65,6 +66,10 @@ static void T4T_NDEF_EMU_FillRsp(unsigned char *pRsp, unsigned short offset, uns
     /* Notify application of the NDEF send */
     if (pT4T_NDEF_EMU_PushCb != NULL)
       pT4T_NDEF_EMU_PushCb(pT4T_NdefMessage, T4T_NdefMessage_size);
+
+    // Notify custom callback
+    if (ndefSendCallback != NULL)
+      ndefSendCallback();
   }
 }
 
@@ -79,6 +84,10 @@ bool T4T_NDEF_EMU_SetMessage(unsigned char *pMessage, unsigned short Message_siz
 void T4T_NDEF_EMU_SetMsg(const char *pMessage, unsigned short Message_size) {
   pT4T_NdefMessage = (unsigned char *)pMessage;
   T4T_NdefMessage_size = Message_size;
+}
+
+void T4T_NDEF_EMU_SetCallback(CustomCallback_t function) {
+  ndefSendCallback = function;
 }
 
 void T4T_NDEF_EMU_Reset(void) {

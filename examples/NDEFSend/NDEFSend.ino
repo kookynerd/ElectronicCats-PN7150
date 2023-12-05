@@ -19,7 +19,8 @@
 #define PN7150_ADDR (0x28)
 
 // Function prototypes
-void messageSentCallback(unsigned char *pNdefRecord, unsigned short NdefRecordSize);
+// void messageSentCallback(unsigned char *pNdefRecord, unsigned short NdefRecordSize);
+void messageSentCallback();
 
 Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);  // Creates a global NFC device interface object, attached to pins 11 (IRQ) and 13 (VEN) and using the default I2C address 0x28
 NdefMessage message;
@@ -81,6 +82,7 @@ void setup() {
   Serial.println("Send NDEF Message with PN7150");
 
   message.setContent(ndefMessage, sizeof(ndefMessage));
+  nfc.setSendMsgCallback(messageSentCallback);
 
   // if (T4T_NDEF_EMU_SetMessage((unsigned char *)ndefMessage, sizeof(ndefMessage), (void *)*messageSentCallback)) {
   //   Serial.println("Set message success!");
@@ -112,7 +114,12 @@ void loop() {
   }
 }
 
-void messageSentCallback(unsigned char *pNdefRecord, unsigned short NdefRecordSize) {
-  Serial.println("NDEF Record sent!");
+// void messageSentCallback(unsigned char *pNdefRecord, unsigned short NdefRecordSize) {
+//   Serial.println("NDEF Record sent!");
+//   // Do something...
+// }
+
+void messageSentCallback() {
+  Serial.println("NDEF message sent!");
   // Do something...
 }

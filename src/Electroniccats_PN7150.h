@@ -180,6 +180,7 @@ class Electroniccats_PN7150 : public Mode {
   bool NxpNci_FactoryTest_RfOn();  // Deprecated, use nciFactoryTestRfOn() instead
   bool reset();
   void setReadMsgCallback(CustomCallback_t function);
+  void setSendMsgCallback(CustomCallback_t function);
   bool isReaderDetected();
   void closeCommunication();
   void sendMessage();
