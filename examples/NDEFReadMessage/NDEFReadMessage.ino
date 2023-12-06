@@ -95,6 +95,9 @@ void messageReceivedCallback() {
     return;
   }
 
+  Serial.print("NDEF message: ");
+  Serial.println(getHexRepresentation(message.getContent(), message.getContentSize()));
+
   // Show NDEF message details, it is composed of records
   do {
     record.create(message.getRecord());  // Get a new record every time we call getRecord()
