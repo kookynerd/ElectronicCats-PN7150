@@ -15,8 +15,13 @@
 
 NdefRecord::NdefRecord() {
   this->_type = UNSUPPORTED_NDEF_RECORD;
+  this->headerFlags = 0;
   this->payload = NULL;
   this->payloadSize = 0;
+  this->typeLength = 0;
+  this->recordType = 0;
+  this->status = 0;
+  this->languageCode = 0;
   this->newString = "null";
 }
 
@@ -232,4 +237,63 @@ String NdefRecord::getUri() {
   payload[payloadSize] = save;
 
   return uri;
+}
+
+void NdefRecord::setPayload(unsigned char *payload) {
+  this->payload = payload;
+}
+
+void NdefRecord::setHeaderFlags(uint8_t headerFlags) {
+  this->headerFlags = headerFlags;
+}
+
+void NdefRecord::setTypeLength(uint8_t typeLength) {
+  this->typeLength = typeLength;
+}
+
+void NdefRecord::setRecordType(uint8_t recordType) {
+  this->recordType = recordType;
+}
+
+void NdefRecord::setStatus(uint8_t status) {
+  this->status = status;
+}
+
+void NdefRecord::setLanguageCode(unsigned char *languageCode) {
+  this->languageCode = languageCode;
+  Serial.println("Language code: " + String((char *)this->languageCode));
+  Serial.println("Language code: " + getHexRepresentation(this->languageCode, 2)); // Language code: 65:6E
+}
+
+void NdefRecord::setPayloadSize(uint8_t payloadSize) {
+  this->payloadSize = payloadSize;
+}
+
+const char *NdefRecord::getContent() {
+  char *recordContent = new char[getPayloadSize()];
+  Serial.println("Language code: " + getHexRepresentation(this->languageCode, 2)); // Language code: 010:00
+
+  recordContent[0] = headerFlags;
+  recordContent[1] = typeLength;
+  recordContent[2] = payloadSize;
+  recordContent[3] = recordType;
+  recordContent[4] = status;
+  recordContent[5] = languageCode[0];
+  recordContent[6] = languageCode[1];
+
+  Serial.println("Header flags: " + String(recordContent[0], HEX));
+  Serial.print("Language code: ");
+  Serial.print(languageCode[0], HEX);
+  Serial.println(languageCode[1], HEX);
+  Serial.println("Language code: " + String(recordContent[5]) + String(recordContent[6]));
+
+  for (int i = 0; i < getPayloadSize(); i++) {
+    recordContent[i + 7] = payload[i];
+  }
+
+  return recordContent;
+}
+
+unsigned short NdefRecord::getContentSize() {
+  return getPayloadSize() + 4; // 5 bytes for header, type length, payload length, record type, status, and 2 bytes for language code
 }

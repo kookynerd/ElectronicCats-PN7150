@@ -16,15 +16,37 @@
 unsigned char *NdefMessage::content;
 unsigned short NdefMessage::contentSize;
 uint8_t NdefMessage::recordCounter;
+String NdefMessage::newString;
 
 NdefMessage::NdefMessage() {
   content = NULL;
   contentSize = 0;
   recordCounter = 0;
+  newString = "null";
 }
 
 void NdefMessage::begin() {
   registerUpdateNdefMessageCallback(NdefMessage::update);
+}
+
+String NdefMessage::getHexRepresentation(const byte *data, const uint32_t dataSize) {
+  String hexString;
+
+  if (dataSize == 0) {
+    hexString = newString;
+  }
+
+  for (uint32_t index = 0; index < dataSize; index++) {
+    if (data[index] <= 0xF)
+      hexString += "0";
+    String hexValue = String(data[index] & 0xFF, HEX);
+    hexValue.toUpperCase();
+    hexString += hexValue;
+    if ((dataSize > 1) && (index != dataSize - 1)) {
+      hexString += ":";
+    }
+  }
+  return hexString;
 }
 
 void NdefMessage::update(unsigned char *message, unsigned short messageSize) {
@@ -47,8 +69,8 @@ unsigned short NdefMessage::getContentSize() {
 void NdefMessage::setContent(const char *content, unsigned short contentSize) {
   NdefMessage::content = (unsigned char *)content;
   NdefMessage::contentSize = contentSize;
-  NdefMessage::recordCounter = MAX_NDEF_RECORDS;
 
+  Serial.println(NdefMessage::getHexRepresentation((byte *)content, (uint32_t)contentSize));
   T4T_NDEF_EMU_SetMsg(content, contentSize);
 }
 
@@ -77,4 +99,33 @@ bool NdefMessage::isNotEmpty() {
 
 bool NdefMessage::hasRecord() {
   return NdefMessage::isNotEmpty();
+}
+
+bool NdefMessage::addRecord(NdefRecord record) {
+  if (recordCounter < MAX_NDEF_RECORDS) {
+    records[recordCounter] = record;
+    recordCounter++;
+
+    setContent(record.getContent(), record.getContentSize());
+
+    return true;
+  }
+  return false;
+}
+
+bool NdefMessage::addTextRecord(String text) {
+  NdefRecord record;
+  record.setHeaderFlags(0xD1);
+  record.setTypeLength(0x01);
+  record.setPayloadSize(text.length() + 3);
+  record.setRecordType(0x54);
+  record.setStatus(0x02);
+  record.setLanguageCode((unsigned char *)"en");
+  record.setPayload((unsigned char *)text.c_str());
+
+  Serial.println("Payload size: " + String(record.getPayloadSize()));
+  unsigned char *payload = record.getPayload();
+  Serial.println("Payload: " + String((char *)payload));
+
+  return addRecord(record);
 }

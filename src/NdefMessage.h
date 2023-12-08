@@ -23,7 +23,7 @@
 
 #define MAX_NDEF_RECORDS 4
 
-class NdefMessage {
+class NdefMessage : NdefRecord {
  private:
   NdefRecord records[MAX_NDEF_RECORDS];
   static uint8_t recordCounter;
@@ -31,6 +31,8 @@ class NdefMessage {
   static unsigned short contentSize;
   static void update(unsigned char *message, unsigned short messageSize);
   void getNextRecord();
+  static String getHexRepresentation(const byte *data, const uint32_t dataSize);
+  static String newString;
 
  public:
   NdefMessage();
@@ -42,6 +44,10 @@ class NdefMessage {
   bool isEmpty();
   bool isNotEmpty();
   bool hasRecord();
+  bool addRecord(NdefRecord record);
+  bool addTextRecord(String text);
+  bool addTextRecord(String text, String languageCode);
+  bool addUriRecord(String uri);
 };
 
 #endif

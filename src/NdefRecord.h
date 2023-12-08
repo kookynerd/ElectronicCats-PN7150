@@ -20,10 +20,14 @@
 
 class NdefRecord {
  private:
-  NdefRecord_t content;
   NdefRecordType_e _type;
-  unsigned char *payload;
+  uint8_t headerFlags;
+  uint8_t typeLength;
   unsigned short payloadSize;
+  uint8_t recordType;
+  uint8_t status;
+  unsigned char *languageCode;
+  unsigned char *payload;
   String getHexRepresentation(const byte *data, const uint32_t dataSize);
   String newString;
 
@@ -45,6 +49,15 @@ class NdefRecord {
   String getWiFiPassword();
   String getVCardContent();
   String getUri();
+  void setPayload(unsigned char *payload);
+  void setHeaderFlags(uint8_t headerFlags);
+  void setTypeLength(uint8_t typeLength);
+  void setRecordType(uint8_t recordType);
+  void setStatus(uint8_t status);
+  void setLanguageCode(unsigned char *languageCode);
+  void setPayloadSize(uint8_t payloadSize);
+  const char *getContent();
+  unsigned short getContentSize();
 };
 
 #endif
