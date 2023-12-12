@@ -93,7 +93,7 @@ void setup() {
   // message.setContent(ndefMessage, sizeof(ndefMessage));
   message.addTextRecord("Hello");
   message.addTextRecord("world");
-  // message.addTextRecord("adios");
+  message.addTextRecord("adios");
   // message.addTextRecord("Hola mundo!");
   nfc.setSendMsgCallback(messageSentCallback);
 

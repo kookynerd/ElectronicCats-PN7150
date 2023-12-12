@@ -239,8 +239,9 @@ String NdefRecord::getUri() {
   return uri;
 }
 
-void NdefRecord::setPayload(unsigned char *payload) {
-  this->payload = payload;
+void NdefRecord::setPayload(String payload) {
+  this->payload = new unsigned char[payload.length()];
+  strcpy((char *)this->payload, payload.c_str());
 }
 
 void NdefRecord::setHeaderFlags(uint8_t headerFlags) {
@@ -259,10 +260,12 @@ void NdefRecord::setStatus(uint8_t status) {
   this->status = status;
 }
 
-void NdefRecord::setLanguageCode(unsigned char *languageCode) {
-  this->languageCode = languageCode;
-  Serial.println("Language code: " + String((char *)this->languageCode));
-  Serial.println("Language code: " + getHexRepresentation(this->languageCode, 2)); // Language code: 65:6E
+void NdefRecord::setLanguageCode(String languageCode) {
+  this->languageCode = new unsigned char[languageCode.length()];
+  strcpy((char *)this->languageCode, languageCode.c_str());
+#ifdef DEBUG3
+  Serial.println("Language code: " + languageCode);
+#endif
 }
 
 void NdefRecord::setPayloadSize(uint8_t payloadSize) {
@@ -271,7 +274,6 @@ void NdefRecord::setPayloadSize(uint8_t payloadSize) {
 
 const char *NdefRecord::getContent() {
   char *recordContent = new char[getPayloadSize()];
-  Serial.println("Language code: " + getHexRepresentation(this->languageCode, 2)); // Language code: 010:00
 
   recordContent[0] = headerFlags;
   recordContent[1] = typeLength;
@@ -281,12 +283,6 @@ const char *NdefRecord::getContent() {
   recordContent[5] = languageCode[0];
   recordContent[6] = languageCode[1];
 
-  Serial.println("Header flags: " + String(recordContent[0], HEX));
-  Serial.print("Language code: ");
-  Serial.print(languageCode[0], HEX);
-  Serial.println(languageCode[1], HEX);
-  Serial.println("Language code: " + String(recordContent[5]) + String(recordContent[6]));
-
   for (int i = 0; i < getPayloadSize(); i++) {
     recordContent[i + 7] = payload[i];
   }
@@ -295,5 +291,5 @@ const char *NdefRecord::getContent() {
 }
 
 unsigned short NdefRecord::getContentSize() {
-  return getPayloadSize() + 4; // 5 bytes for header, type length, payload length, record type, status, and 2 bytes for language code
+  return getPayloadSize() + 4; // 4 bytes for header, type length, payload length and record type
 }

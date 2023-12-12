@@ -49,12 +49,12 @@ class NdefRecord {
   String getWiFiPassword();
   String getVCardContent();
   String getUri();
-  void setPayload(unsigned char *payload);
+  void setPayload(String payload);
   void setHeaderFlags(uint8_t headerFlags);
   void setTypeLength(uint8_t typeLength);
   void setRecordType(uint8_t recordType);
   void setStatus(uint8_t status);
-  void setLanguageCode(unsigned char *languageCode);
+  void setLanguageCode(String languageCode);
   void setPayloadSize(uint8_t payloadSize);
   const char *getContent();
   unsigned short getContentSize();

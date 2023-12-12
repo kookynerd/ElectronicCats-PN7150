@@ -15,6 +15,8 @@
 
 unsigned char *NdefMessage::content;
 unsigned short NdefMessage::contentSize;
+unsigned char *NdefMessage::newContent;
+unsigned short NdefMessage::newContentSize;
 uint8_t NdefMessage::recordCounter;
 String NdefMessage::newString;
 
@@ -74,6 +76,15 @@ void NdefMessage::setContent(const char *content, unsigned short contentSize) {
   T4T_NDEF_EMU_SetMsg(content, contentSize);
 }
 
+void NdefMessage::addContent(const char *record, unsigned short recordSize) {
+  unsigned short newContentSize = contentSize + recordSize;
+  unsigned char *newContent = (unsigned char *)malloc(newContentSize);
+  memcpy(newContent, content, contentSize);
+  memcpy(newContent + contentSize, record, recordSize);
+  setContent((const char *)newContent, newContentSize);
+  free(newContent);
+}
+
 NdefRecord_t NdefMessage::getRecord() {
   NdefRecord_t ndefRecord = DetectNdefRecordType(content);
 
@@ -102,26 +113,45 @@ bool NdefMessage::hasRecord() {
 }
 
 bool NdefMessage::addRecord(NdefRecord record) {
-  if (recordCounter < MAX_NDEF_RECORDS) {
-    records[recordCounter] = record;
-    recordCounter++;
-
-    setContent(record.getContent(), record.getContentSize());
-
-    return true;
+  if (recordCounter > MAX_NDEF_RECORDS) {
+    return false;
   }
-  return false;
+
+  // records[recordCounter] = record;
+
+  // Update header flags
+  if (recordCounter == 1) {
+    // NdefMessage::content[0] = NDEF_HEADER_FLAGS_FIRST_RECORD;
+    // records[recordCounter].setHeaderFlags(NDEF_HEADER_FLAGS_NEXT_RECORD);
+    NdefMessage::content[0] = NDEF_HEADER_FLAGS_FIRST_RECORD;
+    record.setHeaderFlags(NDEF_HEADER_FLAGS_NEXT_RECORD);
+  } else if (recordCounter == 2) {
+    NdefMessage::content[contentSize - record.getContentSize()] = 0x11;
+    record.setHeaderFlags(NDEF_HEADER_FLAGS_NEXT_RECORD);
+  }
+
+  NdefMessage::newContent = new unsigned char[contentSize + record.getContentSize()];
+  memcpy(newContent, content, contentSize);
+  memcpy(newContent + contentSize, record.getContent(), record.getContentSize());
+  setContent((const char *)newContent, contentSize + record.getContentSize());
+
+  recordCounter++;
+
+  // addContent(record.getContent(), record.getContentSize());  // Doesn't work
+  // setContent(record.getContent(), record.getContentSize());  // Works
+
+  return true;
 }
 
 bool NdefMessage::addTextRecord(String text) {
   NdefRecord record;
-  record.setHeaderFlags(0xD1);
-  record.setTypeLength(0x01);
+  record.setHeaderFlags(NDEF_HEADER_FLAGS_SINGLE_RECORD);
+  record.setTypeLength(NDEF_TYPE_LENGTH);
   record.setPayloadSize(text.length() + 3);
-  record.setRecordType(0x54);
-  record.setStatus(0x02);
-  record.setLanguageCode((unsigned char *)"en");
-  record.setPayload((unsigned char *)text.c_str());
+  record.setRecordType(NDEF_TEXT_RECORD_TYPE);
+  record.setStatus(NDEF_STATUS);
+  record.setLanguageCode(NDEF_DEFAULT_LANGUAGE_CODE);
+  record.setPayload(text);
 
   Serial.println("Payload size: " + String(record.getPayloadSize()));
   unsigned char *payload = record.getPayload();
