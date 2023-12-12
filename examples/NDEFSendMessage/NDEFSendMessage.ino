@@ -91,8 +91,10 @@ void setup() {
   Serial.println("Send NDEF Message with PN7150");
 
   // message.setContent(ndefMessage, sizeof(ndefMessage));
-  // message.addTextRecord("Hello");
+  message.addTextRecord("Hello");
   message.addTextRecord("world");
+  // message.addTextRecord("adios");
+  // message.addTextRecord("Hola mundo!");
   nfc.setSendMsgCallback(messageSentCallback);
 
   Serial.println("Initializing...");
