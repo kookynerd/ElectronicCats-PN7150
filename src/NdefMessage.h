@@ -16,15 +16,16 @@
 
 #include <Arduino.h>
 
-#include "RW_NDEF.h"
-#include "ndef_helper.h"
 #include "NdefRecord.h"
+#include "RW_NDEF.h"
 #include "T4T_NDEF_emu.h"
+#include "ndef_helper.h"
 
 #define MAX_NDEF_RECORDS 4
 #define NDEF_HEADER_FLAGS_SINGLE_RECORD 0xD1
 #define NDEF_HEADER_FLAGS_FIRST_RECORD 0x91
-#define NDEF_HEADER_FLAGS_NEXT_RECORD 0x51
+#define NDEF_HEADER_FLAGS_NEXT_RECORD 0x11
+#define NDEF_HEADER_FLAGS_LAST_RECORD 0x51
 #define NDEF_TYPE_LENGTH 0x01
 #define NDEF_TEXT_RECORD_TYPE 'T'
 #define NDEF_URI_RECORD_TYPE 'U'
@@ -44,7 +45,8 @@ class NdefMessage : NdefRecord {
   static String getHexRepresentation(const byte *data, const uint32_t dataSize);
   static String newString;
   static void addContent(const char *record, unsigned short recordSize);
-  bool addRecord(NdefRecord record);
+  void addRecord(NdefRecord record);
+  static void updateHeaderFlags();
 
  public:
   NdefMessage();
@@ -56,9 +58,9 @@ class NdefMessage : NdefRecord {
   bool isEmpty();
   bool isNotEmpty();
   bool hasRecord();
-  bool addTextRecord(String text);
-  bool addTextRecord(String text, String languageCode);
-  bool addUriRecord(String uri);
+  void addTextRecord(String text);
+  void addTextRecord(String text, String languageCode);
+  void addUriRecord(String uri);
 };
 
 #endif

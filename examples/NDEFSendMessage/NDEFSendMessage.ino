@@ -93,8 +93,9 @@ void setup() {
   // message.setContent(ndefMessage, sizeof(ndefMessage));
   message.addTextRecord("Hello");
   message.addTextRecord("world");
-  message.addTextRecord("adios");
-  // message.addTextRecord("Hola mundo!");
+  message.addTextRecord("Hola mundo!");
+  message.addTextRecord("Hola");
+  message.addTextRecord("mundo :D");
   nfc.setSendMsgCallback(messageSentCallback);
 
   Serial.println("Initializing...");

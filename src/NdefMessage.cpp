@@ -73,16 +73,35 @@ void NdefMessage::setContent(const char *content, unsigned short contentSize) {
   NdefMessage::contentSize = contentSize;
 
   Serial.println(NdefMessage::getHexRepresentation((byte *)content, (uint32_t)contentSize));
+  NdefMessage::updateHeaderFlags();
+  Serial.println(NdefMessage::getHexRepresentation((byte *)content, (uint32_t)contentSize));
   T4T_NDEF_EMU_SetMsg(content, contentSize);
 }
 
-void NdefMessage::addContent(const char *record, unsigned short recordSize) {
-  unsigned short newContentSize = contentSize + recordSize;
-  unsigned char *newContent = (unsigned char *)malloc(newContentSize);
-  memcpy(newContent, content, contentSize);
-  memcpy(newContent + contentSize, record, recordSize);
-  setContent((const char *)newContent, newContentSize);
-  free(newContent);
+void NdefMessage::updateHeaderFlags() {
+  uint8_t headersPositions[recordCounter];
+  uint8_t recordCounterAux = 0;
+  Serial.print("Header positions:");
+  for (uint8_t i = 0; i < contentSize; i++) {
+    if (content[i] == NDEF_TYPE_LENGTH) {  // New record found
+      Serial.print(" " + String(i - 1));
+      headersPositions[recordCounterAux] = i - 1;
+      recordCounterAux++;
+    }
+  }
+  Serial.println();
+
+  for (uint8_t i = 0; i < recordCounter; i++) {
+    if (i == 0) {
+      content[headersPositions[i]] = NDEF_HEADER_FLAGS_SINGLE_RECORD;
+    } else if (i == 1) {
+      content[headersPositions[i - 1]] = NDEF_HEADER_FLAGS_FIRST_RECORD;
+      content[headersPositions[i]] = NDEF_HEADER_FLAGS_LAST_RECORD;
+    } else {
+      content[headersPositions[i - 1]] = NDEF_HEADER_FLAGS_NEXT_RECORD;
+      content[headersPositions[i]] = NDEF_HEADER_FLAGS_LAST_RECORD;
+    }
+  }
 }
 
 NdefRecord_t NdefMessage::getRecord() {
@@ -112,38 +131,16 @@ bool NdefMessage::hasRecord() {
   return NdefMessage::isNotEmpty();
 }
 
-bool NdefMessage::addRecord(NdefRecord record) {
-  if (recordCounter > MAX_NDEF_RECORDS) {
-    return false;
-  }
-
-  // records[recordCounter] = record;
-
-  // Update header flags
-  if (recordCounter == 1) {
-    // NdefMessage::content[0] = NDEF_HEADER_FLAGS_FIRST_RECORD;
-    // records[recordCounter].setHeaderFlags(NDEF_HEADER_FLAGS_NEXT_RECORD);
-    NdefMessage::content[0] = NDEF_HEADER_FLAGS_FIRST_RECORD;
-    record.setHeaderFlags(NDEF_HEADER_FLAGS_NEXT_RECORD);
-  } else if (recordCounter == 2) {
-    NdefMessage::content[contentSize - record.getContentSize()] = 0x11;
-    record.setHeaderFlags(NDEF_HEADER_FLAGS_NEXT_RECORD);
-  }
+void NdefMessage::addRecord(NdefRecord record) {
+  recordCounter++;
 
   NdefMessage::newContent = new unsigned char[contentSize + record.getContentSize()];
   memcpy(newContent, content, contentSize);
   memcpy(newContent + contentSize, record.getContent(), record.getContentSize());
   setContent((const char *)newContent, contentSize + record.getContentSize());
-
-  recordCounter++;
-
-  // addContent(record.getContent(), record.getContentSize());  // Doesn't work
-  // setContent(record.getContent(), record.getContentSize());  // Works
-
-  return true;
 }
 
-bool NdefMessage::addTextRecord(String text) {
+void NdefMessage::addTextRecord(String text) {
   NdefRecord record;
   record.setHeaderFlags(NDEF_HEADER_FLAGS_SINGLE_RECORD);
   record.setTypeLength(NDEF_TYPE_LENGTH);
