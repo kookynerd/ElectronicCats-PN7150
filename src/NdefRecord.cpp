@@ -73,7 +73,11 @@ unsigned char *NdefRecord::getPayload() {
 }
 
 unsigned short NdefRecord::getPayloadSize() {
-  return this->payloadSize;
+  if (isTextRecord()) {
+    return this->payloadSize;
+  } else {
+    return this->payloadSize + 2;
+  }
 }
 
 String NdefRecord::getText() {
@@ -245,11 +249,15 @@ String NdefRecord::getUri() {
 }
 
 void NdefRecord::setPayload(String payload) {
+  int length = payload.length();
 #ifdef DEBUG3
-  Serial.println("Payload: " + payload);
+  Serial.println("Payload: '" + payload + "'");
 #endif
   this->payload = new unsigned char[payload.length()];
   strcpy((char *)this->payload, payload.c_str());
+#ifdef DEBUG3
+  // Serial.println("Payload: '" + getHexRepresentation(this->payload, length) + "'");
+#endif
 }
 
 void NdefRecord::setHeaderFlags(uint8_t headerFlags) {
@@ -300,9 +308,17 @@ const char *NdefRecord::getContent() {
     }
   }
 
+#ifdef DEBUG3
+  Serial.println("Payload size: " + String(getPayloadSize()));
+#endif
+
   return recordContent;
 }
 
 unsigned short NdefRecord::getContentSize() {
-  return getPayloadSize() + 4;  // 4 bytes for header, type length, payload length and record type
+  if (isTextRecord()) {
+    return getPayloadSize() + 4;  // 4 bytes for header, type length, payload length and record type
+  } else {
+    return getPayloadSize() + 2;  // 2 bytes for header and payload length
+  }
 }
