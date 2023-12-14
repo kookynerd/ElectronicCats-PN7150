@@ -72,24 +72,34 @@ void NdefMessage::setContent(const char *content, unsigned short contentSize) {
   NdefMessage::content = (unsigned char *)content;
   NdefMessage::contentSize = contentSize;
 
+#ifdef DEBUG3
   Serial.println(NdefMessage::getHexRepresentation((byte *)content, (uint32_t)contentSize));
+#endif
   NdefMessage::updateHeaderFlags();
+#ifdef DEBUG3
   Serial.println(NdefMessage::getHexRepresentation((byte *)content, (uint32_t)contentSize));
+#endif
   T4T_NDEF_EMU_SetMsg(content, contentSize);
 }
 
 void NdefMessage::updateHeaderFlags() {
   uint8_t headersPositions[recordCounter];
   uint8_t recordCounterAux = 0;
+#ifdef DEBUG3
   Serial.print("Header positions:");
+#endif
   for (uint8_t i = 0; i < contentSize; i++) {
     if (content[i] == NDEF_TYPE_LENGTH) {  // New record found
+#ifdef DEBUG3
       Serial.print(" " + String(i - 1));
+#endif
       headersPositions[recordCounterAux] = i - 1;
       recordCounterAux++;
     }
   }
+#ifdef DEBUG3
   Serial.println();
+#endif
 
   for (uint8_t i = 0; i < recordCounter; i++) {
     if (i == 0) {
@@ -150,9 +160,10 @@ void NdefMessage::addTextRecord(String text) {
   record.setLanguageCode(NDEF_DEFAULT_LANGUAGE_CODE);
   record.setPayload(text);
 
+#ifdef DEBUG3
   Serial.println("Payload size: " + String(record.getPayloadSize()));
-  unsigned char *payload = record.getPayload();
-  Serial.println("Payload: " + String((char *)payload));
+  Serial.println("Payload: " + String((char *)record.getPayload()));
+#endif
 
-  return addRecord(record);
+  addRecord(record);
 }

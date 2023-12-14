@@ -18,6 +18,13 @@
 
 #include "ndef_helper.h"
 
+/*
+ * Active DEBUG Serial
+ */
+// #define DEBUG
+// #define DEBUG2
+#define DEBUG3
+
 class NdefRecord {
  private:
   NdefRecordType_e _type;

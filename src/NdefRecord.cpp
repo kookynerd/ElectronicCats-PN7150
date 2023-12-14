@@ -263,9 +263,6 @@ void NdefRecord::setStatus(uint8_t status) {
 void NdefRecord::setLanguageCode(String languageCode) {
   this->languageCode = new unsigned char[languageCode.length()];
   strcpy((char *)this->languageCode, languageCode.c_str());
-#ifdef DEBUG3
-  Serial.println("Language code: " + languageCode);
-#endif
 }
 
 void NdefRecord::setPayloadSize(uint8_t payloadSize) {
