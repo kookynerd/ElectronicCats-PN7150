@@ -3,7 +3,7 @@
  * Authors:
  *        Francisco Torres - Electronic Cats - electroniccats.com
  *
- *  August 2023
+ * December 2023
  *
  * This code is beerware; if you see me (or any other collaborator
  * member) at the local, and you've found our code helpful,
@@ -160,14 +160,129 @@ void NdefMessage::addTextRecord(String text, String languageCode) {
   record.setLanguageCode(languageCode);
   record.setPayload(text);
 
-#ifdef DEBUG3
-  Serial.println("Payload size: " + String(record.getPayloadSize()));
-  Serial.println("Payload: " + String((char *)record.getPayload()));
-#endif
-
   addRecord(record);
 }
 
 void NdefMessage::addTextRecord(String text) {
   addTextRecord(text, NDEF_DEFAULT_LANGUAGE_CODE);
+}
+
+void NdefMessage::addUriRecord(String uri) {
+  NdefRecord record;
+  record.setHeaderFlags(NDEF_HEADER_FLAGS_SINGLE_RECORD);
+  record.setTypeLength(NDEF_TYPE_LENGTH);
+  record.setPayloadSize(uri.length() + 3);
+  record.setRecordType(NDEF_URI_RECORD_TYPE);
+
+  if (uri.startsWith("http://www.")) {
+    record.setStatus(NDEF_URI_HTTP_WWWDOT);
+    record.setPayload(uri.substring(11).c_str());
+  } else if (uri.startsWith("https://www.")) {
+    record.setStatus(NDEF_URI_HTTPS_WWWDOT);
+    record.setPayload(uri.substring(12).c_str());
+  } else if (uri.startsWith("http://")) {
+    record.setStatus(NDEF_URI_HTTP);
+    record.setPayload(uri.substring(7).c_str());
+  } else if (uri.startsWith("https://")) {
+    record.setStatus(NDEF_URI_HTTPS);
+    record.setPayload(uri.substring(8).c_str());
+  } else if (uri.startsWith("tel:")) {
+    record.setStatus(NDEF_URI_TEL);
+    record.setPayload(uri.substring(4).c_str());
+  } else if (uri.startsWith("mailto:")) {
+    record.setStatus(NDEF_URI_MAILTO);
+    record.setPayload(uri.substring(7).c_str());
+  } else if (uri.startsWith("ftp://anonymous:anonymous@")) {
+    record.setStatus(NDEF_URI_FTP_ANONIMOUS);
+    record.setPayload(uri.substring(26).c_str());
+  } else if (uri.startsWith("ftp://ftp.")) {
+    record.setStatus(NDEF_URI_FTP_FTPDOT);
+    record.setPayload(uri.substring(9).c_str());
+  } else if (uri.startsWith("ftps://")) {
+    record.setStatus(NDEF_URI_FTPS);
+    record.setPayload(uri.substring(7).c_str());
+  } else if (uri.startsWith("sftp://")) {
+    record.setStatus(NDEF_URI_SFTP);
+    record.setPayload(uri.substring(7).c_str());
+  } else if (uri.startsWith("smb://")) {
+    record.setStatus(NDEF_URI_SMB);
+    record.setPayload(uri.substring(6).c_str());
+  } else if (uri.startsWith("nfs://")) {
+    record.setStatus(NDEF_URI_NFS);
+    record.setPayload(uri.substring(6).c_str());
+  } else if (uri.startsWith("ftp://")) {
+    record.setStatus(NDEF_URI_FTP);
+    record.setPayload(uri.substring(6).c_str());
+  } else if (uri.startsWith("dav://")) {
+    record.setStatus(NDEF_URI_DAV);
+    record.setPayload(uri.substring(6).c_str());
+  } else if (uri.startsWith("news:")) {
+    record.setStatus(NDEF_URI_NEWS);
+    record.setPayload(uri.substring(5).c_str());
+  } else if (uri.startsWith("telnet://")) {
+    record.setStatus(NDEF_URI_TELNET);
+    record.setPayload(uri.substring(9).c_str());
+  } else if (uri.startsWith("imap:")) {
+    record.setStatus(NDEF_URI_IMAP);
+    record.setPayload(uri.substring(5).c_str());
+  } else if (uri.startsWith("rtsp://")) {
+    record.setStatus(NDEF_URI_RTSP);
+    record.setPayload(uri.substring(7).c_str());
+  } else if (uri.startsWith("urn:")) {
+    record.setStatus(NDEF_URI_URN);
+    record.setPayload(uri.substring(4).c_str());
+  } else if (uri.startsWith("pop:")) {
+    record.setStatus(NDEF_URI_POP);
+    record.setPayload(uri.substring(4).c_str());
+  } else if (uri.startsWith("sip:")) {
+    record.setStatus(NDEF_URI_SIP);
+    record.setPayload(uri.substring(4).c_str());
+  } else if (uri.startsWith("sips:")) {
+    record.setStatus(NDEF_URI_SIPS);
+    record.setPayload(uri.substring(5).c_str());
+  } else if (uri.startsWith("tftp:")) {
+    record.setStatus(NDEF_URI_TFTP);
+    record.setPayload(uri.substring(5).c_str());
+  } else if (uri.startsWith("btspp://")) {
+    record.setStatus(NDEF_URI_BTSPP);
+    record.setPayload(uri.substring(8).c_str());
+  } else if (uri.startsWith("btl2cap://")) {
+    record.setStatus(NDEF_URI_BTL2CAP);
+    record.setPayload(uri.substring(10).c_str());
+  } else if (uri.startsWith("btgoep://")) {
+    record.setStatus(NDEF_URI_BTGOEP);
+    record.setPayload(uri.substring(9).c_str());
+  } else if (uri.startsWith("tcpobex://")) {
+    record.setStatus(NDEF_URI_TCPOBEX);
+    record.setPayload(uri.substring(10).c_str());
+  } else if (uri.startsWith("irdaobex://")) {
+    record.setStatus(NDEF_URI_IRDAOBEX);
+    record.setPayload(uri.substring(11).c_str());
+  } else if (uri.startsWith("file://")) {
+    record.setStatus(NDEF_URI_FILE);
+    record.setPayload(uri.substring(7).c_str());
+  } else if (uri.startsWith("urn:epc:id:")) {
+    record.setStatus(NDEF_URI_URN_EPC_ID);
+    record.setPayload(uri.substring(11).c_str());
+  } else if (uri.startsWith("urn:epc:tag:")) {
+    record.setStatus(NDEF_URI_URN_EPC_TAG);
+    record.setPayload(uri.substring(12).c_str());
+  } else if (uri.startsWith("urn:epc:pat:")) {
+    record.setStatus(NDEF_URI_URN_EPC_PAT);
+    record.setPayload(uri.substring(12).c_str());
+  } else if (uri.startsWith("urn:epc:raw:")) {
+    record.setStatus(NDEF_URI_URN_EPC_RAW);
+    record.setPayload(uri.substring(12).c_str());
+  } else if (uri.startsWith("urn:epc:")) {
+    record.setStatus(NDEF_URI_URN_EPC);
+    record.setPayload(uri.substring(8).c_str());
+  } else if (uri.startsWith("urn:nfc:")) {
+    record.setStatus(NDEF_URI_URN_NFC);
+    record.setPayload(uri.substring(8).c_str());
+  } else {
+    record.setStatus(NDEF_URI_NO_PREFIX);
+    record.setPayload(uri);
+  }
+
+  addRecord(record);
 }

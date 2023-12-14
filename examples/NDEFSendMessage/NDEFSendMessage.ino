@@ -1,10 +1,13 @@
 /**
  * Example to send NDEF messages
+ *
+ * Note: If you know how to create custom NDEF messages, you can use the NDEFSendRawMessage example, otherwise, use this example.
+ *
  * Authors:
  *        Salvador Mendoza - @Netxing - salmg.net
  *        Francisco Torres - Electronic Cats - electroniccats.com
  *
- *  August 2023
+ * December 2023
  *
  * This code is beerware; if you see me (or any other collaborator
  * member) at the local, and you've found our code helpful,
@@ -30,10 +33,13 @@ void setup() {
     ;
   Serial.println("Send NDEF Message with PN7150");
 
-  message.addTextRecord("Hello");                    // English by default
-  message.addTextRecord("world", "en");              // English explicitly, the library only supports two letter language codes (ISO 639-1) by now
-  message.addTextRecord("Hola mundo!", "es");        // Spanish explicitly, check a language code table at https://www.science.co.il/language/Locale-codes.php
-  message.addTextRecord("Bonjour le monde!", "fr");  // French explicitly
+  message.addTextRecord("Hello");                          // English by default
+  message.addTextRecord("world", "en");                    // English explicitly, the library only supports two letter language codes (ISO 639-1) by now
+  message.addTextRecord("Hola mundo!", "es");              // Spanish explicitly, check a language code table at https://www.science.co.il/language/Locale-codes.php
+  message.addTextRecord("Bonjour le monde!", "fr");        // French explicitly
+  message.addUriRecord("google.com");                      // No prefix explicitly
+  message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
+  message.addUriRecord("rtsp://test");
   nfc.setSendMsgCallback(messageSentCallback);
 
   Serial.println("Initializing...");

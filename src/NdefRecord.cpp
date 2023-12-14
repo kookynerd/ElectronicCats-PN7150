@@ -3,7 +3,7 @@
  * Authors:
  *        Francisco Torres - Electronic Cats - electroniccats.com
  *
- *  August 2023
+ * December 2023
  *
  * This code is beerware; if you see me (or any other collaborator
  * member) at the local, and you've found our code helpful,
@@ -23,6 +23,11 @@ NdefRecord::NdefRecord() {
   this->status = 0;
   this->languageCode = 0;
   this->newString = "null";
+  this->textRecord = false;
+}
+
+bool NdefRecord::isTextRecord() {
+  return this->textRecord;
 }
 
 void NdefRecord::create(NdefRecord_t record) {
@@ -240,6 +245,9 @@ String NdefRecord::getUri() {
 }
 
 void NdefRecord::setPayload(String payload) {
+#ifdef DEBUG3
+  Serial.println("Payload: " + payload);
+#endif
   this->payload = new unsigned char[payload.length()];
   strcpy((char *)this->payload, payload.c_str());
 }
@@ -261,6 +269,7 @@ void NdefRecord::setStatus(uint8_t status) {
 }
 
 void NdefRecord::setLanguageCode(String languageCode) {
+  this->textRecord = true;
   this->languageCode = new unsigned char[languageCode.length()];
   strcpy((char *)this->languageCode, languageCode.c_str());
 }
@@ -277,16 +286,23 @@ const char *NdefRecord::getContent() {
   recordContent[2] = payloadSize;
   recordContent[3] = recordType;
   recordContent[4] = status;
-  recordContent[5] = languageCode[0];
-  recordContent[6] = languageCode[1];
 
-  for (int i = 0; i < getPayloadSize(); i++) {
-    recordContent[i + 7] = payload[i];
+  if (isTextRecord()) {
+    recordContent[5] = languageCode[0];
+    recordContent[6] = languageCode[1];
+
+    for (int i = 0; i < getPayloadSize(); i++) {
+      recordContent[i + 7] = payload[i];
+    }
+  } else {
+    for (int i = 0; i < getPayloadSize(); i++) {
+      recordContent[i + 5] = payload[i];
+    }
   }
 
   return recordContent;
 }
 
 unsigned short NdefRecord::getContentSize() {
-  return getPayloadSize() + 4; // 4 bytes for header, type length, payload length and record type
+  return getPayloadSize() + 4;  // 4 bytes for header, type length, payload length and record type
 }

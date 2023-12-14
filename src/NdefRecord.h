@@ -3,7 +3,7 @@
  * Authors:
  *        Francisco Torres - Electronic Cats - electroniccats.com
  *
- *  August 2023
+ * December 2023
  *
  * This code is beerware; if you see me (or any other collaborator
  * member) at the local, and you've found our code helpful,
@@ -35,8 +35,10 @@ class NdefRecord {
   uint8_t status;
   unsigned char *languageCode;
   unsigned char *payload;
-  String getHexRepresentation(const byte *data, const uint32_t dataSize);
   String newString;
+  bool textRecord;
+  String getHexRepresentation(const byte *data, const uint32_t dataSize);
+  bool isTextRecord();
 
  public:
   NdefRecord();

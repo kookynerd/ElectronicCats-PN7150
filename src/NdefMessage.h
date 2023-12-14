@@ -3,7 +3,7 @@
  * Authors:
  *        Francisco Torres - Electronic Cats - electroniccats.com
  *
- *  August 2023
+ * December 2023
  *
  * This code is beerware; if you see me (or any other collaborator
  * member) at the local, and you've found our code helpful,
@@ -21,7 +21,6 @@
 #include "T4T_NDEF_emu.h"
 #include "ndef_helper.h"
 
-#define MAX_NDEF_RECORDS 4
 #define NDEF_HEADER_FLAGS_SINGLE_RECORD 0xD1
 #define NDEF_HEADER_FLAGS_FIRST_RECORD 0x91
 #define NDEF_HEADER_FLAGS_NEXT_RECORD 0x11
@@ -32,9 +31,45 @@
 #define NDEF_STATUS 0x02
 #define NDEF_DEFAULT_LANGUAGE_CODE "en"
 
-class NdefMessage : NdefRecord {
+#define NDEF_URI_NO_PREFIX 0x00
+#define NDEF_URI_HTTP_WWWDOT 0x01
+#define NDEF_URI_HTTPS_WWWDOT 0x02
+#define NDEF_URI_HTTP 0x03
+#define NDEF_URI_HTTPS 0x04
+#define NDEF_URI_TEL 0x05
+#define NDEF_URI_MAILTO 0x06
+#define NDEF_URI_FTP_ANONIMOUS 0x07
+#define NDEF_URI_FTP_FTPDOT 0x08
+#define NDEF_URI_FTPS 0x09
+#define NDEF_URI_SFTP 0x0A
+#define NDEF_URI_SMB 0x0B
+#define NDEF_URI_NFS 0x0C
+#define NDEF_URI_FTP 0x0D
+#define NDEF_URI_DAV 0x0E
+#define NDEF_URI_NEWS 0x0F
+#define NDEF_URI_TELNET 0x10
+#define NDEF_URI_IMAP 0x11
+#define NDEF_URI_RTSP 0x12
+#define NDEF_URI_URN 0x13
+#define NDEF_URI_POP 0x14
+#define NDEF_URI_SIP 0x15
+#define NDEF_URI_SIPS 0x16
+#define NDEF_URI_TFTP 0x17
+#define NDEF_URI_BTSPP 0x18
+#define NDEF_URI_BTL2CAP 0x19
+#define NDEF_URI_BTGOEP 0x1A
+#define NDEF_URI_TCPOBEX 0x1B
+#define NDEF_URI_IRDAOBEX 0x1C
+#define NDEF_URI_FILE 0x1D
+#define NDEF_URI_URN_EPC_ID 0x1E
+#define NDEF_URI_URN_EPC_TAG 0x1F
+#define NDEF_URI_URN_EPC_PAT 0x20
+#define NDEF_URI_URN_EPC_RAW 0x21
+#define NDEF_URI_URN_EPC 0x22
+#define NDEF_URI_URN_NFC 0x23
+
+class NdefMessage {
  private:
-  NdefRecord records[MAX_NDEF_RECORDS];
   static uint8_t recordCounter;
   static unsigned char *content;
   static unsigned short contentSize;
@@ -44,7 +79,6 @@ class NdefMessage : NdefRecord {
   void getNextRecord();
   static String getHexRepresentation(const byte *data, const uint32_t dataSize);
   static String newString;
-  static void addContent(const char *record, unsigned short recordSize);
   void addRecord(NdefRecord record);
   static void updateHeaderFlags();
 

@@ -1,13 +1,13 @@
 /**
  * Example to create a custom NDEF message and send it using the PN7150.
- * 
- * Note: If you know how to create custom NDEF messages, you can use this example, otherwise, use the NDEFSend example.
- * 
+ *
+ * Note: If you know how to create custom NDEF messages, you can use this example, otherwise, use the NDEFSendMessage example.
+ *
  * Authors:
  *        Salvador Mendoza - @Netxing - salmg.net
  *        Francisco Torres - Electronic Cats - electroniccats.com
  *
- *  August 2023
+ * December 2023
  *
  * This code is beerware; if you see me (or any other collaborator
  * member) at the local, and you've found our code helpful,
@@ -28,26 +28,34 @@ Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);  // Creates a gl
 NdefMessage message;
 
 // Three records, "Hello", "world" and Uri "https://www.electroniccats.com"
-const char ndefMessage[] = {0x91,                      // MB/ME/CF/1/IL/TNF
-                            0x01,                      // Type length (1 byte)
-                            0x08,                      // Payload length
-                            'T',                       // Type -> 'T' for text, 'U' for URI
-                            0x02,                      // Status
-                            'e', 'n',                  // Language
-                            'H', 'e', 'l', 'l', 'o',   // Message Payload
-                            0x11,                      // MB/ME/CF/1/IL/TNF
-                            0x01,                      // Type length (1 byte)
-                            0x08,                      // Payload length
-                            'T',                       // Type -> 'T' for text, 'U' for URI
-                            0x02,                      // Status
-                            'e', 'n',                  // Language
-                            'w', 'o', 'r', 'l', 'd',   // Message Payload
-                            0x51,                      // MB/ME/CF/1/IL/TNF
-                            0x01,                      // Type length (1 byte)
-                            0x13,                      // Payload length
-                            'U',                       // Type -> 'T' for text, 'U' for URI
-                            0x02,                      // Status
-                            'e', 'l', 'e', 'c', 't', 'r', 'o', 'n', 'i', 'c', 'c', 'a', 't', 's', '.', 'c', 'o', 'm'};  // Message Payload
+// const char ndefMessage[] = {0x91,                                                                                       // MB/ME/CF/1/IL/TNF
+//                             0x01,                                                                                       // Type length (1 byte)
+//                             0x08,                                                                                       // Payload length
+//                             'T',                                                                                        // Type -> 'T' for text, 'U' for URI
+//                             0x02,                                                                                       // Status
+//                             'e', 'n',                                                                                   // Language
+//                             'H', 'e', 'l', 'l', 'o',                                                                    // Message Payload
+//                             0x11,                                                                                       // MB/ME/CF/1/IL/TNF
+//                             0x01,                                                                                       // Type length (1 byte)
+//                             0x08,                                                                                       // Payload length
+//                             'T',                                                                                        // Type -> 'T' for text, 'U' for URI
+//                             0x02,                                                                                       // Status
+//                             'e', 'n',                                                                                   // Language
+//                             'w', 'o', 'r', 'l', 'd',                                                                    // Message Payload
+//                             0x51,                                                                                       // MB/ME/CF/1/IL/TNF
+//                             0x01,                                                                                       // Type length (1 byte)
+//                             0x13,                                                                                       // Payload length
+//                             'U',                                                                                        // Type -> 'T' for text, 'U' for URI
+//                             0x02,                                                                                       // Status
+//                             'e', 'l', 'e', 'c', 't', 'r', 'o', 'n', 'i', 'c', 'c', 'a', 't', 's', '.', 'c', 'o', 'm'};  // Message Payload
+
+// One uri record "https://www.electroniccats.com"
+const char ndefMessage[] = {0xD1,
+                            0x01,
+                            0x13,
+                            'U',
+                            0x02,
+                            'e', 'l', 'e', 'c', 't', 'r', 'o', 'n', 'i', 'c', 'c', 'a', 't', 's', '.', 'c', 'o', 'm'};
 
 void setup() {
   Serial.begin(9600);
