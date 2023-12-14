@@ -150,14 +150,14 @@ void NdefMessage::addRecord(NdefRecord record) {
   setContent((const char *)newContent, contentSize + record.getContentSize());
 }
 
-void NdefMessage::addTextRecord(String text) {
+void NdefMessage::addTextRecord(String text, String languageCode) {
   NdefRecord record;
   record.setHeaderFlags(NDEF_HEADER_FLAGS_SINGLE_RECORD);
   record.setTypeLength(NDEF_TYPE_LENGTH);
   record.setPayloadSize(text.length() + 3);
   record.setRecordType(NDEF_TEXT_RECORD_TYPE);
   record.setStatus(NDEF_STATUS);
-  record.setLanguageCode(NDEF_DEFAULT_LANGUAGE_CODE);
+  record.setLanguageCode(languageCode);
   record.setPayload(text);
 
 #ifdef DEBUG3
@@ -166,4 +166,8 @@ void NdefMessage::addTextRecord(String text) {
 #endif
 
   addRecord(record);
+}
+
+void NdefMessage::addTextRecord(String text) {
+  addTextRecord(text, NDEF_DEFAULT_LANGUAGE_CODE);
 }

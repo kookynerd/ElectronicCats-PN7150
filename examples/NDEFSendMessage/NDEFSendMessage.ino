@@ -30,11 +30,10 @@ void setup() {
     ;
   Serial.println("Send NDEF Message with PN7150");
 
-  message.addTextRecord("Hello");
-  message.addTextRecord("world");
-  message.addTextRecord("Hola mundo!");
-  message.addTextRecord("Hola");
-  message.addTextRecord("mundo :D");
+  message.addTextRecord("Hello");                    // English by default
+  message.addTextRecord("world", "en");              // English explicitly, the library only supports two letter language codes (ISO 639-1) by now
+  message.addTextRecord("Hola mundo!", "es");        // Spanish explicitly, check a language code table at https://www.science.co.il/language/Locale-codes.php
+  message.addTextRecord("Bonjour le monde!", "fr");  // French explicitly
   nfc.setSendMsgCallback(messageSentCallback);
 
   Serial.println("Initializing...");
