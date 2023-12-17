@@ -87,14 +87,14 @@ void NdefMessage::updateHeaderFlags() {
   uint8_t headersPositions[recordCounter];
   uint8_t recordCounterAux = 0;
 #ifdef DEBUG3
-  Serial.print("Header positions:");
+  Serial.println("Header positions:");
 #endif
   for (uint8_t i = 0; i < contentSize; i++) {
-    if (content[i] == NDEF_TYPE_LENGTH) {  // New record found
+    if (isHeaderByte(content[i])) {  // New record found
 #ifdef DEBUG3
-      Serial.print(" " + String(i - 1));
+      Serial.println("\t" + String(i) + ": " + String(content[i], HEX) + ",");
 #endif
-      headersPositions[recordCounterAux] = i - 1;
+      headersPositions[recordCounterAux] = i;
       recordCounterAux++;
     }
   }
@@ -113,6 +113,10 @@ void NdefMessage::updateHeaderFlags() {
       content[headersPositions[i]] = NDEF_HEADER_FLAGS_LAST_RECORD;
     }
   }
+}
+
+bool NdefMessage::isHeaderByte(unsigned char byte) {
+  return (byte == NDEF_HEADER_FLAGS_SINGLE_RECORD) || (byte == NDEF_HEADER_FLAGS_FIRST_RECORD) || (byte == NDEF_HEADER_FLAGS_NEXT_RECORD) || (byte == NDEF_HEADER_FLAGS_LAST_RECORD);
 }
 
 NdefRecord_t NdefMessage::getRecord() {
@@ -177,7 +181,6 @@ void NdefMessage::addUriRecord(String uri) {
   NdefRecord record;
   record.setHeaderFlags(NDEF_HEADER_FLAGS_SINGLE_RECORD);
   record.setTypeLength(NDEF_TYPE_LENGTH);
-  // record.setPayloadSize(uri.length() + 1);
   record.setRecordType(NDEF_URI_RECORD_TYPE);
 
   if (uri.startsWith("http://www.")) {

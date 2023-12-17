@@ -81,6 +81,7 @@ class NdefMessage {
   static String newString;
   void addRecord(NdefRecord record);
   static void updateHeaderFlags();
+  static bool isHeaderByte(unsigned char byte);
 
  public:
   NdefMessage();
