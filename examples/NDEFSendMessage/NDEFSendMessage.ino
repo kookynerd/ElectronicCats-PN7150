@@ -39,7 +39,11 @@ void setup() {
   message.addTextRecord("Bonjour le monde!", "fr");        // French explicitly
   message.addUriRecord("google.com");                      // No prefix explicitly
   message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
-  // message.addTextRecord("Hello, lorem:50 ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor.", "en");  // English explicitly, the library only supports two letter language codes (ISO 639-1) by now
+  // message.addTextRecord("Hello, lorem:50 ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor.", "en");
+  // message.addTextRecord("lorem:60 ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor.", "en");
+
+  // message.addTextRecord("lorem:70 ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Donec et mollis dolor.", "en");
+
   message.addTextRecord("Hello");                          // English by default
   message.addTextRecord("world", "en");                    // English explicitly, the library only supports two letter language codes (ISO 639-1) by now
   message.addTextRecord("Hola mundo!", "es");              // Spanish explicitly, check a language code table at https://www.science.co.il/language/Locale-codes.php
@@ -47,6 +51,14 @@ void setup() {
   message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
   message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
   message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
+  message.addUriRecord("h.com");
+  message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
+  message.addUriRecord("h.co");
+  // message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
+  // message.addTextRecord("Hello world, this is a test, this is a test");                          // English by default
+  // message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
+  // message.addTextRecord("Hello");                          // English by default
+
   // message.addUriRecord("http://test2.com");
   // message.addUriRecord("https://test3.com");
   // message.addUriRecord("tel:test4");

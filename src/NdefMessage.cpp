@@ -79,28 +79,32 @@ void NdefMessage::setContent(const char *content, unsigned short contentSize) {
   NdefMessage::updateHeaderFlags();
 #ifdef DEBUG3
   Serial.println(NdefMessage::getHexRepresentation((byte *)content, (uint32_t)contentSize));
+  Serial.println();
 #endif
   T4T_NDEF_EMU_SetMsg(content, contentSize);
 }
 
 void NdefMessage::updateHeaderFlags() {
   uint8_t headersPositions[recordCounter];
+  uint8_t previousHeaders[recordCounter];
   uint8_t recordCounterAux = 0;
 #ifdef DEBUG3
   Serial.println("Header positions:");
 #endif
   for (uint8_t i = 0; i < contentSize; i++) {
+    if (recordCounterAux == recordCounter) {
+      break;
+    }
+
     if (isHeaderByte(content[i])) {  // New record found
 #ifdef DEBUG3
       Serial.println("\t" + String(i) + ": " + String(content[i], HEX) + ",");
 #endif
+      previousHeaders[recordCounterAux] = content[i];
       headersPositions[recordCounterAux] = i;
       recordCounterAux++;
     }
   }
-#ifdef DEBUG3
-  Serial.println();
-#endif
 
   for (uint8_t i = 0; i < recordCounter; i++) {
     if (i == 0) {
@@ -113,6 +117,13 @@ void NdefMessage::updateHeaderFlags() {
       content[headersPositions[i]] = NDEF_HEADER_FLAGS_LAST_RECORD;
     }
   }
+
+#ifdef DEBUG3
+  for (uint8_t i = 0; i < recordCounter; i++) {
+    Serial.print("Header: " + String(previousHeaders[i], HEX) + " -> ");
+    Serial.println(String(content[headersPositions[i]], HEX));
+  }
+#endif
 }
 
 bool NdefMessage::isHeaderByte(unsigned char byte) {
@@ -147,13 +158,23 @@ bool NdefMessage::hasRecord() {
 }
 
 void NdefMessage::addRecord(NdefRecord record) {
-  recordCounter++;
-
 #ifdef DEBUG3
   Serial.println("Record size: " + String(record.getContentSize()));
 #endif
 
-  NdefMessage::newContent = new unsigned char[contentSize + record.getContentSize()];
+  uint16_t newSize = contentSize + record.getContentSize();
+
+  if (newSize >= 249) {
+#ifdef DEBUG3
+    Serial.println("NDEF message is full");
+#endif
+    updateHeaderFlags();
+    return;
+  }
+
+  recordCounter++;
+
+  NdefMessage::newContent = new unsigned char[newSize];
   memcpy(newContent, content, contentSize);
   memcpy(newContent + contentSize, record.getContent(), record.getContentSize());
   setContent((const char *)newContent, contentSize + record.getContentSize());
