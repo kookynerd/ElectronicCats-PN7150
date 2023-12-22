@@ -33,37 +33,50 @@ void setup() {
     ;
   Serial.println("Send NDEF Message with PN7150");
 
-  message.addTextRecord("Hello");                          // English by default
-  message.addTextRecord("world", "en");                    // English explicitly, the library only supports two letter language codes (ISO 639-1) by now
-  message.addTextRecord("Hola mundo!", "es");              // Spanish explicitly, check a language code table at https://www.science.co.il/language/Locale-codes.php
-  message.addTextRecord("Bonjour le monde!", "fr");        // French explicitly
-  message.addUriRecord("google.com");                      // No prefix explicitly
-  message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
-  // message.addTextRecord("Hello, lorem:50 ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor.", "en");
-  // message.addTextRecord("lorem:60 ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor.", "en");
-
-  // message.addTextRecord("lorem:70 ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Donec et mollis dolor.", "en");
-
-  message.addTextRecord("Hello");                          // English by default
-  message.addTextRecord("world", "en");                    // English explicitly, the library only supports two letter language codes (ISO 639-1) by now
-  message.addTextRecord("Hola mundo!", "es");              // Spanish explicitly, check a language code table at https://www.science.co.il/language/Locale-codes.php
-  message.addTextRecord("Bonjour le monde!", "fr");        // French explicitly
-  message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
-  message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
-  message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
-  message.addUriRecord("h.com");
-  message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
-  message.addUriRecord("h.co");
-  // message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
-  // message.addTextRecord("Hello world, this is a test, this is a test");                          // English by default
-  // message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
   // message.addTextRecord("Hello");                          // English by default
+  // message.addTextRecord("world", "en");                    // English explicitly, the library only supports two letter language codes (ISO 639-1) by now
+  // message.addTextRecord("Hola mundo!", "es");              // Spanish explicitly, check a language code table at https://www.science.co.il/language/Locale-codes.php
+  // message.addTextRecord("Bonjour le monde!", "fr");        // French explicitly
+  // message.addUriRecord("google.com");                      // No prefix explicitly
+  // message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
 
-  // message.addUriRecord("http://test2.com");
-  // message.addUriRecord("https://test3.com");
-  // message.addUriRecord("tel:test4");
-  // message.addUriRecord("http://www.test2.com");
-  // message.addUriRecord("https://www.test2.com");
+  message.addUriRecord("google.com");
+  message.addUriRecord("http://www.test1.com");
+  message.addUriRecord("https://www.test2.com");
+  message.addUriRecord("tel:123456789");
+  message.addUriRecord("mailto:deimoshallgmail.com");  // TODO: check @ problem
+  message.addUriRecord("ftp://anonymous:anonymous@test5");
+  message.addUriRecord("ftp://ftp.test6");
+  // message.addUriRecord("ftps://test7");
+  // message.addUriRecord("sftp://test8");
+  // message.addUriRecord("smb://test9");
+  // message.addUriRecord("nfs://test10");
+  // message.addUriRecord("ftp://test11");
+  // message.addUriRecord("dav://test12");
+  // message.addUriRecord("news:test13");
+  // message.addUriRecord("telnet://test14");
+  // message.addUriRecord("imap://test15");
+  // message.addUriRecord("rtsp://test16");
+  message.addUriRecord("urn:test17");
+  // message.addUriRecord("pop:test18");
+  // message.addUriRecord("sip:test19");
+  // message.addUriRecord("sips:test20");
+  // message.addUriRecord("tftp://test21");
+  // message.addUriRecord("btspp://test22");
+  // message.addUriRecord("btl2cap://test23");
+  // message.addUriRecord("btgoep://test24");
+  // message.addUriRecord("tcpobex://test25");
+  // message.addUriRecord("irdaobex://test26");
+  // message.addUriRecord("file://test27");
+
+  // message.addUriRecord("urn:epc:id:sgtin:0614141.107346.1");
+
+  message.addUriRecord("urn:epc:id:test28");
+  message.addUriRecord("urn:epc:tag:test29");
+  message.addUriRecord("urn:epc:pat:sgtin96:3.0614141.812345.6789");
+  message.addUriRecord("urn:epc:raw:test30");
+  message.addUriRecord("urn:epc:test31");
+  message.addUriRecord("urn:nfc:test32");
   nfc.setSendMsgCallback(messageSentCallback);
 
   Serial.println("Initializing...");

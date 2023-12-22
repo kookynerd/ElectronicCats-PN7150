@@ -276,10 +276,6 @@ void NdefMessage::addUriRecord(String uri) {
     record.setStatus(NDEF_URI_RTSP);
     record.setPayload(uri.substring(7).c_str());
     record.setPayloadSize(uri.length() - 7 + statusLength);
-  } else if (uri.startsWith("urn:")) {
-    record.setStatus(NDEF_URI_URN);
-    record.setPayload(uri.substring(4).c_str());
-    record.setPayloadSize(uri.length() - 4 + statusLength);
   } else if (uri.startsWith("pop:")) {
     record.setStatus(NDEF_URI_POP);
     record.setPayload(uri.substring(4).c_str());
@@ -344,6 +340,10 @@ void NdefMessage::addUriRecord(String uri) {
     record.setStatus(NDEF_URI_URN_NFC);
     record.setPayload(uri.substring(8).c_str());
     record.setPayloadSize(uri.length() - 8 + statusLength);
+  } else if (uri.startsWith("urn:")) {
+    record.setStatus(NDEF_URI_URN);
+    record.setPayload(uri.substring(4).c_str());
+    record.setPayloadSize(uri.length() - 4 + statusLength);
   } else {
     record.setStatus(NDEF_URI_NO_PREFIX);
     record.setPayload(uri);
