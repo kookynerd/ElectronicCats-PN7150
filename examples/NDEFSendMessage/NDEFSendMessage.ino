@@ -38,7 +38,7 @@ void setup() {
   message.addTextRecord("Bonjour le monde!", "fr");        // French explicitly
   message.addUriRecord("google.com");                      // No prefix explicitly
   message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
-  message.addMimeMediaRecord("application/vnd.wfa.wsc", "Wi-Fi Easy Connect");
+  // message.addMimeMediaRecord("application/vnd.wfa.wsc", "Wi-Fi Easy Connect");
   message.addUriRecord("tel:1234567890");
   message.addUriRecord("mailto:deimoshallgmail.com");  // TODO: check @ problem
   nfc.setSendMsgCallback(messageSentCallback);
