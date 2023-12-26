@@ -96,6 +96,7 @@ class NdefMessage {
   void addTextRecord(String text);
   void addTextRecord(String text, String languageCode);
   void addUriRecord(String uri);
+  void addMimeMediaRecord(String mimeType, String payload);
 };
 
 #endif
