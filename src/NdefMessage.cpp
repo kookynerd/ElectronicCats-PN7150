@@ -352,3 +352,5 @@ void NdefMessage::addUriRecord(String uri) {
 
   addRecord(record);
 }
+
+

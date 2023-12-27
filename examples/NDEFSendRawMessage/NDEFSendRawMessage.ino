@@ -57,82 +57,12 @@ NdefMessage message;
 //                             0x02,
 //                             'e', 'l', 'e', 'c', 't', 'r', 'o', 'n', 'i', 'c', 'c', 'a', 't', 's', '.', 'c', 'o', 'm'};
 
-// const char ndefMessage[] = {0xD1, 0x02, 0x1A, 'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'v', 'n', 'd', '.', 'w', 'f', 'a', '.', 'w', 's', 'c', 0x01, 0x00, 0x00, 0x00, 0x04, 't', 'e', 's', 't', 0x00, 0x00, 0x00, 0x01, 0x00, 'p', 'a', 's', 's', 'w', 'o', 'r', 'd'};
-// One media record of type "application/vnd.wfa.wsc", with network name = test, Authentication type = OPEN, Encription type = WEP, Password = password
-// D2 17 29 61 70 70 6C 69 63 61 74 69 6F 6E 2F 76 6E 64 2E 77 66 61 2E 77 73 63 10 0E 00 36 10 26 00 01 01 10 45 00 04 74 65 73 74 10 03 00 02 00 01 10 0F 00 02 00 01 10 27 00 08 70 61 73 73 77 6F 72 64
-// const char ndefMessage[] = {0xD2,
-//                             0x17,
-//                             0x29,
-//                             0x61,
-//                             0x70,
-//                             0x70,
-//                             0x6C,
-//                             0x69,
-//                             0x63,
-//                             0x61,
-//                             0x74,
-//                             0x69,
-//                             0x6F,
-//                             0x6E,
-//                             0x2F,
-//                             0x76,
-//                             0x6E,
-//                             0x64,
-//                             0x2E,
-//                             0x77,
-//                             0x66,
-//                             0x61,
-//                             0x2E,
-//                             0x77,
-//                             0x73,
-//                             0x63,
-//                             0x10,
-//                             0x0E,
-//                             0x00,
-//                             0x36,
-//                             0x10,
-//                             0x26,
-//                             0x00,
-//                             0x01,
-//                             0x01,
-//                             0x10,
-//                             0x45,
-//                             0x00,
-//                             0x04,
-//                             0x74,
-//                             0x65,
-//                             0x73,
-//                             0x74,
-//                             0x10,
-//                             0x03,
-//                             0x00,
-//                             0x02,
-//                             0x00,
-//                             0x01,
-//                             0x10,
-//                             0x0F,
-//                             0x00,
-//                             0x02,
-//                             0x00,
-//                             0x01,
-//                             0x10,
-//                             0x27,
-//                             0x00,
-//                             0x08,
-//                             0x70,
-//                             0x61,
-//                             0x73,
-//                             0x73,
-//                             0x77,
-//                             0x6F,
-//                             0x72,
-//                             0x64};
-// D2:17:29:61:61:70:70:6C:69:63:61:74:69:6F:6E:2F:76:6E:64:2E:77:66:61:2E:77:73:63:10:0E:00:36:10:26:00:01:01:10:45:00:04:74:65:73:74:10:03:00:02:00:01:10:0F:00:02:00:01:10:27:00:08:70:61:73:73:77:6F:72:64
+// One media record of type "application/vnd.wfa.wsc", with network name = test, Authentication type = OPEN, Encription type = AES, Password = password
 const char ndefMessage[] = {
-    0xD2,
-    0X17,
-    0x29,
-    'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'v', 'n', 'd', '.', 'w', 'f', 'a', '.', 'w', 's', 'c',
+    0xD2,                                                                                                               // MB/ME/CF/1/IL/TNF
+    0X17,                                                                                                               // Type length
+    0x2A,                                                                                                               // Payload length
+    'a', 'p', 'p', 'l', 'i', 'c', 'a', 't', 'i', 'o', 'n', '/', 'v', 'n', 'd', '.', 'w', 'f', 'a', '.', 'w', 's', 'c',  // Type
     0x10,
     0x0E,
     0x00,
@@ -145,25 +75,26 @@ const char ndefMessage[] = {
     0x10,
     0x45,
     0x00,
-    0x04,
-    't', 'e', 's', 't',
+    0x09,  // Length of the Network Name attribute
+    // 't', 'e', 's', 't', 's',
+    'B', 'o', 'm', 'b', 'e', 'r', 'c', 'a', 't',
     0x10,
     0x03,
     0x00,
-    0x02,
+    0x02,  // Length of the Authentication Type attribute
     0x00,
-    0x01,
+    0x01,  // Value for Authentication type
     0x10,
     0x0F,
     0x00,
-    0x02,
+    0x02,  // Length of the Encryption Type attribute
     0x00,
-    0x01,
+    0x01,  // Value for Encryption type
     0x10,
     0x27,
     0x00,
-    0x08,
-    'p', 'a', 's', 's', 'w', 'o', 'r', 'd'};
+    0x04,  // Length of the Network Key attribute
+    'p', 'a', 's', 's'};
 
 void setup() {
   Serial.begin(9600);

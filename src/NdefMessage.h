@@ -21,10 +21,19 @@
 #include "T4T_NDEF_emu.h"
 #include "ndef_helper.h"
 
-#define NDEF_HEADER_FLAGS_SINGLE_RECORD 0xD1
-#define NDEF_HEADER_FLAGS_FIRST_RECORD 0x91
-#define NDEF_HEADER_FLAGS_NEXT_RECORD 0x11
-#define NDEF_HEADER_FLAGS_LAST_RECORD 0x51
+/*
+ * MB = Message Begin
+ * ME = Message End
+ * CF = Chunk Flag
+ * SR = Short Record
+ * IL = ID Length present
+ * TNF = Type Name Format
+ */
+#define NDEF_HEADER_FLAGS_SINGLE_RECORD 0xD1        // 1101 0001 -> MB = 1, ME = 1, CF = 0, SR = 1, IL = 0, TNF = 001
+#define NDEF_HEADER_FLAGS_SINGLE_MEDIA_RECORD 0xD2  // 1101 0010 -> MB = 1, ME = 1, CF = 0, SR = 1, IL = 0, TNF = 010
+#define NDEF_HEADER_FLAGS_FIRST_RECORD 0x91         // 1001 0001 -> MB = 1, ME = 0, CF = 0, SR = 1, IL = 0, TNF = 001
+#define NDEF_HEADER_FLAGS_NEXT_RECORD 0x11          // 0001 0001 -> MB = 0, ME = 0, CF = 0, SR = 1, IL = 0, TNF = 001
+#define NDEF_HEADER_FLAGS_LAST_RECORD 0x51          // 0101 0001 -> MB = 0, ME = 1, CF = 0, SR = 1, IL = 0, TNF = 001
 #define NDEF_TYPE_LENGTH 0x01
 #define NDEF_TEXT_RECORD_TYPE 'T'
 #define NDEF_URI_RECORD_TYPE 'U'
@@ -67,6 +76,20 @@
 #define NDEF_URI_URN_EPC_RAW 0x21
 #define NDEF_URI_URN_EPC 0x22
 #define NDEF_URI_URN_NFC 0x23
+
+// WiFi authentication types
+#define WIFI_AUTH_OPEN 0x01
+#define WIFI_AUTH_WPA_PERSONAL 0x02
+#define WIFI_AUTH_SHARED 0x04
+#define WIFI_AUTH_WPA_ENTERPRISE 0x08
+#define WIFI_AUTH_WPA2_ENTERPRISE 0x10
+#define WIFI_AUTH_WPA2_PERSONAL 0x20
+
+// WiFi encryption types
+#define WIFI_ENCRYPT_NONE 0x01
+#define WIFI_ENCRYPT_WEP 0x02
+#define WIFI_ENCRYPT_TKIP 0x04
+#define WIFI_ENCRYPT_AES 0x08
 
 class NdefMessage {
  private:
