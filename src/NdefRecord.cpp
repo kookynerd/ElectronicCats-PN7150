@@ -19,7 +19,7 @@ NdefRecord::NdefRecord() {
   this->payload = NULL;
   this->payloadSize = 0;
   this->typeLength = 0;
-  this->recordType = 0;
+  this->wellKnownType = 0;
   this->status = 0;
   this->languageCode = 0;
   this->newString = "null";
@@ -73,6 +73,10 @@ unsigned char *NdefRecord::getPayload() {
 }
 
 unsigned short NdefRecord::getPayloadSize() {
+  if ((headerFlags & NDEF_RECORD_TNF_MASK) == NDEF_MEDIA) {
+    return this->payloadSize;
+  }
+
   if (isTextRecord()) {
     return this->payloadSize;
   } else {
@@ -253,10 +257,19 @@ void NdefRecord::setPayload(String payload) {
 #ifdef DEBUG3
   Serial.println("Payload: '" + payload + "'");
 #endif
+
   this->payload = new unsigned char[payload.length()];
   strcpy((char *)this->payload, payload.c_str());
+
 #ifdef DEBUG3
   // Serial.println("Payload: '" + getHexRepresentation(this->payload, length) + "'");
+#endif
+}
+
+void NdefRecord::setPayload(const char *payload, unsigned short payloadLength) {
+  this->payload = (unsigned char *)payload;
+#ifdef DEBUG3
+  Serial.println("Payload: '" + getHexRepresentation(this->payload, payloadSize) + "'");
 #endif
 }
 
@@ -268,8 +281,13 @@ void NdefRecord::setTypeLength(uint8_t typeLength) {
   this->typeLength = typeLength;
 }
 
-void NdefRecord::setRecordType(uint8_t recordType) {
-  this->recordType = recordType;
+void NdefRecord::setRecordType(uint8_t wellKnownType) {
+  this->wellKnownType = wellKnownType;
+}
+
+void NdefRecord::setRecordType(String type) {
+  this->mimeMediaType = new unsigned char[type.length()];
+  strcpy((char *)this->mimeMediaType, type.c_str());
 }
 
 void NdefRecord::setStatus(uint8_t status) {
@@ -286,13 +304,13 @@ void NdefRecord::setPayloadSize(uint8_t payloadSize) {
   this->payloadSize = payloadSize;
 }
 
-const char *NdefRecord::getContent() {
+const char *NdefRecord::getWellKnownContent() {
   char *recordContent = new char[getPayloadSize()];
 
   recordContent[0] = headerFlags;
   recordContent[1] = typeLength;
   recordContent[2] = payloadSize;
-  recordContent[3] = recordType;
+  recordContent[3] = wellKnownType;
   recordContent[4] = status;
 
   if (isTextRecord()) {
@@ -308,14 +326,50 @@ const char *NdefRecord::getContent() {
     }
   }
 
-#ifdef DEBUG3
-  Serial.println("Payload size: " + String(getPayloadSize()));
-#endif
+  return recordContent;
+}
+
+const char *NdefRecord::getMimeMediaContent() {
+  char *recordContent = new char[getPayloadSize()];
+
+  recordContent[0] = headerFlags;
+  recordContent[1] = typeLength;
+  recordContent[2] = payloadSize;
+
+  for (int i = 0; i < typeLength; i++) {
+    recordContent[i + 3] = mimeMediaType[i];
+  }
+
+  for (int i = 0; i < getPayloadSize(); i++) {
+    recordContent[i + 3 + typeLength] = payload[i];
+  }
 
   return recordContent;
 }
 
+const char *NdefRecord::getContent() {
+#ifdef DEBUG3
+  Serial.println("Payload size: " + String(getPayloadSize()));
+#endif
+
+  // Search in the last 3 bits of headerFlags
+  if ((headerFlags & NDEF_RECORD_TNF_MASK) == NDEF_WELL_KNOWN) {
+    Serial.println("Well known record");
+    return getWellKnownContent();
+  } else if ((headerFlags & NDEF_RECORD_TNF_MASK) == NDEF_MEDIA) {
+    Serial.println("Media record");
+    return getMimeMediaContent();
+  } else {
+    Serial.println("Unknown record");
+    return NULL;
+  }
+}
+
 unsigned short NdefRecord::getContentSize() {
+  if ((headerFlags & NDEF_RECORD_TNF_MASK) == NDEF_MEDIA) {
+    return getPayloadSize() + typeLength + 3;  // 3 bytes for header, type length and payload length
+  }
+
   if (isTextRecord()) {
     return getPayloadSize() + 4;  // 4 bytes for header, type length, payload length and record type
   } else {

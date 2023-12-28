@@ -172,6 +172,13 @@ void NdefMessage::addRecord(NdefRecord record) {
     return;
   }
 
+  if (record.getContent() == NULL) {
+#ifdef DEBUG3
+    Serial.println("Record content is NULL");
+#endif
+    return;
+  }
+
   recordCounter++;
 
   NdefMessage::newContent = new unsigned char[newSize];
@@ -353,4 +360,13 @@ void NdefMessage::addUriRecord(String uri) {
   addRecord(record);
 }
 
+void NdefMessage::addMimeMediaRecord(String mimeType, const char *payload, unsigned short payloadSize) {
+  NdefRecord record;
+  record.setHeaderFlags(NDEF_HEADER_FLAGS_SINGLE_MEDIA_RECORD);
+  record.setTypeLength(mimeType.length());
+  record.setPayloadSize(payloadSize);
+  record.setRecordType(mimeType);
+  record.setPayload(payload, payloadSize);
 
+  addRecord(record);
+}

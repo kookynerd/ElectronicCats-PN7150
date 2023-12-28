@@ -31,7 +31,8 @@ class NdefRecord {
   uint8_t headerFlags;
   uint8_t typeLength;
   unsigned short payloadSize;
-  uint8_t recordType;
+  uint8_t wellKnownType;
+  unsigned char *mimeMediaType;
   uint8_t status;
   unsigned char *languageCode;
   unsigned char *payload;
@@ -39,6 +40,8 @@ class NdefRecord {
   bool textRecord;
   String getHexRepresentation(const byte *data, const uint32_t dataSize);
   bool isTextRecord();
+  const char *getWellKnownContent();
+  const char *getMimeMediaContent();
 
  public:
   NdefRecord();
@@ -59,9 +62,11 @@ class NdefRecord {
   String getVCardContent();
   String getUri();
   void setPayload(String payload);
+  void setPayload(const char *payload, unsigned short payloadLength);
   void setHeaderFlags(uint8_t headerFlags);
   void setTypeLength(uint8_t typeLength);
-  void setRecordType(uint8_t recordType);
+  void setRecordType(uint8_t wellKnownType);
+  void setRecordType(String type);
   void setStatus(uint8_t status);
   void setLanguageCode(String languageCode);
   void setPayloadSize(uint8_t payloadSize);
