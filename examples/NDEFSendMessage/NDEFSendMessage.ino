@@ -44,7 +44,7 @@ void setup() {
   String encryptionType = "AES";
   String password = "Password";
   message.addWiFiRecord(ssid, authentificationType, encryptionType, password);
-  // message.addUriRecord("mailto:deimoshallgmail.com");  // TODO: check @ problem
+  message.addUriRecord("mailto:deimoshall@gmail.com");
   nfc.setSendMsgCallback(messageSentCallback);
 
   Serial.println("Initializing...");

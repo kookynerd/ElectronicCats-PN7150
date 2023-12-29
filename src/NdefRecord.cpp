@@ -259,10 +259,11 @@ void NdefRecord::setPayload(String payload) {
 #endif
 
   this->payload = new unsigned char[payload.length()];
-  strcpy((char *)this->payload, payload.c_str());
+  strncpy((char *)this->payload, payload.c_str(), payload.length());
 
 #ifdef DEBUG3
-  // Serial.println("Payload: '" + getHexRepresentation(this->payload, length) + "'");
+  Serial.println("Payload length: " + String(length));
+  Serial.println("Payload: '" + getHexRepresentation(this->payload, length) + "'");
 #endif
 }
 
