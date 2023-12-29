@@ -108,6 +108,8 @@ class NdefMessage {
   void addRecord(NdefRecord record);
   static void updateHeaderFlags();
   static bool isHeaderByte(unsigned char byte);
+  uint8_t getWiFiAuthenticationType(String authenticationType);
+  uint8_t getWiFiEncryptionType(String encryptionType);
 
  public:
   NdefMessage();
@@ -123,6 +125,7 @@ class NdefMessage {
   void addTextRecord(String text, String languageCode);
   void addUriRecord(String uri);
   void addMimeMediaRecord(String mimeType, const char *payload, unsigned short payloadSize);
+  void addWiFiRecord(String ssid, String authenticationType, String encryptionType, String password);
 };
 
 #endif

@@ -23,7 +23,7 @@
  */
 // #define DEBUG
 // #define DEBUG2
-// #define DEBUG3
+#define DEBUG3
 
 class NdefRecord {
  private:

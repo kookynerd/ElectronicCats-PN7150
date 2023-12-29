@@ -106,6 +106,7 @@ void NdefMessage::updateHeaderFlags() {
     }
   }
 
+  // TODO: refactor this to make it more generic
   for (uint8_t i = 0; i < recordCounter; i++) {
     if (i == 0) {
       if ((content[headersPositions[i]] & NDEF_RECORD_TNF_MASK) == NDEF_WELL_KNOWN) {
@@ -390,4 +391,94 @@ void NdefMessage::addMimeMediaRecord(String mimeType, const char *payload, unsig
   record.setPayload(payload, payloadSize);
 
   addRecord(record);
+}
+
+void NdefMessage::addWiFiRecord(String ssid, String authenticationType, String encryptionType, String password) {
+  NdefRecord record;
+  String mimeType = "application/vnd.wfa.wsc";
+  unsigned char *payload = new unsigned char[ssid.length() + password.length() + 29];  // TODO: 29 must be calculated
+
+  payload[0] = 0x10;
+  payload[1] = 0x0E;
+  payload[2] = 0x00;
+  payload[3] = 0x36;
+  payload[4] = 0x10;
+  payload[5] = 0x26;
+  payload[6] = 0x00;
+  payload[7] = 0x01;
+  payload[8] = 0x01;
+  payload[9] = 0x10;
+  payload[10] = 0x45;
+  payload[11] = 0x00;
+  payload[12] = ssid.length();
+  for (int i = 0; i < ssid.length(); i++) {
+    payload[13 + i] = ssid[i];
+  }
+  payload[13 + ssid.length()] = 0x10;
+  payload[14 + ssid.length()] = 0x03;
+  payload[15 + ssid.length()] = 0x00;
+  payload[16 + ssid.length()] = 0x02;
+  payload[17 + ssid.length()] = 0x00;
+  payload[18 + ssid.length()] = getWiFiAuthenticationType(authenticationType);
+  payload[19 + ssid.length()] = 0x10;
+  payload[20 + ssid.length()] = 0x0F;
+  payload[21 + ssid.length()] = 0x00;
+  payload[22 + ssid.length()] = 0x02;
+  payload[23 + ssid.length()] = 0x00;
+  payload[24 + ssid.length()] = getWiFiEncryptionType(encryptionType);
+  payload[25 + ssid.length()] = 0x10;
+  payload[26 + ssid.length()] = 0x27;
+  payload[27 + ssid.length()] = 0x00;
+  payload[28 + ssid.length()] = password.length();
+  for (int i = 0; i < password.length(); i++) {
+    payload[29 + ssid.length() + i] = password[i];
+  }
+
+  record.setHeaderFlags(NDEF_HEADER_FLAGS_SINGLE_MEDIA_RECORD);
+  record.setTypeLength(mimeType.length());
+  record.setPayloadSize(ssid.length() + password.length() + 29);  // TODO: 29 must be calculated
+  record.setRecordType(mimeType);
+  record.setPayload((const char *)payload, sizeof(payload));
+
+  addRecord(record);
+}
+
+uint8_t NdefMessage::getWiFiAuthenticationType(String authenticationType) {
+  uint8_t authenticationTypeValue = 0x00;
+  authenticationType.trim();
+  authenticationType.toUpperCase();
+
+  if (authenticationType == "OPEN") {
+    authenticationTypeValue = WIFI_AUTH_OPEN;
+  } else if (authenticationType == "WPA PERSONAL") {
+    authenticationTypeValue = WIFI_AUTH_WPA_PERSONAL;
+  } else if (authenticationType == "SHARED") {
+    authenticationTypeValue = WIFI_AUTH_SHARED;
+  } else if (authenticationType == "WPA ENTERPRISE") {
+    authenticationTypeValue = WIFI_AUTH_WPA_ENTERPRISE;
+  } else if (authenticationType == "WPA2 ENTERPRISE") {
+    authenticationTypeValue = WIFI_AUTH_WPA2_ENTERPRISE;
+  } else if (authenticationType == "WPA2 PERSONAL") {
+    authenticationTypeValue = WIFI_AUTH_WPA2_PERSONAL;
+  }
+
+  return authenticationTypeValue;
+}
+
+uint8_t NdefMessage::getWiFiEncryptionType(String encryptionType) {
+  uint8_t encryptionTypeValue = 0x00;
+  encryptionType.trim();
+  encryptionType.toUpperCase();
+
+  if (encryptionType == "NONE") {
+    encryptionTypeValue = WIFI_ENCRYPT_NONE;
+  } else if (encryptionType == "WEP") {
+    encryptionTypeValue = WIFI_ENCRYPT_WEP;
+  } else if (encryptionType == "TKIP") {
+    encryptionTypeValue = WIFI_ENCRYPT_TKIP;
+  } else if (encryptionType == "AES") {
+    encryptionTypeValue = WIFI_ENCRYPT_AES;
+  }
+
+  return encryptionTypeValue;
 }
