@@ -37,14 +37,15 @@ void setup() {
   message.addTextRecord("Hola mundo!", "es");              // Spanish explicitly, check a language code table at https://www.science.co.il/language/Locale-codes.php
   message.addTextRecord("Bonjour le monde!", "fr");        // French explicitly
   message.addUriRecord("google.com");                      // No prefix explicitly
-  message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
-  message.addUriRecord("tel:1234567890");
+  message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly
+  message.addUriRecord("tel:1234567890");                  // The library can handle all the prefixes listed at https://github.com/ElectronicCats/ElectronicCats-PN7150/blob/refactor/API.md##uri-prefixes
   String ssid = "Bomber Cat";
   String authentificationType = "WPA2 PERSONAL";
   String encryptionType = "AES";
   String password = "Password";
   message.addWiFiRecord(ssid, authentificationType, encryptionType, password);
   message.addUriRecord("mailto:deimoshall@gmail.com");
+  message.addMimeMediaRecord("text/plain", "Hello world!", 12);
   nfc.setSendMsgCallback(messageSentCallback);
 
   Serial.println("Initializing...");

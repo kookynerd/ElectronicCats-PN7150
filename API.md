@@ -10,7 +10,6 @@ Include and instantiate the Electroniccats_PN7150 class. Creates a global NFC de
 #include <Electroniccats_PN7150.h>
 
 Electroniccats_PN7150 nfc(PN7150_IRQ, PN7150_VEN, PN7150_ADDR);
-
 ```
 
 - `uint8_t PN7150_IRQ`: IRQ pin for data interrupt.
@@ -1255,12 +1254,12 @@ void setup() {
 }
 ```
 
-### Method: `getContentSize`
+### Method: `getContentLength`
 
-Get the content size of the message.
+Get the content length of the message.
 
 ```cpp
-static unsigned short getContentSize();
+static unsigned short getContentLength();
 ```
 
 ### Method: `getContent`
@@ -1276,7 +1275,7 @@ static unsigned char *getContent();
 Set the content of the message.
 
 ```cpp
-static void setContent(unsigned char *content, unsigned short contentSize);
+static void setContent(unsigned char *content, unsigned short contentLength);
 ```
 
 ### Method: `getRecord`
@@ -1293,7 +1292,7 @@ The record is a structure that contains the following properties:
 typedef struct {
   NdefRecordType_e recordType;
   unsigned char *recordPayload;
-  unsigned int recordPayloadSize;
+  unsigned int recordPayloadLength;
 } NdefRecord_t;
 ```
 
@@ -1349,6 +1348,75 @@ bool hasRecord();
 if (message.hasRecord()) {
   Serial.println("The message has a record!");
 }
+```
+
+### Method: `addTextRecord`
+
+Adds a text record to the message.
+
+```cpp
+void addTextRecord(String text);
+```
+
+#### Example 1
+
+```cpp
+message.addTextRecord("Hello");  // English by default
+```
+
+#### Example 2
+
+```cpp
+// English explicitly, the library only supports two letter language codes (ISO 639-1) by now
+message.addTextRecord("world", "en");
+```
+
+### Method: `addUriRecord`
+
+Adds a URI record to the message.
+
+```cpp
+void addUriRecord(String uri);
+```
+
+#### Example
+
+```cpp
+message.addUriRecord("https://www.electroniccats.com/");
+```
+
+See [URI prefixes](#uri-prefixes) for a list of all the prefixes that can be used.
+
+### Method: `addMimeMediaRecord`
+
+Adds a MIME media record to the message.
+
+```cpp
+void addMimeMediaRecord(String mimeType, const char *payload, unsigned short payloadLength);
+```
+
+#### Example
+
+```cpp
+message.addMimeMediaRecord("text/plain", "Hello world!", 12);
+```
+
+### Method: `addWiFiRecord`
+
+Adds a WiFi record to the message.
+
+```cpp
+void addWiFiRecord(String ssid, String authenticationType, String encryptionType, String password);
+```
+
+#### Example
+
+```cpp
+String ssid = "Bomber Cat";
+String authentificationType = "WPA2 PERSONAL";
+String encryptionType = "AES";
+String password = "Password";
+message.addWiFiRecord(ssid, authentificationType, encryptionType, password);
 ```
 
 ## Class NdefRecord
@@ -1436,12 +1504,12 @@ typedef enum {
 } NdefRecordType_e;
 ```
 
-### Method: `getPayloadSize`
+### Method: `getPayloadLength`
 
-Get the payload size of the record.
+Get the payload length of the record.
 
 ```cpp
-unsigned short getPayloadSize();
+unsigned short getPayloadLength();
 ```
 
 ### Method: `getPayload`
@@ -1456,7 +1524,7 @@ unsigned char *getPayload();
 
 ```cpp
 Serial.print("Payload: ");
-for (int i = 0; i < record.getPayloadSize(); i++) {
+for (int i = 0; i < record.getPayloadLength(); i++) {
   Serial.print(record.getPayload()[i], HEX);
   Serial.print(" ");
 }
@@ -1597,3 +1665,48 @@ String getUri();
 Serial.print("URI: ");
 Serial.println(record.getUri());
 ```
+
+## Appendix
+
+### URI prefixes
+
+Here is a list of all the prefixes that can be used with the [`addUriRecord`](#method-addurirecord) method.
+
+| Prefix | Meaning |
+| --- | --- |
+| `0x00` | No prepending is done, the URI is encoded in its entirety in the record payload |
+| `0x01` | `http://www.` |
+| `0x02` | `https://www.` |
+| `0x03` | `http://` |
+| `0x04` | `https://` |
+| `0x05` | `tel:` |
+| `0x06` | `mailto:` |
+| `0x07` | `ftp://anonymous:anonymous@` |
+| `0x08` | `ftp://ftp.` |
+| `0x09` | `ftps://` |
+| `0x0A` | `sftp://` |
+| `0x0B` | `smb://` |
+| `0x0C` | `nfs://` |
+| `0x0D` | `ftp://` |
+| `0x0E` | `dav://` |
+| `0x0F` | `news:` |
+| `0x10` | `telnet://` |
+| `0x11` | `imap:` |
+| `0x12` | `rtsp:` |
+| `0x13` | `urn:` |
+| `0x14` | `pop:` |
+| `0x15` | `sip:` |
+| `0x16` | `sips:` |
+| `0x17` | `tftp:` |
+| `0x18` | `btspp://` |
+| `0x19` | `btl2cap://` |
+| `0x1A` | `btgoep://` |
+| `0x1B` | `tcpobex://` |
+| `0x1C` | `irdaobex://` |
+| `0x1D` | `file://` |
+| `0x1E` | `urn:epc:id:` |
+| `0x1F` | `urn:epc:tag:` |
+| `0x20` | `urn:epc:pat:` |
+| `0x21` | `urn:epc:raw:` |
+| `0x22` | `urn:epc:` |
+| `0x23` | `urn:nfc:` |
