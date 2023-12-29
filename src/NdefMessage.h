@@ -98,12 +98,12 @@ class NdefMessage {
  private:
   static uint8_t recordCounter;
   static unsigned char *content;
-  static unsigned short contentSize;
+  static unsigned short contentLength;
   static unsigned char *newContent;
-  static unsigned short newContentSize;
-  static void update(unsigned char *message, unsigned short messageSize);
+  static unsigned short newContentLength;
+  static void update(unsigned char *message, unsigned short messageLength);
   void getNextRecord();
-  static String getHexRepresentation(const byte *data, const uint32_t dataSize);
+  static String getHexRepresentation(const byte *data, const uint32_t dataLength);
   static String newString;
   void addRecord(NdefRecord record);
   static void updateHeaderFlags();
@@ -115,8 +115,8 @@ class NdefMessage {
   NdefMessage();
   void begin();
   static unsigned char *getContent();
-  static unsigned short getContentSize();
-  static void setContent(const char *content, unsigned short contentSize);
+  static unsigned short getContentLength();
+  static void setContent(const char *content, unsigned short contentLength);
   NdefRecord_t getRecord();
   bool isEmpty();
   bool isNotEmpty();
@@ -124,7 +124,7 @@ class NdefMessage {
   void addTextRecord(String text);
   void addTextRecord(String text, String languageCode);
   void addUriRecord(String uri);
-  void addMimeMediaRecord(String mimeType, const char *payload, unsigned short payloadSize);
+  void addMimeMediaRecord(String mimeType, const char *payload, unsigned short payloadLength);
   void addWiFiRecord(String ssid, String authenticationType, String encryptionType, String password);
 };
 

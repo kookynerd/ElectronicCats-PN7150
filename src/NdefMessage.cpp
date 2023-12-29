@@ -14,15 +14,15 @@
 #include "NdefMessage.h"
 
 unsigned char *NdefMessage::content;
-unsigned short NdefMessage::contentSize;
+unsigned short NdefMessage::contentLength;
 unsigned char *NdefMessage::newContent;
-unsigned short NdefMessage::newContentSize;
+unsigned short NdefMessage::newContentLength;
 uint8_t NdefMessage::recordCounter;
 String NdefMessage::newString;
 
 NdefMessage::NdefMessage() {
   content = NULL;
-  contentSize = 0;
+  contentLength = 0;
   recordCounter = 0;
   newString = "null";
 }
@@ -31,57 +31,57 @@ void NdefMessage::begin() {
   registerUpdateNdefMessageCallback(NdefMessage::update);
 }
 
-String NdefMessage::getHexRepresentation(const byte *data, const uint32_t dataSize) {
+String NdefMessage::getHexRepresentation(const byte *data, const uint32_t dataLength) {
   String hexString;
 
-  if (dataSize == 0) {
+  if (dataLength == 0) {
     hexString = newString;
   }
 
-  for (uint32_t index = 0; index < dataSize; index++) {
+  for (uint32_t index = 0; index < dataLength; index++) {
     if (data[index] <= 0xF)
       hexString += "0";
     String hexValue = String(data[index] & 0xFF, HEX);
     hexValue.toUpperCase();
     hexString += hexValue;
-    if ((dataSize > 1) && (index != dataSize - 1)) {
+    if ((dataLength > 1) && (index != dataLength - 1)) {
       hexString += ":";
     }
   }
   return hexString;
 }
 
-void NdefMessage::update(unsigned char *message, unsigned short messageSize) {
+void NdefMessage::update(unsigned char *message, unsigned short messageLength) {
   if (content != NULL) {
     free(content);
   }
-  content = (unsigned char *)malloc(messageSize);
-  memcpy(content, message, messageSize);
-  contentSize = messageSize;
+  content = (unsigned char *)malloc(messageLength);
+  memcpy(content, message, messageLength);
+  contentLength = messageLength;
 }
 
 unsigned char *NdefMessage::getContent() {
   return content;
 }
 
-unsigned short NdefMessage::getContentSize() {
-  return contentSize;
+unsigned short NdefMessage::getContentLength() {
+  return contentLength;
 }
 
-void NdefMessage::setContent(const char *content, unsigned short contentSize) {
+void NdefMessage::setContent(const char *content, unsigned short contentLength) {
   NdefMessage::content = (unsigned char *)content;
-  NdefMessage::contentSize = contentSize;
+  NdefMessage::contentLength = contentLength;
 
 #ifdef DEBUG3
-  Serial.println("Content size: " + String(contentSize));
-  Serial.println(NdefMessage::getHexRepresentation((byte *)content, (uint32_t)contentSize));
+  Serial.println("Content length: " + String(contentLength));
+  Serial.println(NdefMessage::getHexRepresentation((byte *)content, (uint32_t)contentLength));
 #endif
   NdefMessage::updateHeaderFlags();
 #ifdef DEBUG3
-  Serial.println(NdefMessage::getHexRepresentation((byte *)content, (uint32_t)contentSize));
+  Serial.println(NdefMessage::getHexRepresentation((byte *)content, (uint32_t)contentLength));
   Serial.println();
 #endif
-  T4T_NDEF_EMU_SetMsg(content, contentSize);
+  T4T_NDEF_EMU_SetMsg(content, contentLength);
 }
 
 void NdefMessage::updateHeaderFlags() {
@@ -91,7 +91,7 @@ void NdefMessage::updateHeaderFlags() {
 #ifdef DEBUG3
   Serial.println("Header positions:");
 #endif
-  for (uint8_t i = 0; i < contentSize; i++) {
+  for (uint8_t i = 0; i < contentLength; i++) {
     if (recordCounterAux == recordCounter) {
       break;
     }
@@ -181,12 +181,12 @@ bool NdefMessage::hasRecord() {
 
 void NdefMessage::addRecord(NdefRecord record) {
 #ifdef DEBUG3
-  Serial.println("Record size: " + String(record.getContentSize()));
+  Serial.println("Record length: " + String(record.getContentLength()));
 #endif
 
-  uint16_t newSize = contentSize + record.getContentSize();
+  uint16_t newLength = contentLength + record.getContentLength();
 
-  if (newSize >= 249) {
+  if (newLength >= 249) {
 #ifdef DEBUG3
     Serial.println("NDEF message is full");
 #endif
@@ -203,17 +203,17 @@ void NdefMessage::addRecord(NdefRecord record) {
 
   recordCounter++;
 
-  NdefMessage::newContent = new unsigned char[newSize];
-  memcpy(newContent, content, contentSize);
-  memcpy(newContent + contentSize, record.getContent(), record.getContentSize());
-  setContent((const char *)newContent, contentSize + record.getContentSize());
+  NdefMessage::newContent = new unsigned char[newLength];
+  memcpy(newContent, content, contentLength);
+  memcpy(newContent + contentLength, record.getContent(), record.getContentLength());
+  setContent((const char *)newContent, contentLength + record.getContentLength());
 }
 
 void NdefMessage::addTextRecord(String text, String languageCode) {
   NdefRecord record;
   record.setHeaderFlags(NDEF_HEADER_FLAGS_SINGLE_RECORD);
   record.setTypeLength(NDEF_TYPE_LENGTH);
-  record.setPayloadSize(text.length() + 3);  // 3 = status + language code length
+  record.setPayloadLength(text.length() + 3);  // 3 = status + language code length
   record.setRecordType(NDEF_TEXT_RECORD_TYPE);
   record.setStatus(NDEF_STATUS);
   record.setLanguageCode(languageCode);
@@ -236,159 +236,159 @@ void NdefMessage::addUriRecord(String uri) {
   if (uri.startsWith("http://www.")) {
     record.setStatus(NDEF_URI_HTTP_WWWDOT);
     record.setPayload(uri.substring(11).c_str());
-    record.setPayloadSize(uri.length() - 11 + statusLength);
+    record.setPayloadLength(uri.length() - 11 + statusLength);
   } else if (uri.startsWith("https://www.")) {
     record.setStatus(NDEF_URI_HTTPS_WWWDOT);
     record.setPayload(uri.substring(12).c_str());
-    record.setPayloadSize(uri.length() - 12 + statusLength);
+    record.setPayloadLength(uri.length() - 12 + statusLength);
   } else if (uri.startsWith("http://")) {
     record.setStatus(NDEF_URI_HTTP);
     record.setPayload(uri.substring(7).c_str());
-    record.setPayloadSize(uri.length() - 7 + statusLength);
+    record.setPayloadLength(uri.length() - 7 + statusLength);
   } else if (uri.startsWith("https://")) {
     record.setStatus(NDEF_URI_HTTPS);
     record.setPayload(uri.substring(8).c_str());
-    record.setPayloadSize(uri.length() - 8 + statusLength);
+    record.setPayloadLength(uri.length() - 8 + statusLength);
   } else if (uri.startsWith("tel:")) {
     record.setStatus(NDEF_URI_TEL);
     record.setPayload(uri.substring(4).c_str());
-    record.setPayloadSize(uri.length() - 4 + statusLength);
+    record.setPayloadLength(uri.length() - 4 + statusLength);
   } else if (uri.startsWith("mailto:")) {
     record.setStatus(NDEF_URI_MAILTO);
     record.setPayload(uri.substring(7).c_str());
-    record.setPayloadSize(uri.length() - 7 + statusLength);
+    record.setPayloadLength(uri.length() - 7 + statusLength);
   } else if (uri.startsWith("ftp://anonymous:anonymous@")) {
     record.setStatus(NDEF_URI_FTP_ANONIMOUS);
     record.setPayload(uri.substring(26).c_str());
-    record.setPayloadSize(uri.length() - 26 + statusLength);
+    record.setPayloadLength(uri.length() - 26 + statusLength);
   } else if (uri.startsWith("ftp://ftp.")) {
     record.setStatus(NDEF_URI_FTP_FTPDOT);
     record.setPayload(uri.substring(9).c_str());
-    record.setPayloadSize(uri.length() - 9 + statusLength);
+    record.setPayloadLength(uri.length() - 9 + statusLength);
   } else if (uri.startsWith("ftps://")) {
     record.setStatus(NDEF_URI_FTPS);
     record.setPayload(uri.substring(7).c_str());
-    record.setPayloadSize(uri.length() - 7 + statusLength);
+    record.setPayloadLength(uri.length() - 7 + statusLength);
   } else if (uri.startsWith("sftp://")) {
     record.setStatus(NDEF_URI_SFTP);
     record.setPayload(uri.substring(7).c_str());
-    record.setPayloadSize(uri.length() - 7 + statusLength);
+    record.setPayloadLength(uri.length() - 7 + statusLength);
   } else if (uri.startsWith("smb://")) {
     record.setStatus(NDEF_URI_SMB);
     record.setPayload(uri.substring(6).c_str());
-    record.setPayloadSize(uri.length() - 6 + statusLength);
+    record.setPayloadLength(uri.length() - 6 + statusLength);
   } else if (uri.startsWith("nfs://")) {
     record.setStatus(NDEF_URI_NFS);
     record.setPayload(uri.substring(6).c_str());
-    record.setPayloadSize(uri.length() - 6 + statusLength);
+    record.setPayloadLength(uri.length() - 6 + statusLength);
   } else if (uri.startsWith("ftp://")) {
     record.setStatus(NDEF_URI_FTP);
     record.setPayload(uri.substring(6).c_str());
-    record.setPayloadSize(uri.length() - 6 + statusLength);
+    record.setPayloadLength(uri.length() - 6 + statusLength);
   } else if (uri.startsWith("dav://")) {
     record.setStatus(NDEF_URI_DAV);
     record.setPayload(uri.substring(6).c_str());
-    record.setPayloadSize(uri.length() - 6 + statusLength);
+    record.setPayloadLength(uri.length() - 6 + statusLength);
   } else if (uri.startsWith("news:")) {
     record.setStatus(NDEF_URI_NEWS);
     record.setPayload(uri.substring(5).c_str());
-    record.setPayloadSize(uri.length() - 5 + statusLength);
+    record.setPayloadLength(uri.length() - 5 + statusLength);
   } else if (uri.startsWith("telnet://")) {
     record.setStatus(NDEF_URI_TELNET);
     record.setPayload(uri.substring(9).c_str());
-    record.setPayloadSize(uri.length() - 9 + statusLength);
+    record.setPayloadLength(uri.length() - 9 + statusLength);
   } else if (uri.startsWith("imap:")) {
     record.setStatus(NDEF_URI_IMAP);
     record.setPayload(uri.substring(5).c_str());
-    record.setPayloadSize(uri.length() - 5 + statusLength);
+    record.setPayloadLength(uri.length() - 5 + statusLength);
   } else if (uri.startsWith("rtsp://")) {
     record.setStatus(NDEF_URI_RTSP);
     record.setPayload(uri.substring(7).c_str());
-    record.setPayloadSize(uri.length() - 7 + statusLength);
+    record.setPayloadLength(uri.length() - 7 + statusLength);
   } else if (uri.startsWith("pop:")) {
     record.setStatus(NDEF_URI_POP);
     record.setPayload(uri.substring(4).c_str());
-    record.setPayloadSize(uri.length() - 4 + statusLength);
+    record.setPayloadLength(uri.length() - 4 + statusLength);
   } else if (uri.startsWith("sip:")) {
     record.setStatus(NDEF_URI_SIP);
     record.setPayload(uri.substring(4).c_str());
-    record.setPayloadSize(uri.length() - 4 + statusLength);
+    record.setPayloadLength(uri.length() - 4 + statusLength);
   } else if (uri.startsWith("sips:")) {
     record.setStatus(NDEF_URI_SIPS);
     record.setPayload(uri.substring(5).c_str());
-    record.setPayloadSize(uri.length() - 5 + statusLength);
+    record.setPayloadLength(uri.length() - 5 + statusLength);
   } else if (uri.startsWith("tftp:")) {
     record.setStatus(NDEF_URI_TFTP);
     record.setPayload(uri.substring(5).c_str());
-    record.setPayloadSize(uri.length() - 5 + statusLength);
+    record.setPayloadLength(uri.length() - 5 + statusLength);
   } else if (uri.startsWith("btspp://")) {
     record.setStatus(NDEF_URI_BTSPP);
     record.setPayload(uri.substring(8).c_str());
-    record.setPayloadSize(uri.length() - 8 + statusLength);
+    record.setPayloadLength(uri.length() - 8 + statusLength);
   } else if (uri.startsWith("btl2cap://")) {
     record.setStatus(NDEF_URI_BTL2CAP);
     record.setPayload(uri.substring(10).c_str());
-    record.setPayloadSize(uri.length() - 10 + statusLength);
+    record.setPayloadLength(uri.length() - 10 + statusLength);
   } else if (uri.startsWith("btgoep://")) {
     record.setStatus(NDEF_URI_BTGOEP);
     record.setPayload(uri.substring(9).c_str());
-    record.setPayloadSize(uri.length() - 9 + statusLength);
+    record.setPayloadLength(uri.length() - 9 + statusLength);
   } else if (uri.startsWith("tcpobex://")) {
     record.setStatus(NDEF_URI_TCPOBEX);
     record.setPayload(uri.substring(10).c_str());
-    record.setPayloadSize(uri.length() - 10 + statusLength);
+    record.setPayloadLength(uri.length() - 10 + statusLength);
   } else if (uri.startsWith("irdaobex://")) {
     record.setStatus(NDEF_URI_IRDAOBEX);
     record.setPayload(uri.substring(11).c_str());
-    record.setPayloadSize(uri.length() - 11 + statusLength);
+    record.setPayloadLength(uri.length() - 11 + statusLength);
   } else if (uri.startsWith("file://")) {
     record.setStatus(NDEF_URI_FILE);
     record.setPayload(uri.substring(7).c_str());
-    record.setPayloadSize(uri.length() - 7 + statusLength);
+    record.setPayloadLength(uri.length() - 7 + statusLength);
   } else if (uri.startsWith("urn:epc:id:")) {
     record.setStatus(NDEF_URI_URN_EPC_ID);
     record.setPayload(uri.substring(11).c_str());
-    record.setPayloadSize(uri.length() - 11 + statusLength);
+    record.setPayloadLength(uri.length() - 11 + statusLength);
   } else if (uri.startsWith("urn:epc:tag:")) {
     record.setStatus(NDEF_URI_URN_EPC_TAG);
     record.setPayload(uri.substring(12).c_str());
-    record.setPayloadSize(uri.length() - 12 + statusLength);
+    record.setPayloadLength(uri.length() - 12 + statusLength);
   } else if (uri.startsWith("urn:epc:pat:")) {
     record.setStatus(NDEF_URI_URN_EPC_PAT);
     record.setPayload(uri.substring(12).c_str());
-    record.setPayloadSize(uri.length() - 12 + statusLength);
+    record.setPayloadLength(uri.length() - 12 + statusLength);
   } else if (uri.startsWith("urn:epc:raw:")) {
     record.setStatus(NDEF_URI_URN_EPC_RAW);
     record.setPayload(uri.substring(12).c_str());
-    record.setPayloadSize(uri.length() - 12 + statusLength);
+    record.setPayloadLength(uri.length() - 12 + statusLength);
   } else if (uri.startsWith("urn:epc:")) {
     record.setStatus(NDEF_URI_URN_EPC);
     record.setPayload(uri.substring(8).c_str());
-    record.setPayloadSize(uri.length() - 8 + statusLength);
+    record.setPayloadLength(uri.length() - 8 + statusLength);
   } else if (uri.startsWith("urn:nfc:")) {
     record.setStatus(NDEF_URI_URN_NFC);
     record.setPayload(uri.substring(8).c_str());
-    record.setPayloadSize(uri.length() - 8 + statusLength);
+    record.setPayloadLength(uri.length() - 8 + statusLength);
   } else if (uri.startsWith("urn:")) {
     record.setStatus(NDEF_URI_URN);
     record.setPayload(uri.substring(4).c_str());
-    record.setPayloadSize(uri.length() - 4 + statusLength);
+    record.setPayloadLength(uri.length() - 4 + statusLength);
   } else {
     record.setStatus(NDEF_URI_NO_PREFIX);
     record.setPayload(uri);
-    record.setPayloadSize(uri.length() + statusLength);
+    record.setPayloadLength(uri.length() + statusLength);
   }
 
   addRecord(record);
 }
 
-void NdefMessage::addMimeMediaRecord(String mimeType, const char *payload, unsigned short payloadSize) {
+void NdefMessage::addMimeMediaRecord(String mimeType, const char *payload, unsigned short payloadLength) {
   NdefRecord record;
   record.setHeaderFlags(NDEF_HEADER_FLAGS_SINGLE_MEDIA_RECORD);
   record.setTypeLength(mimeType.length());
-  record.setPayloadSize(payloadSize);
+  record.setPayloadLength(payloadLength);
   record.setRecordType(mimeType);
-  record.setPayload(payload, payloadSize);
+  record.setPayload(payload, payloadLength);
 
   addRecord(record);
 }
@@ -436,7 +436,7 @@ void NdefMessage::addWiFiRecord(String ssid, String authenticationType, String e
 
   record.setHeaderFlags(NDEF_HEADER_FLAGS_SINGLE_MEDIA_RECORD);
   record.setTypeLength(mimeType.length());
-  record.setPayloadSize(ssid.length() + password.length() + 29);  // TODO: 29 must be calculated
+  record.setPayloadLength(ssid.length() + password.length() + 29);  // TODO: 29 must be calculated
   record.setRecordType(mimeType);
   record.setPayload((const char *)payload, sizeof(payload));
 

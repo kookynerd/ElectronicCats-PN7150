@@ -50,7 +50,7 @@ typedef enum {
 typedef struct {
   NdefRecordType_e recordType;
   unsigned char *recordPayload;
-  unsigned int recordPayloadSize;
+  unsigned int recordPayloadLength;
 } NdefRecord_t;
 
 const char *ndef_helper_WifiAuth(unsigned char auth);

@@ -30,7 +30,7 @@ class NdefRecord {
   NdefRecordType_e _type;
   uint8_t headerFlags;
   uint8_t typeLength;
-  unsigned short payloadSize;
+  unsigned short payloadLength;
   uint8_t wellKnownType;
   unsigned char *mimeMediaType;
   uint8_t status;
@@ -38,7 +38,7 @@ class NdefRecord {
   unsigned char *payload;
   String newString;
   bool textRecord;
-  String getHexRepresentation(const byte *data, const uint32_t dataSize);
+  String getHexRepresentation(const byte *data, const uint32_t dataLength);
   bool isTextRecord();
   const char *getWellKnownContent();
   const char *getMimeMediaContent();
@@ -51,7 +51,7 @@ class NdefRecord {
   bool isNotEmpty();
   NdefRecordType_e getType();
   unsigned char *getPayload();
-  unsigned short getPayloadSize();
+  unsigned short getPayloadLength();
   String getText();
   String getBluetoothName();
   String getBluetoothAddress();
@@ -69,9 +69,9 @@ class NdefRecord {
   void setRecordType(String type);
   void setStatus(uint8_t status);
   void setLanguageCode(String languageCode);
-  void setPayloadSize(uint8_t payloadSize);
+  void setPayloadLength(uint8_t payloadLength);
   const char *getContent();
-  unsigned short getContentSize();
+  unsigned short getContentLength();
 };
 
 #endif

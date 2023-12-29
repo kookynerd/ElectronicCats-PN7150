@@ -96,7 +96,7 @@ void messageReceivedCallback() {
   }
 
   Serial.print("NDEF message: ");
-  Serial.println(getHexRepresentation(message.getContent(), message.getContentSize()));
+  Serial.println(getHexRepresentation(message.getContent(), message.getContentLength()));
 
   // Show NDEF message details, it is composed of records
   do {
@@ -253,16 +253,16 @@ void displayRecordInfo(NdefRecord record) {
 
     case record.type.MEDIA_HANDOVER_BLE:
       Serial.print("\tBLE Handover");
-      Serial.println("\t- Payload size: " + String(record.getPayloadSize()) + " bytes");
+      Serial.println("\t- Payload size: " + String(record.getPayloadLength()) + " bytes");
       Serial.print("\t- Payload = ");
-      Serial.println(getHexRepresentation(record.getPayload(), record.getPayloadSize()));
+      Serial.println(getHexRepresentation(record.getPayload(), record.getPayloadLength()));
       break;
 
     case record.type.MEDIA_HANDOVER_BLE_SECURE:
       Serial.print("\tBLE secure Handover");
-      Serial.println("\t- Payload size: " + String(record.getPayloadSize()) + " bytes");
+      Serial.println("\t- Payload size: " + String(record.getPayloadLength()) + " bytes");
       Serial.print("\t- Payload = ");
-      Serial.println(getHexRepresentation(record.getPayload(), record.getPayloadSize()));
+      Serial.println(getHexRepresentation(record.getPayload(), record.getPayloadLength()));
       break;
 
     default:
