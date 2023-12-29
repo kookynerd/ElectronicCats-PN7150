@@ -3,3 +3,6 @@ src/sync.ffs_db
 
 .DS_Store
 .vscode/
+
+# Firmware binaries
+/examples/**/build/

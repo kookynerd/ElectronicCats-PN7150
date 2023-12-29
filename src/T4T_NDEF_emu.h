@@ -14,6 +14,10 @@
 
 #include <Arduino.h>
 
+typedef void CustomCallback_t(void);
+
 void T4T_NDEF_EMU_Reset(void);
-bool T4T_NDEF_EMU_SetMessage(unsigned char *pMessage, unsigned short Message_size, void *pCb);
+bool T4T_NDEF_EMU_SetMessage(unsigned char *pMessage, unsigned short messageLength, void *pCb);
+void T4T_NDEF_EMU_SetMsg(const char *pMessage, unsigned short messageLength);
+void T4T_NDEF_EMU_SetCallback(CustomCallback_t function);
 void T4T_NDEF_EMU_Next(unsigned char *pCmd, unsigned short Cmd_size, unsigned char *Rsp, unsigned short *pRsp_size);

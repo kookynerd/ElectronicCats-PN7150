@@ -1,8 +1,9 @@
 BOARD_TAG = electroniccats:mbed_rp2040:bombercat
-MONITOR_PORT = /dev/cu.usbmodem1101
+# BOARD_TAG = rp2040:rp2040:generic
+MONITOR_PORT = /dev/cu.usbmodem11101
 
 compile:
-	arduino-cli compile --fqbn $(BOARD_TAG)
+	arduino-cli compile --fqbn $(BOARD_TAG) --warnings all
 
 upload:
 	arduino-cli upload -p $(MONITOR_PORT) --fqbn $(BOARD_TAG) --verbose

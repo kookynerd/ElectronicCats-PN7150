@@ -81,7 +81,7 @@ NdefRecord_t DetectNdefRecordType(unsigned char *pNdefRecord) {
   if (pNdefRecord == NULL) {
     record.recordType = UNSUPPORTED_NDEF_RECORD;
     record.recordPayload = NULL;
-    record.recordPayloadSize = 0;
+    record.recordPayloadLength = 0;
     return record;
   }
 
@@ -89,10 +89,10 @@ NdefRecord_t DetectNdefRecordType(unsigned char *pNdefRecord) {
 
   /* Short or normal record ?*/
   if (pNdefRecord[0] & NDEF_RECORD_SR_MASK) {
-    record.recordPayloadSize = pNdefRecord[2];
+    record.recordPayloadLength = pNdefRecord[2];
     typeField = 3;
   } else {
-    record.recordPayloadSize = (pNdefRecord[2] << 24) + (pNdefRecord[3] << 16) + (pNdefRecord[4] << 8) + pNdefRecord[5];
+    record.recordPayloadLength = (pNdefRecord[2] << 24) + (pNdefRecord[3] << 16) + (pNdefRecord[4] << 8) + pNdefRecord[5];
     typeField = 6;
   }
 
