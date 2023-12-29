@@ -40,10 +40,10 @@ void setup() {
   message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly
   message.addUriRecord("tel:1234567890");                  // The library can handle all the prefixes listed at https://github.com/ElectronicCats/ElectronicCats-PN7150/blob/master/API.md#uri-prefixes
   String ssid = "Bomber Cat";                              // SSID of the WiFi network
-  String authentificationType = "WPA2 PERSONAL";           // Supported authentification types at https://github.com/ElectronicCats/ElectronicCats-PN7150/blob/master/API.md#wifi-authentication-types
+  String authenticationType = "WPA2 PERSONAL";             // Supported authentication types at https://github.com/ElectronicCats/ElectronicCats-PN7150/blob/master/API.md#wifi-authentication-types
   String encryptionType = "AES";                           // Supported encryption types at https://github.com/ElectronicCats/ElectronicCats-PN7150/blob/master/API.md#wifi-encryption-types
   String password = "Password";                            // Password of the WiFi network
-  message.addWiFiRecord(ssid, authentificationType, encryptionType, password);
+  message.addWiFiRecord(ssid, authenticationType, encryptionType, password);
   message.addUriRecord("mailto:deimoshall@gmail.com");
   message.addMimeMediaRecord("text/plain", "Hello world!", 12);  // Media-type as defined in RFC 2046
   nfc.setSendMsgCallback(messageSentCallback);
