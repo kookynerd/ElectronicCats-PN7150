@@ -108,13 +108,34 @@ void NdefMessage::updateHeaderFlags() {
 
   for (uint8_t i = 0; i < recordCounter; i++) {
     if (i == 0) {
-      content[headersPositions[i]] = NDEF_HEADER_FLAGS_SINGLE_RECORD;
+      if ((content[headersPositions[i]] & NDEF_RECORD_TNF_MASK) == NDEF_WELL_KNOWN) {
+        content[headersPositions[i]] = NDEF_HEADER_FLAGS_SINGLE_RECORD;
+      } else {
+        content[headersPositions[i]] = NDEF_HEADER_FLAGS_SINGLE_MEDIA_RECORD;
+      }
     } else if (i == 1) {
-      content[headersPositions[i - 1]] = NDEF_HEADER_FLAGS_FIRST_RECORD;
-      content[headersPositions[i]] = NDEF_HEADER_FLAGS_LAST_RECORD;
+      if ((content[headersPositions[i - 1]] & NDEF_RECORD_TNF_MASK) == NDEF_WELL_KNOWN) {
+        content[headersPositions[i - 1]] = NDEF_HEADER_FLAGS_FIRST_RECORD;
+      } else {
+        content[headersPositions[i - 1]] = NDEF_HEADER_FLAGS_FIRST_MEDIA_RECORD;
+      }
+      if ((content[headersPositions[i]] & NDEF_RECORD_TNF_MASK) == NDEF_WELL_KNOWN) {
+        content[headersPositions[i]] = NDEF_HEADER_FLAGS_LAST_RECORD;
+      } else {
+        content[headersPositions[i]] = NDEF_HEADER_FLAGS_LAST_MEDIA_RECORD;
+      }
     } else {
-      content[headersPositions[i - 1]] = NDEF_HEADER_FLAGS_NEXT_RECORD;
-      content[headersPositions[i]] = NDEF_HEADER_FLAGS_LAST_RECORD;
+      if ((content[headersPositions[i - 1]] & NDEF_RECORD_TNF_MASK) == NDEF_WELL_KNOWN) {
+        content[headersPositions[i - 1]] = NDEF_HEADER_FLAGS_NEXT_RECORD;
+      } else {
+        content[headersPositions[i - 1]] = NDEF_HEADER_FLAGS_NEXT_MEDIA_RECORD;
+      }
+
+      if ((content[headersPositions[i]] & NDEF_RECORD_TNF_MASK) == NDEF_WELL_KNOWN) {
+        content[headersPositions[i]] = NDEF_HEADER_FLAGS_LAST_RECORD;
+      } else {
+        content[headersPositions[i]] = NDEF_HEADER_FLAGS_LAST_MEDIA_RECORD;
+      }
     }
   }
 
@@ -127,7 +148,7 @@ void NdefMessage::updateHeaderFlags() {
 }
 
 bool NdefMessage::isHeaderByte(unsigned char byte) {
-  return (byte == NDEF_HEADER_FLAGS_SINGLE_RECORD) || (byte == NDEF_HEADER_FLAGS_FIRST_RECORD) || (byte == NDEF_HEADER_FLAGS_NEXT_RECORD) || (byte == NDEF_HEADER_FLAGS_LAST_RECORD);
+  return (byte == NDEF_HEADER_FLAGS_SINGLE_RECORD) || (byte == NDEF_HEADER_FLAGS_SINGLE_MEDIA_RECORD) || (byte == NDEF_HEADER_FLAGS_FIRST_RECORD) || (byte == NDEF_HEADER_FLAGS_FIRST_MEDIA_RECORD) || (byte == NDEF_HEADER_FLAGS_NEXT_RECORD) || (byte == NDEF_HEADER_FLAGS_NEXT_MEDIA_RECORD) || (byte == NDEF_HEADER_FLAGS_LAST_RECORD) || (byte == NDEF_HEADER_FLAGS_LAST_MEDIA_RECORD);
 }
 
 NdefRecord_t NdefMessage::getRecord() {

@@ -354,13 +354,19 @@ const char *NdefRecord::getContent() {
 
   // Search in the last 3 bits of headerFlags
   if ((headerFlags & NDEF_RECORD_TNF_MASK) == NDEF_WELL_KNOWN) {
+#ifdef DEBUG3
     Serial.println("Well known record");
+#endif
     return getWellKnownContent();
   } else if ((headerFlags & NDEF_RECORD_TNF_MASK) == NDEF_MEDIA) {
+#ifdef DEBUG3
     Serial.println("Media record");
+#endif
     return getMimeMediaContent();
   } else {
+#ifdef DEBUG3
     Serial.println("Unknown record");
+#endif
     return NULL;
   }
 }

@@ -45,7 +45,7 @@ const char payload[] = {
     0x10,
     0x03,
     0x00,
-    0x02,  // Length of the Authentication Type attribute
+    0x02,
     0x00,
     0x01,  // Value for Authentication type
     0x10,
@@ -66,14 +66,14 @@ void setup() {
     ;
   Serial.println("Send NDEF Message with PN7150");
 
-  // message.addTextRecord("Hello");                          // English by default
-  // message.addTextRecord("world", "en");                    // English explicitly, the library only supports two letter language codes (ISO 639-1) by now
-  // message.addTextRecord("Hola mundo!", "es");              // Spanish explicitly, check a language code table at https://www.science.co.il/language/Locale-codes.php
-  // message.addTextRecord("Bonjour le monde!", "fr");        // French explicitly
-  // message.addUriRecord("google.com");                      // No prefix explicitly
-  // message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
+  message.addTextRecord("Hello");                          // English by default
+  message.addTextRecord("world", "en");                    // English explicitly, the library only supports two letter language codes (ISO 639-1) by now
+  message.addTextRecord("Hola mundo!", "es");              // Spanish explicitly, check a language code table at https://www.science.co.il/language/Locale-codes.php
+  message.addTextRecord("Bonjour le monde!", "fr");        // French explicitly
   message.addMimeMediaRecord("application/vnd.wfa.wsc", payload, sizeof(payload));
-  // message.addUriRecord("tel:1234567890");
+  message.addUriRecord("google.com");                      // No prefix explicitly
+  message.addUriRecord("https://www.electroniccats.com");  // https://www. prefix explicitly, the library can handle all the prefixes listed at TODO: add link to prefixes table
+  message.addUriRecord("tel:1234567890");
   // message.addUriRecord("mailto:deimoshallgmail.com");  // TODO: check @ problem
   nfc.setSendMsgCallback(messageSentCallback);
 
