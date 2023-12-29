@@ -63,13 +63,13 @@ class NdefRecord {
   String getUri();
   void setPayload(String payload);
   void setPayload(const char *payload, unsigned short payloadLength);
+  void setPayloadLength(uint8_t payloadLength);
   void setHeaderFlags(uint8_t headerFlags);
   void setTypeLength(uint8_t typeLength);
   void setRecordType(uint8_t wellKnownType);
   void setRecordType(String type);
   void setStatus(uint8_t status);
   void setLanguageCode(String languageCode);
-  void setPayloadLength(uint8_t payloadLength);
   const char *getContent();
   unsigned short getContentLength();
 };
