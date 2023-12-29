@@ -1356,6 +1356,7 @@ Adds a text record to the message.
 
 ```cpp
 void addTextRecord(String text);
+void addTextRecord(String text, String languageCode);
 ```
 
 #### Example 1
@@ -1398,7 +1399,7 @@ void addMimeMediaRecord(String mimeType, const char *payload, unsigned short pay
 #### Example
 
 ```cpp
-message.addMimeMediaRecord("text/plain", "Hello world!", 12);
+message.addMimeMediaRecord("text/plain", "Hello world!", 12);  // 12 is the payload length
 ```
 
 ### Method: `addWiFiRecord`
@@ -1418,6 +1419,8 @@ String encryptionType = "AES";
 String password = "Password";
 message.addWiFiRecord(ssid, authentificationType, encryptionType, password);
 ```
+
+See [WiFi authentication types](#wifi-authentication-types) and [WiFi encryption types](#wifi-encryption-types) for a list of all the types that can be used.
 
 ## Class NdefRecord
 
@@ -1666,6 +1669,152 @@ Serial.print("URI: ");
 Serial.println(record.getUri());
 ```
 
+### Method: `setPayload`
+
+Set the payload of the record.
+
+```cpp
+void setPayload(String payload);
+void setPayload(const char *payload, unsigned short payloadLength);
+```
+
+#### Example 1
+
+```cpp
+record.setPayload("Hello world!");
+```
+
+#### Example 2
+
+```cpp
+record.setPayload("Hello world!", 12);
+```
+
+### Method: `setPayloadLength`
+
+Set the payload length of the record.
+
+```cpp
+void setPayloadLength(uint8_t payloadLength);
+```
+
+#### Example
+
+```cpp
+record.setPayloadLength(12);
+```
+
+### Method: `setHeaderFlags`
+
+Set the header flags of the record.
+
+```cpp
+void setHeaderFlags(uint8_t headerFlags);
+```
+
+#### Example
+
+```cpp
+record.setHeaderFlags(0x00);
+```
+
+### Method: `setTypeLength`
+
+Set the type length of the record.
+
+```cpp
+void setTypeLength(uint8_t typeLength);
+```
+
+#### Example
+
+```cpp
+record.setTypeLength(0x00);
+```
+
+### Method: `setRecordType`
+
+Set the record type of the record.
+
+```cpp
+void setRecordType(uint8_t wellKnownType);
+void setRecordType(String type);
+```
+
+#### Example 1
+
+```cpp
+record.setRecordType(NDEF_TEXT_RECORD_TYPE);
+```
+
+#### Example 2
+
+```cpp
+record.setRecordType("application/vnd.wfa.wsc");
+```
+
+### Method: `setStatus`
+
+Set the status of the record.
+
+```cpp
+void setStatus(uint8_t status);
+```
+
+#### Example
+
+```cpp
+record.setStatus(NDEF_STATUS);
+```
+
+### Method: `setLanguageCode`
+
+Set the language code of the record.
+
+```cpp
+void setLanguageCode(String languageCode);
+```
+
+#### Example
+
+```cpp
+record.setLanguageCode("en");
+```
+
+### Method: `getContentLength`
+
+Get the content length of the record.
+
+```cpp
+unsigned short getContentLength();
+```
+
+#### Example
+
+```cpp
+Serial.print("Content length: ");
+Serial.println(record.getContentLength());
+```
+
+### Method: `getContent`
+
+Get the content of the record.
+
+```cpp
+const char *getContent();
+```
+
+#### Example
+
+```cpp
+Serial.print("Content: ");
+for (int i = 0; i < record.getContentLength(); i++) {
+  Serial.print(record.getContent()[i], HEX);
+  Serial.print(" ");
+}
+Serial.println();
+```
+
 ## Appendix
 
 ### URI prefixes
@@ -1710,3 +1859,31 @@ Here is a list of all the prefixes that can be used with the [`addUriRecord`](#m
 | `0x21` | `urn:epc:raw:` |
 | `0x22` | `urn:epc:` |
 | `0x23` | `urn:nfc:` |
+
+### WiFi authentication types
+
+Here is a list of all the authentication types that can be used with the [`addWiFiRecord`](#method-addwifirecord) method.
+
+| Authentication type | Meaning |
+| --- | --- |
+| `"OPEN"` | Open |
+| `"WPA PERSONAL"` | WPA Personal |
+| `"SHARED"` | Shared |
+| `"WPA ENTERPRISE"` | WPA Enterprise |
+| `"WPA2 ENTERPRISE"` | WPA2 Enterprise |
+| `"WPA2 PERSONAL"` | WPA2 Personal |
+
+Any other value will be interpreted as `UNKNOWN`.
+
+### WiFi encryption types
+
+Here is a list of all the encryption types that can be used with the [`addWiFiRecord`](#method-addwifirecord) method.
+
+| Encryption type | Meaning |
+| --- | --- |
+| `"NONE"` | None |
+| `"WEP"` | WEP |
+| `"TKIP"` | TKIP |
+| `"AES"` | AES |
+
+Any other value will be interpreted as `UNKNOWN`.
