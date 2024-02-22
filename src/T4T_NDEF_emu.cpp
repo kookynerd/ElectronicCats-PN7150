@@ -28,7 +28,7 @@ const unsigned char T4T_NDEF_EMU_OK[] = {0x90, 0x00};
 const unsigned char T4T_NDEF_EMU_NOK[] = {0x6A, 0x82};
 
 unsigned char *pT4T_NdefMessage;
-unsigned short T4T_NdefMessage_size = 0;
+unsigned short T4T_NdefMessage_length = 0;
 
 unsigned char T4T_NdefMessageWritten[256];
 
@@ -45,15 +45,16 @@ typedef void T4T_NDEF_EMU_Callback_t(unsigned char *, unsigned short);
 static T4T_NDEF_EMU_state_t eT4T_NDEF_EMU_State = Ready;
 
 static T4T_NDEF_EMU_Callback_t *pT4T_NDEF_EMU_PushCb = NULL;
+CustomCallback_t *ndefSendCallback;
 
 static void T4T_NDEF_EMU_FillRsp(unsigned char *pRsp, unsigned short offset, unsigned char length) {
   if (offset == 0) {
-    pRsp[0] = (T4T_NdefMessage_size & 0xFF00) >> 8;
-    pRsp[1] = (T4T_NdefMessage_size & 0x00FF);
+    pRsp[0] = (T4T_NdefMessage_length & 0xFF00) >> 8;
+    pRsp[1] = (T4T_NdefMessage_length & 0x00FF);
     if (length > 2)
       memcpy(&pRsp[2], &pT4T_NdefMessage[0], length - 2);
   } else if (offset == 1) {
-    pRsp[0] = (T4T_NdefMessage_size & 0x00FF);
+    pRsp[0] = (T4T_NdefMessage_length & 0x00FF);
     if (length > 1)
       memcpy(&pRsp[1], &pT4T_NdefMessage[0], length - 1);
   } else {
@@ -61,19 +62,32 @@ static void T4T_NDEF_EMU_FillRsp(unsigned char *pRsp, unsigned short offset, uns
   }
 
   /* Did we reached the end of NDEF message ?*/
-  if ((offset + length) >= (T4T_NdefMessage_size + 2)) {
+  if ((offset + length) >= (T4T_NdefMessage_length + 2)) {
     /* Notify application of the NDEF send */
     if (pT4T_NDEF_EMU_PushCb != NULL)
-      pT4T_NDEF_EMU_PushCb(pT4T_NdefMessage, T4T_NdefMessage_size);
+      pT4T_NDEF_EMU_PushCb(pT4T_NdefMessage, T4T_NdefMessage_length);
+
+    // Notify custom callback
+    if (ndefSendCallback != NULL)
+      ndefSendCallback();
   }
 }
 
-bool T4T_NDEF_EMU_SetMessage(unsigned char *pMessage, unsigned short Message_size, void *pCb) {
+bool T4T_NDEF_EMU_SetMessage(unsigned char *pMessage, unsigned short messageLength, void *pCb) {
   pT4T_NdefMessage = pMessage;
-  T4T_NdefMessage_size = Message_size;
+  T4T_NdefMessage_length = messageLength;
   pT4T_NDEF_EMU_PushCb = (T4T_NDEF_EMU_Callback_t *)pCb;
 
   return true;
+}
+
+void T4T_NDEF_EMU_SetMsg(const char *pMessage, unsigned short messageLength) {
+  pT4T_NdefMessage = (unsigned char *)pMessage;
+  T4T_NdefMessage_length = messageLength;
+}
+
+void T4T_NDEF_EMU_SetCallback(CustomCallback_t function) {
+  ndefSendCallback = function;
 }
 
 void T4T_NDEF_EMU_Reset(void) {
@@ -111,7 +125,7 @@ void T4T_NDEF_EMU_Next(unsigned char *pCmd, unsigned short Cmd_size, unsigned ch
       unsigned short offset = (pCmd[2] << 8) + pCmd[3];
       unsigned char length = pCmd[4];
 
-      if (length <= (T4T_NdefMessage_size + offset + 2)) {
+      if (length <= (T4T_NdefMessage_length + offset + 2)) {
         T4T_NDEF_EMU_FillRsp(pRsp, offset, length);
         *pRsp_size = length;
         eStatus = true;
@@ -124,7 +138,7 @@ void T4T_NDEF_EMU_Next(unsigned char *pCmd, unsigned short Cmd_size, unsigned ch
       if (offset + length <= sizeof(T4T_NdefMessageWritten)) {
         memcpy(&T4T_NdefMessageWritten[offset - 2], &pCmd[5], length);
         pT4T_NdefMessage = T4T_NdefMessageWritten;
-        T4T_NdefMessage_size = (pCmd[5] << 8) + pCmd[6];
+        T4T_NdefMessage_length = (pCmd[5] << 8) + pCmd[6];
         *pRsp_size = 0;
         eStatus = true;
       }

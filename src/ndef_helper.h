@@ -50,7 +50,7 @@ typedef enum {
 typedef struct {
   NdefRecordType_e recordType;
   unsigned char *recordPayload;
-  unsigned int recordPayloadSize;
+  unsigned int recordPayloadLength;
 } NdefRecord_t;
 
 const char *ndef_helper_WifiAuth(unsigned char auth);
@@ -58,5 +58,25 @@ const char *ndef_helper_WifiEnc(unsigned char enc);
 const char *ndef_helper_UriHead(unsigned char head);
 NdefRecord_t DetectNdefRecordType(unsigned char *pNdefRecord);
 unsigned char *GetNextRecord(unsigned char *pNdefRecord);
+
+class RecordType {
+ public:
+  enum Value {
+    WELL_KNOWN_SIMPLE_TEXT = 0,
+    WELL_KNOWN_SIMPLE_URI,
+    WELL_KNOWN_SMART_POSTER,
+    WELL_KNOWN_HANDOVER_SELECT,
+    WELL_KNOWN_HANDOVER_REQUEST,
+    WELL_KNOWN_ALTERNATIVE_CARRIER,
+    WELL_KNOWN_COLLISION_RESOLUTION,
+    MEDIA_VCARD,
+    MEDIA_HANDOVER_WIFI,
+    MEDIA_HANDOVER_BT,
+    MEDIA_HANDOVER_BLE,
+    MEDIA_HANDOVER_BLE_SECURE,
+    ABSOLUTE_URI,
+    UNSUPPORTED_NDEF_RECORD = 0xFF
+  };
+};
 
 #endif

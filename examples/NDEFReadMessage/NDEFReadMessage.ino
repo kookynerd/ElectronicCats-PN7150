@@ -18,7 +18,7 @@
 #define PN7150_ADDR (0x28)
 
 // Function prototypes
-void messageReceived();
+void messageReceivedCallback();
 String getHexRepresentation(const byte *data, const uint32_t dataSize);
 void displayDeviceInfo();
 void displayRecordInfo(NdefRecord record);
@@ -34,7 +34,7 @@ void setup() {
   Serial.println("Detect NFC tags with PN7150");
 
   // Register a callback function to be called when an NDEF message is received
-  nfc.setReadMsgCallback(messageReceived);
+  nfc.setReadMsgCallback(messageReceivedCallback);
 
   Serial.println("Initializing...");
 
@@ -84,7 +84,7 @@ void loop() {
 }
 
 /// @brief Callback function called when an NDEF message is received
-void messageReceived() {
+void messageReceivedCallback() {
   NdefRecord record;
   Serial.println("Processing Callback...");
 
@@ -95,7 +95,10 @@ void messageReceived() {
     return;
   }
 
-  // Show NDEF message details
+  Serial.print("NDEF message: ");
+  Serial.println(getHexRepresentation(message.getContent(), message.getContentLength()));
+
+  // Show NDEF message details, it is composed of records
   do {
     record.create(message.getRecord());  // Get a new record every time we call getRecord()
     displayRecordInfo(record);
@@ -204,23 +207,23 @@ void displayRecordInfo(NdefRecord record) {
   Serial.println("--- NDEF record received:");
 
   switch (record.getType()) {
-    case MEDIA_VCARD:
+    case record.type.MEDIA_VCARD:
       Serial.println("vCard:");
       Serial.println(record.getVCardContent());
       break;
 
-    case WELL_KNOWN_SIMPLE_TEXT:
+    case record.type.WELL_KNOWN_SIMPLE_TEXT:
       Serial.println("\tWell known simple text");
       Serial.println("\t- Text record: " + record.getText());
       break;
 
-    case WELL_KNOWN_SIMPLE_URI:
+    case record.type.WELL_KNOWN_SIMPLE_URI:
       Serial.println("\tWell known simple URI");
       Serial.print("\t- URI record: ");
       Serial.println(record.getUri());
       break;
 
-    case MEDIA_HANDOVER_WIFI:
+    case record.type.MEDIA_HANDOVER_WIFI:
       Serial.println("\tReceived WIFI credentials:");
       Serial.println("\t- SSID: " + record.getWiFiSSID());
       Serial.println("\t- Network key: " + record.getWiFiPassword());
@@ -228,38 +231,38 @@ void displayRecordInfo(NdefRecord record) {
       Serial.println("\t- Encryption type: " + record.getWiFiEncryptionType());
       break;
 
-    case WELL_KNOWN_HANDOVER_SELECT:
+    case record.type.WELL_KNOWN_HANDOVER_SELECT:
       Serial.print("\tHandover select version: ");
       Serial.print(*payload >> 4);
       Serial.print(".");
       Serial.println(*payload & 0xF);
       break;
 
-    case WELL_KNOWN_HANDOVER_REQUEST:
+    case record.type.WELL_KNOWN_HANDOVER_REQUEST:
       Serial.print("\tHandover request version: ");
       Serial.print(*payload >> 4);
       Serial.print(".");
       Serial.println(*payload & 0xF);
       break;
 
-    case MEDIA_HANDOVER_BT:
+    case record.type.MEDIA_HANDOVER_BT:
       Serial.println("\tBluetooth handover");
       Serial.println("\t- Bluetooth name: " + record.getBluetoothName());
       Serial.println("\t- Bluetooth address: " + record.getBluetoothAddress());
       break;
 
-    case MEDIA_HANDOVER_BLE:
+    case record.type.MEDIA_HANDOVER_BLE:
       Serial.print("\tBLE Handover");
-      Serial.println("\t- Payload size: " + String(record.getPayloadSize()) + " bytes");
+      Serial.println("\t- Payload size: " + String(record.getPayloadLength()) + " bytes");
       Serial.print("\t- Payload = ");
-      Serial.println(getHexRepresentation(record.getPayload(), record.getPayloadSize()));
+      Serial.println(getHexRepresentation(record.getPayload(), record.getPayloadLength()));
       break;
 
-    case MEDIA_HANDOVER_BLE_SECURE:
+    case record.type.MEDIA_HANDOVER_BLE_SECURE:
       Serial.print("\tBLE secure Handover");
-      Serial.println("\t- Payload size: " + String(record.getPayloadSize()) + " bytes");
+      Serial.println("\t- Payload size: " + String(record.getPayloadLength()) + " bytes");
       Serial.print("\t- Payload = ");
-      Serial.println(getHexRepresentation(record.getPayload(), record.getPayloadSize()));
+      Serial.println(getHexRepresentation(record.getPayload(), record.getPayloadLength()));
       break;
 
     default:

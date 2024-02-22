@@ -27,12 +27,6 @@
 #include "RemoteDevice.h"
 #include "T4T_NDEF_emu.h"
 
-/*
- * Active DEBUG Serial
-*/
-//#define DEBUG
-//#define DEBUG2
-
 #if defined(TEENSYDUINO) && defined(KINETISK)  // Teensy 3.0, 3.1, 3.2, 3.5, 3.6 :  Special, more optimized I2C library for Teensy boards
 #include <i2c_t3.h>                            // Credits Brian "nox771" : see https://forum.pjrc.com/threads/21680-New-I2C-library-for-Teensy3
 #else
@@ -180,6 +174,7 @@ class Electroniccats_PN7150 : public Mode {
   bool NxpNci_FactoryTest_RfOn();  // Deprecated, use nciFactoryTestRfOn() instead
   bool reset();
   void setReadMsgCallback(CustomCallback_t function);
+  void setSendMsgCallback(CustomCallback_t function);
   bool isReaderDetected();
   void closeCommunication();
   void sendMessage();

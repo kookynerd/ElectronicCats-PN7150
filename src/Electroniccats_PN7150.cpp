@@ -1738,6 +1738,10 @@ void Electroniccats_PN7150::setReadMsgCallback(CustomCallback_t function) {
   registerNdefReceivedCallback(function);
 }
 
+void Electroniccats_PN7150::setSendMsgCallback(CustomCallback_t function) {
+  T4T_NDEF_EMU_SetCallback(function);
+}
+
 bool Electroniccats_PN7150::isReaderDetected() {
   static unsigned char STATUSOK[] = {0x90, 0x00}, Cmd[256], CmdSize;
   bool status = false;
