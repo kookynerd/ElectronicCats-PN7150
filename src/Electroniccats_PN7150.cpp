@@ -1448,7 +1448,7 @@ bool Electroniccats_PN7150::readerTagCmd(unsigned char *pCommand, unsigned char 
 
   (void)writeData(Cmd, CommandSize + 3);
   getMessage();
-  getMessage(2000);
+  getMessage(1000);
   /* Wait for Answer 1S */
 
   if ((rxBuffer[0] == 0x0) && (rxBuffer[1] == 0x0))
