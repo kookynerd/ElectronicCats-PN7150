@@ -780,7 +780,7 @@ bool Electroniccats_PN7150::configureSettings(uint8_t *uidcf, uint8_t uidlen) {
   {
     isResetRequired = true;
     (void)writeData(NxpNci_CORE_CONF, uidlen);  // sizeof(NxpNci_CORE_CONF));
-    getMessage(100);
+    getMessage(10);
     if ((rxBuffer[0] != 0x40) || (rxBuffer[1] != 0x02) || (rxBuffer[3] != 0x00) || (rxBuffer[4] != 0x00)) {
 #ifdef DEBUG
       Serial.println("NxpNci_CORE_CONF");
@@ -1011,7 +1011,7 @@ wait:
         /* Restart the discovery loop */
         (void)writeData(NCIRestartDiscovery, sizeof(NCIRestartDiscovery));
         getMessage();
-        getMessage(100);
+        getMessage(10);
         /* Wait for discovery */
         do {
           getMessage(10);  // Infinite loop, waiting for response
@@ -1038,12 +1038,12 @@ wait:
           if (rxMessageLength != 0) {
             /* Flush any other notification  */
             while (rxMessageLength != 0)
-              getMessage(100);
+              getMessage(10);
 
             /* Restart the discovery loop */
             (void)writeData(NCIRestartDiscovery, sizeof(NCIRestartDiscovery));
             getMessage();
-            getMessage(100);
+            getMessage(10);
           }
           goto wait;
         }
@@ -1061,7 +1061,7 @@ wait:
 
     /* Get next NTF for further activation */
     do {
-      if (!getMessage(100))
+      if (!getMessage(10))
         return ERROR;
     } while ((rxBuffer[0] != 0x61) || (rxBuffer[1] != 0x03));
     gNextTag_Protocol = rxBuffer[4];
@@ -1069,7 +1069,7 @@ wait:
     /* Remaining NTF ? */
 
     while (rxBuffer[rxMessageLength - 1] == 0x02)
-      getMessage(100);
+      getMessage(10);
 
     /* In case of multiple cards, select the first one */
     NCIRfDiscoverSelect[4] = remoteDevice.getProtocol();
@@ -1083,11 +1083,11 @@ wait:
       NCIRfDiscoverSelect[5] = interface.FRAME;
 
     (void)writeData(NCIRfDiscoverSelect, sizeof(NCIRfDiscoverSelect));
-    getMessage(100);
+    getMessage(10);
 
     if ((rxBuffer[0] == 0x41) || (rxBuffer[1] == 0x04) || (rxBuffer[3] == 0x00)) {
       (void)writeData(rxBuffer, rxMessageLength);
-      getMessage(100);
+      getMessage(10);
 
       if ((rxBuffer[0] == 0x61) || (rxBuffer[1] == 0x05)) {
         pRfIntf->Interface = rxBuffer[4];
@@ -1104,7 +1104,7 @@ wait:
         /* Restart the discovery loop */
         (void)writeData(NCIStopDiscovery, sizeof(NCIStopDiscovery));
         getMessage();
-        getMessage(100);
+        getMessage(10);
 
         (void)writeData(NCIStartDiscovery, NCIStartDiscovery_length);
         getMessage();
@@ -1199,7 +1199,7 @@ void Electroniccats_PN7150::ProcessCardMode(RfIntf_t RfIntf) {
         do {
           if ((rxBuffer[0] == 0x41) && (rxBuffer[1] == 0x06))
             break;
-          getMessage(100);
+          getMessage(10);
         } while (rxMessageLength != 0);
         (void)writeData(NCIStartDiscovery, NCIStartDiscovery_length);
         getMessage();
@@ -1333,7 +1333,7 @@ void Electroniccats_PN7150::processP2pMode(RfIntf_t RfIntf) {
     /* Communication ended, restart discovery loop */
     (void)writeData(NCIRestartDiscovery, sizeof(NCIRestartDiscovery));
     getMessage();
-    getMessage(100);
+    getMessage(10);
   }
 }
 
@@ -1360,7 +1360,7 @@ void Electroniccats_PN7150::presenceCheck(RfIntf_t RfIntf) {
         delay(500);
         (void)writeData(NCIPresCheckT1T, sizeof(NCIPresCheckT1T));
         getMessage();
-        getMessage(100);
+        getMessage(10);
       } while ((rxBuffer[0] == 0x00) && (rxBuffer[1] == 0x00));
       break;
 
@@ -1369,7 +1369,7 @@ void Electroniccats_PN7150::presenceCheck(RfIntf_t RfIntf) {
         delay(500);
         (void)writeData(NCIPresCheckT2T, sizeof(NCIPresCheckT2T));
         getMessage();
-        getMessage(100);
+        getMessage(10);
       } while ((rxBuffer[0] == 0x00) && (rxBuffer[1] == 0x00) && (rxBuffer[2] == 0x11));
       break;
 
@@ -1378,7 +1378,7 @@ void Electroniccats_PN7150::presenceCheck(RfIntf_t RfIntf) {
         delay(500);
         (void)writeData(NCIPresCheckT3T, sizeof(NCIPresCheckT3T));
         getMessage();
-        getMessage(100);
+        getMessage(10);
       } while ((rxBuffer[0] == 0x61) && (rxBuffer[1] == 0x08) && ((rxBuffer[3] == 0x00) || (rxBuffer[4] > 0x00)));
       break;
 
@@ -1387,7 +1387,7 @@ void Electroniccats_PN7150::presenceCheck(RfIntf_t RfIntf) {
         delay(500);
         (void)writeData(NCIPresCheckIsoDep, sizeof(NCIPresCheckIsoDep));
         getMessage();
-        getMessage(100);
+        getMessage(10);
       } while ((rxBuffer[0] == 0x6F) && (rxBuffer[1] == 0x11) && (rxBuffer[2] == 0x01) && (rxBuffer[3] == 0x01));
       break;
 
@@ -1399,7 +1399,7 @@ void Electroniccats_PN7150::presenceCheck(RfIntf_t RfIntf) {
         }
         (void)writeData(NCIPresCheckIso15693, sizeof(NCIPresCheckIso15693));
         getMessage();
-        getMessage(100);
+        getMessage(10);
         status = ERROR;
         if (rxMessageLength)
           status = SUCCESS;
@@ -1412,12 +1412,12 @@ void Electroniccats_PN7150::presenceCheck(RfIntf_t RfIntf) {
         /* Deactivate target */
         (void)writeData(NCIDeactivate, sizeof(NCIDeactivate));
         getMessage();
-        getMessage(100);
+        getMessage(10);
 
         /* Reactivate target */
         (void)writeData(NCISelectMIFARE, sizeof(NCISelectMIFARE));
         getMessage();
-        getMessage(100);
+        getMessage(10);
       } while ((rxBuffer[0] == 0x61) && (rxBuffer[1] == 0x05));
       break;
 
@@ -1472,7 +1472,7 @@ bool Electroniccats_PN7150::readerReActivate() {
   /* First de-activate the target */
   (void)writeData(NCIDeactivate, sizeof(NCIDeactivate));
   getMessage();
-  getMessage(100);
+  getMessage(10);
 
   /* Then re-activate the target */
   NCIActivate[4] = remoteDevice.getProtocol();
@@ -1480,7 +1480,7 @@ bool Electroniccats_PN7150::readerReActivate() {
 
   (void)writeData(NCIDeactivate, sizeof(NCIDeactivate));
   getMessage();
-  getMessage(100);
+  getMessage(10);
 
   if ((rxBuffer[0] != 0x61) || (rxBuffer[1] != 0x05))
     return ERROR;
@@ -1515,7 +1515,7 @@ bool Electroniccats_PN7150::ReaderActivateNext(RfIntf_t *pRfIntf) {
 
   if ((rxBuffer[0] != 0x41) && (rxBuffer[1] != 0x06) && (rxBuffer[3] != 0x00))
     return ERROR;
-  getMessage(100);
+  getMessage(10);
 
   if ((rxBuffer[0] != 0x61) && (rxBuffer[1] != 0x06))
     return ERROR;
@@ -1534,7 +1534,7 @@ bool Electroniccats_PN7150::ReaderActivateNext(RfIntf_t *pRfIntf) {
   getMessage();
 
   if ((rxBuffer[0] == 0x41) && (rxBuffer[1] == 0x04) && (rxBuffer[3] == 0x00)) {
-    getMessage(100);
+    getMessage(10);
     if ((rxBuffer[0] == 0x61) || (rxBuffer[1] == 0x05)) {
       pRfIntf->Interface = rxBuffer[4];
       remoteDevice.setInterface(rxBuffer[4]);
@@ -1582,7 +1582,7 @@ void Electroniccats_PN7150::readNdef(RfIntf_t RfIntf) {
         while (rxBuffer[0] == 0x10) {
           memcpy(&tmp[tmpSize], &rxBuffer[3], rxBuffer[2]);
           tmpSize += rxBuffer[2];
-          getMessage(100);
+          getMessage(10);
         }
         memcpy(&tmp[tmpSize], &rxBuffer[3], rxBuffer[2]);
         tmpSize += rxBuffer[2];
