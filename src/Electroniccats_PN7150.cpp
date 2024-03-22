@@ -1014,7 +1014,7 @@ wait:
         getMessage(100);
         /* Wait for discovery */
         do {
-          getMessage(1000);  // Infinite loop, waiting for response
+          getMessage(100);  // Infinite loop, waiting for response
         } while ((rxMessageLength == 4) && (rxBuffer[0] == 0x60) && (rxBuffer[1] == 0x07));
 
         if ((rxMessageLength != 0) && (rxBuffer[0] == 0x61) && (rxBuffer[1] == 0x05)) {
@@ -1156,7 +1156,7 @@ bool Electroniccats_PN7150::cardModeReceive(unsigned char *pData, unsigned char 
   uint8_t Ans[MAX_NCI_FRAME_SIZE];
 
   (void)writeData(Ans, 255);
-  getMessage(2000);
+  getMessage(200);
 
   /* Is data packet ? */
   if ((rxBuffer[0] == 0x00) && (rxBuffer[1] == 0x00)) {
@@ -1186,10 +1186,10 @@ void Electroniccats_PN7150::ProcessCardMode(RfIntf_t RfIntf) {
   /* Reset Card emulation state */
   T4T_NDEF_EMU_Reset();
 
-  getMessage(2000);
+  getMessage(200);
 
   while (rxMessageLength > 0) {
-    getMessage(2000);
+    getMessage(200);
     /* is RF_DEACTIVATE_NTF ? */
     if ((rxBuffer[0] == 0x61) && (rxBuffer[1] == 0x06)) {
       if (FirstCmd) {
@@ -1269,7 +1269,7 @@ void Electroniccats_PN7150::processP2pMode(RfIntf_t RfIntf) {
     restart = true;
   }
   status = ERROR;
-  getMessage(2000);
+  getMessage(200);
   if (rxMessageLength > 0)
     status = SUCCESS;
 
@@ -1448,7 +1448,7 @@ bool Electroniccats_PN7150::readerTagCmd(unsigned char *pCommand, unsigned char 
 
   (void)writeData(Cmd, CommandSize + 3);
   getMessage();
-  getMessage(1000);
+  getMessage(100);
   /* Wait for Answer 1S */
 
   if ((rxBuffer[0] == 0x0) && (rxBuffer[1] == 0x0))
@@ -1573,7 +1573,7 @@ void Electroniccats_PN7150::readNdef(RfIntf_t RfIntf) {
 
       (void)writeData(Cmd, CmdSize + 3);
       getMessage();
-      getMessage(1000);
+      getMessage(100);
 
       // Manage chaining in case of T4T
       if (remoteDevice.getInterface() == INTF_ISODEP && rxBuffer[0] == 0x10) {
@@ -1622,7 +1622,7 @@ void Electroniccats_PN7150::writeNdef(RfIntf_t RfIntf) {
 
       (void)writeData(Cmd, CmdSize + 3);
       getMessage();
-      getMessage(2000);
+      getMessage(200);
     }
   }
 }
