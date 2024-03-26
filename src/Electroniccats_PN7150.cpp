@@ -966,6 +966,16 @@ bool Electroniccats_PN7150::stopDiscovery() {
   (void)writeData(NCIStopDiscovery, sizeof(NCIStopDiscovery));
   getMessage(10);
 
+  if (rxBuffer[0] != 0x41 || rxBuffer[1] != 0x6 || rxBuffer[2] != 0x1 || rxBuffer[3] != 0x0) {
+    Serial.println("Unexpected stop discovery " + String(rxMessageLength));
+    for (int i = 0; i < rxMessageLength; i++) {
+        Serial.print(rxBuffer[i], HEX);
+        Serial.print(" ");
+    }
+    Serial.println("");
+    return ERROR;
+  }
+
   return SUCCESS;
 }
 
